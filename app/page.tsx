@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface RoadmapStep {
   phase: number;
@@ -41,6 +41,8 @@ const phaseConfig: Record<
   },
 };
 
+const UNLOCK_KEY = "skillbridge_authority_unlocked";
+
 export default function Home() {
   const [dreamCareer, setDreamCareer] = useState("");
   const [currentRole, setCurrentRole] = useState("");
@@ -49,6 +51,20 @@ export default function Home() {
   const [result, setResult] = useState<RoadmapResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Lead capture state
+  const [authorityUnlocked, setAuthorityUnlocked] = useState(false);
+  const [unlockEmail, setUnlockEmail] = useState("");
+  const [unlockLoading, setUnlockLoading] = useState(false);
+  const [unlockError, setUnlockError] = useState<string | null>(null);
+
+  // Check localStorage on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem(UNLOCK_KEY);
+      if (stored) setAuthorityUnlocked(true);
+    }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -86,6 +102,35 @@ export default function Home() {
     }
   }
 
+  async function handleUnlock(e: React.FormEvent) {
+    e.preventDefault();
+    setUnlockLoading(true);
+    setUnlockError(null);
+
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: unlockEmail }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to unlock");
+      }
+
+      // Persist unlock
+      localStorage.setItem(UNLOCK_KEY, unlockEmail);
+      setAuthorityUnlocked(true);
+    } catch (err) {
+      setUnlockError(
+        err instanceof Error ? err.message : "Something went wrong"
+      );
+    } finally {
+      setUnlockLoading(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
       {/* Header */}
@@ -96,7 +141,7 @@ export default function Home() {
             <span className="text-blue-400">Bridge</span>
           </h1>
           <span className="rounded-full border border-white/10 px-3 py-1 font-mono text-xs text-zinc-500">
-            v0.1 — API Engine
+            v0.2 — Lead Capture
           </span>
         </div>
       </header>
@@ -224,69 +269,126 @@ export default function Home() {
                   badge: "bg-zinc-500/15 text-zinc-400",
                 };
 
+                const isAuthority = step.title === "Authority";
+                const isLocked = isAuthority && !authorityUnlocked;
+
                 return (
                   <div
                     key={step.phase}
                     className={`group relative overflow-hidden rounded-2xl border bg-gradient-to-br p-6 transition-all duration-300 ${config.gradient} ${config.border}`}
                   >
-                    {/* Phase Header */}
-                    <div className="mb-4 flex items-center justify-between">
-                      <span className="text-2xl">{config.icon}</span>
-                      <span
-                        className={`rounded-full px-2.5 py-1 font-mono text-xs font-medium ${config.badge}`}
-                      >
-                        Phase {step.phase}
-                      </span>
-                    </div>
+                    {/* Card Content — blurred if locked */}
+                    <div
+                      className={`transition-all duration-500 ${
+                        isLocked
+                          ? "pointer-events-none select-none blur-[6px]"
+                          : "blur-0"
+                      }`}
+                    >
+                      {/* Phase Header */}
+                      <div className="mb-4 flex items-center justify-between">
+                        <span className="text-2xl">{config.icon}</span>
+                        <span
+                          className={`rounded-full px-2.5 py-1 font-mono text-xs font-medium ${config.badge}`}
+                        >
+                          Phase {step.phase}
+                        </span>
+                      </div>
 
-                    <h3 className="mb-1 text-xl font-bold text-white">
-                      {step.title}
-                    </h3>
-                    <p className="mb-4 font-mono text-sm text-zinc-500">
-                      {step.duration}
-                    </p>
-
-                    {/* Skills */}
-                    <div className="mb-4">
-                      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                        Skills to Develop
+                      <h3 className="mb-1 text-xl font-bold text-white">
+                        {step.title}
+                      </h3>
+                      <p className="mb-4 font-mono text-sm text-zinc-500">
+                        {step.duration}
                       </p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {step.skills.map((skill) => (
-                          <span
-                            key={skill}
-                            className="rounded-md border border-white/5 bg-white/5 px-2 py-0.5 text-xs text-zinc-300"
-                          >
-                            {skill}
-                          </span>
-                        ))}
+
+                      {/* Skills */}
+                      <div className="mb-4">
+                        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                          Skills to Develop
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {step.skills.map((skill) => (
+                            <span
+                              key={skill}
+                              className="rounded-md border border-white/5 bg-white/5 px-2 py-0.5 text-xs text-zinc-300"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Resources */}
+                      <div className="mb-4">
+                        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                          Resources
+                        </p>
+                        <ul className="space-y-1">
+                          {step.resources.map((r) => (
+                            <li
+                              key={r}
+                              className="flex items-center gap-2 text-sm text-zinc-400"
+                            >
+                              <span className="text-zinc-600">→</span> {r}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* Milestone */}
+                      <div className="rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2">
+                        <p className="text-xs text-zinc-500">🏁 Milestone</p>
+                        <p className="text-sm font-medium text-zinc-300">
+                          {step.milestone}
+                        </p>
                       </div>
                     </div>
 
-                    {/* Resources */}
-                    <div className="mb-4">
-                      <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                        Resources
-                      </p>
-                      <ul className="space-y-1">
-                        {step.resources.map((r) => (
-                          <li
-                            key={r}
-                            className="flex items-center gap-2 text-sm text-zinc-400"
+                    {/* Email Capture Overlay */}
+                    {isLocked && (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-black/60 p-6 backdrop-blur-sm">
+                        <div className="mb-3 text-3xl">🔒</div>
+                        <h4 className="mb-1 text-center text-lg font-bold text-white">
+                          Authority Blueprint
+                        </h4>
+                        <p className="mb-4 text-center text-sm text-zinc-400">
+                          Enter your email to unlock the final phase
+                        </p>
+                        <form
+                          onSubmit={handleUnlock}
+                          className="flex w-full flex-col gap-2"
+                        >
+                          <input
+                            type="email"
+                            value={unlockEmail}
+                            onChange={(e) => setUnlockEmail(e.target.value)}
+                            placeholder="you@company.com"
+                            required
+                            className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-zinc-600 outline-none transition focus:border-purple-500/50"
+                          />
+                          <button
+                            type="submit"
+                            disabled={unlockLoading}
+                            className="w-full rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-2 text-sm font-semibold text-white transition hover:from-purple-500 hover:to-pink-500 disabled:opacity-50"
                           >
-                            <span className="text-zinc-600">→</span> {r}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Milestone */}
-                    <div className="rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2">
-                      <p className="text-xs text-zinc-500">🏁 Milestone</p>
-                      <p className="text-sm font-medium text-zinc-300">
-                        {step.milestone}
-                      </p>
-                    </div>
+                            {unlockLoading ? (
+                              <span className="flex items-center justify-center gap-2">
+                                <Spinner />
+                                Unlocking...
+                              </span>
+                            ) : (
+                              "Unlock Authority Phase →"
+                            )}
+                          </button>
+                          {unlockError && (
+                            <p className="text-center text-xs text-red-400">
+                              {unlockError}
+                            </p>
+                          )}
+                        </form>
+                      </div>
+                    )}
                   </div>
                 );
               })}
