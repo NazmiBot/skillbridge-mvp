@@ -486,6 +486,41 @@ export default function Home() {
               )}
             </div>
 
+            {/* Mock Interview Upsell */}
+            {shareUrl && (
+              <div className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 p-8 text-center">
+                <div className="mb-3 text-4xl">🎙️</div>
+                <h3 className="mb-2 text-xl font-bold text-white">
+                  Ready to nail the interview?
+                </h3>
+                <p className="mx-auto mb-6 max-w-md text-sm text-zinc-400">
+                  Get a personalized mock interview with questions tailored to
+                  your roadmap. Practice before the real thing.
+                </p>
+                <button
+                  onClick={async () => {
+                    const slug = shareUrl.split("/r/")[1];
+                    if (!slug) return;
+                    try {
+                      const res = await fetch("/api/checkout", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ slug }),
+                      });
+                      const data = await res.json();
+                      if (data.url) window.location.href = data.url;
+                    } catch {}
+                  }}
+                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition hover:from-emerald-500 hover:to-teal-500"
+                >
+                  Unlock Mock Interview — $9
+                </button>
+                <p className="mt-3 text-xs text-zinc-600">
+                  One-time payment • Powered by Stripe
+                </p>
+              </div>
+            )}
+
             <p className="text-center font-mono text-xs text-zinc-600">
               Generated {new Date(result.generatedAt).toLocaleString()}
             </p>

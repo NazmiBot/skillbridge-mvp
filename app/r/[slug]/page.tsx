@@ -3,6 +3,7 @@ import { getRedis } from "@/lib/redis";
 import type { SavedRoadmap } from "@/lib/types";
 import type { Metadata } from "next";
 import Link from "next/link";
+import InterviewCTA from "./interview-cta";
 
 type Params = Promise<{ slug: string }>;
 
@@ -74,6 +75,16 @@ export async function generateMetadata({
   };
 }
 
+async function isPaid(slug: string): Promise<boolean> {
+  try {
+    const db = getRedis();
+    const val = await db.get(`interview:paid:${slug}`);
+    return val === "true";
+  } catch {
+    return false;
+  }
+}
+
 export default async function SharedRoadmap({
   params,
 }: {
@@ -84,6 +95,7 @@ export default async function SharedRoadmap({
   if (!roadmap) notFound();
 
   const { input, result } = roadmap;
+  const paid = await isPaid(slug);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
@@ -193,6 +205,9 @@ export default async function SharedRoadmap({
             );
           })}
         </div>
+
+        {/* Mock Interview CTA */}
+        <InterviewCTA slug={slug} paid={paid} />
 
         {/* CTA */}
         <div className="text-center">

@@ -1,0 +1,54 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getStripe } from "@/lib/stripe";
+import { getRedis } from "@/lib/redis";
+
+export async function POST(request: NextRequest) {
+  try {
+    const { slug } = await request.json();
+
+    if (!slug || typeof slug !== "string") {
+      return NextResponse.json({ error: "Missing roadmap slug" }, { status: 400 });
+    }
+
+    // Verify roadmap exists
+    const db = getRedis();
+    const exists = await db.exists(`roadmap:${slug}`);
+    if (!exists) {
+      return NextResponse.json({ error: "Roadmap not found" }, { status: 404 });
+    }
+
+    // Check if already paid
+    const paid = await db.get(`interview:paid:${slug}`);
+    if (paid === "true") {
+      return NextResponse.json({ error: "Already purchased", alreadyPaid: true }, { status: 400 });
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const stripe = getStripe();
+
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            unit_amount: 900, // $9.00
+            product_data: {
+              name: "SkillBridge Mock Interview",
+              description: "AI-powered mock interview tailored to your career roadmap",
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      metadata: { roadmapSlug: slug },
+      success_url: `${baseUrl}/r/${slug}?paid=true`,
+      cancel_url: `${baseUrl}/r/${slug}`,
+    });
+
+    return NextResponse.json({ url: session.url });
+  } catch (error) {
+    console.error("[Checkout] Failed:", error);
+    return NextResponse.json({ error: "Checkout creation failed" }, { status: 500 });
+  }
+}
