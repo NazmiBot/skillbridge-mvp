@@ -1,7 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getRedis } from "@/lib/redis";
 
 // SkillBridge AI Engine — Foundational Route
 // Generates personalized career roadmaps based on user input
+
+const RATE_LIMIT = 3; // max generations per window
+const RATE_WINDOW = 60 * 60 * 24; // 24 hours in seconds
+
+async function checkRateLimit(
+  ip: string
+): Promise<{ allowed: boolean; remaining: number }> {
+  const key = `ratelimit:generate:${ip}`;
+  const db = getRedis();
+  const count = await db.incr(key);
+  if (count === 1) await db.expire(key, RATE_WINDOW);
+  return { allowed: count <= RATE_LIMIT, remaining: Math.max(0, RATE_LIMIT - count) };
+}
 
 interface RoadmapRequest {
   currentRole: string;
@@ -31,6 +45,27 @@ interface RoadmapResponse {
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit by IP
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      request.headers.get("x-real-ip") ||
+      "unknown";
+
+    const { allowed, remaining } = await checkRateLimit(ip);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: "Rate limit exceeded. You can generate up to 3 blueprints per 24 hours." },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(RATE_WINDOW),
+            "X-RateLimit-Limit": String(RATE_LIMIT),
+            "X-RateLimit-Remaining": "0",
+          },
+        }
+      );
+    }
+
     const body: RoadmapRequest = await request.json();
 
     // Validate foundational inputs
@@ -44,7 +79,13 @@ export async function POST(request: NextRequest) {
     // Generate roadmap (placeholder logic — will integrate AI provider)
     const roadmap = generateRoadmap(body);
 
-    return NextResponse.json(roadmap, { status: 200 });
+    return NextResponse.json(roadmap, {
+      status: 200,
+      headers: {
+        "X-RateLimit-Limit": String(RATE_LIMIT),
+        "X-RateLimit-Remaining": String(remaining),
+      },
+    });
   } catch (error) {
     console.error("[API Engine] Generation failed:", error);
     return NextResponse.json(
