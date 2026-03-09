@@ -1,21 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
-interface RoadmapStep {
-  phase: number;
-  title: string;
-  duration: string;
-  skills: string[];
-  resources: string[];
-  milestone: string;
-}
-
-interface RoadmapResponse {
-  roadmap: RoadmapStep[];
-  estimatedTimeline: string;
-  generatedAt: string;
-}
+import type { RoadmapResponse } from "@/lib/types";
 
 const phaseConfig: Record<
   string,
@@ -56,24 +42,43 @@ export default function Home() {
   const [unlockLoading, setUnlockLoading] = useState(false);
   const [unlockError, setUnlockError] = useState<string | null>(null);
 
+  // Share state
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [shareLoading, setShareLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // Track the last submitted input for the save request
+  const [lastInput, setLastInput] = useState<{
+    currentRole: string;
+    targetRole: string;
+    skills: string[];
+    experience: number;
+  } | null>(null);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
     setResult(null);
+    setShareUrl(null);
+    setCopied(false);
+
+    const input = {
+      currentRole: currentRole || "Career Starter",
+      targetRole: dreamCareer,
+      skills: skills
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+      experience: parseInt(experience) || 0,
+    };
 
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          currentRole: currentRole || "Career Starter",
-          targetRole: dreamCareer,
-          skills: skills
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean),
-          experience: parseInt(experience) || 0,
+          ...input,
           preferences: { pace: "balanced", focus: "hybrid" },
         }),
       });
@@ -85,11 +90,41 @@ export default function Home() {
 
       const data: RoadmapResponse = await res.json();
       setResult(data);
+      setLastInput(input);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleShare() {
+    if (!result || !lastInput) return;
+    setShareLoading(true);
+
+    try {
+      const res = await fetch("/api/roadmap/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: lastInput, result }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      setShareUrl(data.url);
+    } catch {
+      // Silently fail — share button just won't show URL
+    } finally {
+      setShareLoading(false);
+    }
+  }
+
+  async function copyLink() {
+    if (!shareUrl) return;
+    await navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   async function handleUnlock(e: React.FormEvent) {
@@ -386,6 +421,61 @@ export default function Home() {
                   </div>
                 );
               })}
+            </div>
+
+            {/* Share Section */}
+            <div className="flex flex-col items-center gap-4">
+              {!shareUrl ? (
+                <button
+                  onClick={handleShare}
+                  disabled={shareLoading}
+                  className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-medium text-zinc-300 transition hover:bg-white/10 disabled:opacity-50"
+                >
+                  {shareLoading ? (
+                    <>
+                      <Spinner /> Generating link...
+                    </>
+                  ) : (
+                    "🔗 Share This Blueprint"
+                  )}
+                </button>
+              ) : (
+                <div className="flex flex-col items-center gap-3">
+                  <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2">
+                    <span className="max-w-xs truncate font-mono text-sm text-zinc-400">
+                      {shareUrl}
+                    </span>
+                    <button
+                      onClick={copyLink}
+                      className="rounded-lg bg-white/10 px-3 py-1 text-xs font-medium text-white transition hover:bg-white/20"
+                    >
+                      {copied ? "✓ Copied!" : "Copy"}
+                    </button>
+                  </div>
+                  <div className="flex gap-3">
+                    <a
+                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                        `My career roadmap from ${lastInput?.currentRole} to ${lastInput?.targetRole} 🚀\n\nGenerated by @SkillBridge`
+                      )}&url=${encodeURIComponent(shareUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-lg border border-white/10 px-4 py-2 text-sm text-zinc-400 transition hover:bg-white/5 hover:text-white"
+                    >
+                      Share on X
+                    </a>
+                    <a
+                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+                        shareUrl
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-lg border border-white/10 px-4 py-2 text-sm text-zinc-400 transition hover:bg-white/5 hover:text-white"
+                    >
+                      Share on LinkedIn
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Generated timestamp */}

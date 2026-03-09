@@ -1,17 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import Redis from "ioredis";
-
-// Singleton Redis connection (reused across invocations in the same lambda)
-let redis: Redis | null = null;
-
-function getRedis(): Redis {
-  if (!redis) {
-    const url = process.env.REDIS_URL;
-    if (!url) throw new Error("REDIS_URL is not configured");
-    redis = new Redis(url, { maxRetriesPerRequest: 2, lazyConnect: true });
-  }
-  return redis;
-}
+import { getRedis } from "@/lib/redis";
 
 export async function POST(request: NextRequest) {
   try {
