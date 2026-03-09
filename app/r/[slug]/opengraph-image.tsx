@@ -13,12 +13,21 @@ const phaseColors: Record<string, { bg: string; text: string; icon: string }> = 
   Authority: { bg: "#4a1d6a", text: "#c084fc", icon: "👑" },
 };
 
+// Fetch Inter font (regular weight) — cached across warm invocations
+const interFont = fetch(
+  "https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.woff2"
+).then((res) => {
+  if (!res.ok) throw new Error(`Font fetch failed: ${res.status}`);
+  return res.arrayBuffer();
+});
+
 export default async function OGImage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const fontData = await interFont;
 
   let roadmap: SavedRoadmap | null = null;
   try {
@@ -48,7 +57,10 @@ export default async function OGImage({
           SkillBridge
         </div>
       ),
-      { ...size }
+      {
+        ...size,
+        fonts: [{ name: "Inter", data: fontData, style: "normal" as const, weight: 400 }],
+      }
     );
   }
 
@@ -64,7 +76,7 @@ export default async function OGImage({
           height: "100%",
           background: "#0a0a0a",
           padding: "48px 56px",
-          fontFamily: "sans-serif",
+          fontFamily: "Inter",
         }}
       >
         {/* Top bar */}
@@ -234,6 +246,11 @@ export default async function OGImage({
         </div>
       </div>
     ),
-    { ...size }
+    {
+      ...size,
+      fonts: [
+        { name: "Inter", data: fontData, style: "normal" as const, weight: 400 },
+      ],
+    }
   );
 }
