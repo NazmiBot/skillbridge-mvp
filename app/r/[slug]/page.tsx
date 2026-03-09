@@ -50,8 +50,10 @@ export async function generateMetadata({
   const roadmap = await getRoadmap(slug);
   if (!roadmap) return { title: "Roadmap Not Found — SkillBridge" };
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://skillbridge.app";
   const title = `${roadmap.input.currentRole} → ${roadmap.input.targetRole} | SkillBridge`;
   const description = `A personalized ${roadmap.result.estimatedTimeline} career roadmap from ${roadmap.input.currentRole} to ${roadmap.input.targetRole}. Built with SkillBridge.`;
+  const ogImage = `${baseUrl}/r/${slug}/opengraph-image`;
 
   return {
     title,
@@ -61,11 +63,13 @@ export async function generateMetadata({
       description,
       type: "website",
       siteName: "SkillBridge",
+      images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: [ogImage],
     },
   };
 }
