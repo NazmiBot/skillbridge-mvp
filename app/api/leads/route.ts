@@ -1,47 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import Redis from "ioredis";
 
-// Lead Capture API — stores email for Authority phase unlock
-// Uses Vercel KV when available, falls back to in-memory store for dev
+// Singleton Redis connection (reused across invocations in the same lambda)
+let redis: Redis | null = null;
 
-let memoryStore: Map<string, { email: string; timestamp: string }> | null =
-  null;
-
-function getMemoryStore() {
-  if (!memoryStore) memoryStore = new Map();
-  return memoryStore;
-}
-
-async function storeWithKV(
-  email: string,
-  roadmapSlug?: string
-): Promise<boolean> {
-  try {
-    // Dynamic import — only loads if KV env vars exist
-    if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
-      return false;
-    }
-    const { kv } = await import("@vercel/kv");
-    const key = `lead:${email}`;
-    await kv.set(key, {
-      email,
-      roadmapSlug: roadmapSlug ?? null,
-      capturedAt: new Date().toISOString(),
-    });
-    // Track total leads count
-    await kv.incr("leads:count");
-    return true;
-  } catch {
-    return false;
+function getRedis(): Redis {
+  if (!redis) {
+    const url = process.env.REDIS_URL;
+    if (!url) throw new Error("REDIS_URL is not configured");
+    redis = new Redis(url, { maxRetriesPerRequest: 2, lazyConnect: true });
   }
-}
-
-function storeInMemory(email: string): void {
-  const store = getMemoryStore();
-  store.set(email, {
-    email,
-    timestamp: new Date().toISOString(),
-  });
-  console.log(`[Leads] Stored in memory (dev mode). Total: ${store.size}`);
+  return redis;
 }
 
 export async function POST(request: NextRequest) {
@@ -56,24 +25,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Try KV first, fall back to memory
-    const storedInKV = await storeWithKV(email, body.roadmapSlug);
-    if (!storedInKV) {
-      storeInMemory(email);
-    }
+    const db = getRedis();
+    const key = `lead:${email}`;
+
+    // Store the lead with metadata
+    await db.set(
+      key,
+      JSON.stringify({
+        email,
+        roadmapSlug: body.roadmapSlug ?? null,
+        capturedAt: new Date().toISOString(),
+        source: "authority-gate",
+      })
+    );
+
+    // Track total leads count
+    await db.incr("leads:count");
 
     return NextResponse.json(
-      {
-        success: true,
-        message: "Authority Blueprint unlocked",
-        storage: storedInKV ? "kv" : "memory",
-      },
+      { success: true, message: "Authority Blueprint unlocked" },
       { status: 200 }
     );
   } catch (error) {
     console.error("[Leads] Capture failed:", error);
     return NextResponse.json(
-      { error: "Failed to process request" },
+      { error: "Failed to save — please try again" },
       { status: 500 }
     );
   }

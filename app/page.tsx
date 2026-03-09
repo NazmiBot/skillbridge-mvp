@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface RoadmapStep {
   phase: number;
@@ -41,8 +41,6 @@ const phaseConfig: Record<
   },
 };
 
-const UNLOCK_KEY = "skillbridge_authority_unlocked";
-
 export default function Home() {
   const [dreamCareer, setDreamCareer] = useState("");
   const [currentRole, setCurrentRole] = useState("");
@@ -52,19 +50,11 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Lead capture state
+  // Lead capture state — only unlocks after server confirms KV write
   const [authorityUnlocked, setAuthorityUnlocked] = useState(false);
   const [unlockEmail, setUnlockEmail] = useState("");
   const [unlockLoading, setUnlockLoading] = useState(false);
   const [unlockError, setUnlockError] = useState<string | null>(null);
-
-  // Check localStorage on mount
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem(UNLOCK_KEY);
-      if (stored) setAuthorityUnlocked(true);
-    }
-  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -114,14 +104,18 @@ export default function Home() {
         body: JSON.stringify({ email: unlockEmail }),
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        const data = await res.json();
         throw new Error(data.error || "Failed to unlock");
       }
 
-      // Persist unlock
-      localStorage.setItem(UNLOCK_KEY, unlockEmail);
-      setAuthorityUnlocked(true);
+      // Only unlock after server confirms the email is saved in KV
+      if (data.success) {
+        setAuthorityUnlocked(true);
+      } else {
+        throw new Error("Server did not confirm save");
+      }
     } catch (err) {
       setUnlockError(
         err instanceof Error ? err.message : "Something went wrong"
