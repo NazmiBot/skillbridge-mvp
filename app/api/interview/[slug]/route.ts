@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRedis } from "@/lib/redis";
 import type { SavedRoadmap } from "@/lib/types";
+import OpenAI from "openai";
 import { matchCareerProfile, CAREER_PROFILES } from "@/lib/career-data";
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 type Params = Promise<{ slug: string }>;
 
@@ -28,6 +31,13 @@ export async function GET(
       );
     }
 
+    // Check for cached questions
+    const cached = await db.get(`interview:questions:${slug}`);
+    if (cached) {
+      const data = JSON.parse(cached);
+      return NextResponse.json(data);
+    }
+
     // Load roadmap for context
     const raw = await db.get(`roadmap:${slug}`);
     if (!raw) {
@@ -40,14 +50,24 @@ export async function GET(
     const roadmap: SavedRoadmap = JSON.parse(raw);
     const { input, result } = roadmap;
 
-    const questions = generateQuestions(
+    const questions = await generateQuestions(
       input.currentRole,
       input.targetRole,
       input.skills,
       result.roadmap.flatMap((step) => step.skills)
     );
 
-    return NextResponse.json({ questions, targetRole: input.targetRole });
+    const responseData = { questions, targetRole: input.targetRole };
+
+    // Cache for 30 days (paid content should persist)
+    await db.set(
+      `interview:questions:${slug}`,
+      JSON.stringify(responseData),
+      "EX",
+      60 * 60 * 24 * 30
+    );
+
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error("[Interview] Failed:", error);
     return NextResponse.json(
@@ -57,7 +77,76 @@ export async function GET(
   }
 }
 
-function generateQuestions(
+async function generateQuestions(
+  currentRole: string,
+  targetRole: string,
+  currentSkills: string[],
+  roadmapSkills: string[]
+): Promise<InterviewQuestion[]> {
+  const profileKey = matchCareerProfile(targetRole);
+  const profile = profileKey ? CAREER_PROFILES[profileKey] : null;
+
+  const categoryContext = profile
+    ? `Career category: ${profile.category}. Key authority skills: ${profile.authority.skills.join(", ")}.`
+    : "";
+
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: `You are an expert career interview coach. Generate personalized mock interview questions for someone transitioning careers.
+
+Output a JSON array of exactly 6 interview question objects. Each must have:
+- "question": A specific, challenging interview question (not generic)
+- "category": Short category label (e.g., "Technical Depth", "Leadership", "System Design", "Career Narrative")
+- "tip": Actionable coaching advice for answering well (2-3 sentences, practical, specific)
+
+Rules:
+- Questions must be specifically tailored to the ${currentRole} → ${targetRole} transition
+- Reference their actual skills (${currentSkills.join(", ")}) and the skills they need to develop
+- Include a mix: 1 background/narrative, 2-3 role-specific technical/domain, 1 behavioral/leadership, 1 vision/future
+- Tips should teach interview technique, not just say "be specific" — give frameworks (STAR, etc.)
+- Questions should be ones a real hiring manager for ${targetRole} would ask
+- Make questions progressively harder (start accessible, end challenging)
+
+Output ONLY the JSON array, no markdown.`,
+        },
+        {
+          role: "user",
+          content: `Generate 6 interview questions for:
+Current Role: ${currentRole || "Career Starter"}
+Target Role: ${targetRole}
+Current Skills: ${currentSkills.join(", ") || "Not specified"}
+Roadmap Skills to Develop: ${roadmapSkills.slice(0, 8).join(", ")}
+${categoryContext}`,
+        },
+      ],
+      temperature: 0.8,
+      max_tokens: 2000,
+      response_format: { type: "json_object" },
+    });
+
+    const content = completion.choices[0]?.message?.content;
+    if (!content) throw new Error("Empty AI response");
+
+    const parsed = JSON.parse(content);
+    // Handle both { questions: [...] } and direct array
+    const questions = Array.isArray(parsed) ? parsed : parsed.questions;
+
+    if (!Array.isArray(questions) || questions.length < 3) {
+      throw new Error("Invalid questions structure");
+    }
+
+    return questions.slice(0, 6);
+  } catch (error) {
+    console.error("[Interview AI] Falling back to templates:", error);
+    return fallbackQuestions(currentRole, targetRole, currentSkills, roadmapSkills);
+  }
+}
+
+function fallbackQuestions(
   currentRole: string,
   targetRole: string,
   currentSkills: string[],
@@ -66,7 +155,6 @@ function generateQuestions(
   const profileKey = matchCareerProfile(targetRole);
   const profile = profileKey ? CAREER_PROFILES[profileKey] : null;
 
-  // Core questions every interview gets
   const core: InterviewQuestion[] = [
     {
       question: `Walk me through your career trajectory from ${currentRole} to wanting to become a ${targetRole}. What's been the most pivotal moment?`,
@@ -80,161 +168,67 @@ function generateQuestions(
     },
   ];
 
-  // Role-specific questions based on career profile
   const roleSpecific: InterviewQuestion[] = [];
+  const category = profile?.category;
 
-  if (profile) {
-    const category = profile.category;
-
-    if (
-      category === "engineering" ||
-      category === "devops" ||
-      category === "security"
-    ) {
-      roleSpecific.push(
-        {
-          question: `You'll need to develop ${roadmapSkills.slice(0, 2).join(" and ")}. Walk me through how you'd approach learning a complex technical topic you've never touched before.`,
-          category: "Learning Ability",
-          tip: "Show your learning system — not just 'I'd Google it.' Mention specific strategies: reading source code, building toy projects, teaching it back, finding mentors.",
-        },
-        {
-          question: `Describe a system you designed or significantly contributed to. What were the key trade-offs, and what would you change with hindsight?`,
-          category: "System Design",
-          tip: "The 'what would you change' part is the real test. It shows intellectual honesty and growth. Don't just describe — analyze your own decisions critically.",
-        },
-        {
-          question: `A junior engineer on your team pushes code that passes review but causes a production incident. How do you handle this?`,
-          category: "Technical Leadership",
-          tip: "This tests empathy + process thinking. Cover: immediate response (no blame), root cause analysis, process improvement (what failed in review?), and how you coach the engineer.",
-        }
-      );
-    }
-
-    if (category === "management") {
-      roleSpecific.push(
-        {
-          question: `Two strong engineers on your team have a fundamental disagreement about architecture. Both have valid points. How do you resolve it?`,
-          category: "Conflict Resolution",
-          tip: "Show you can facilitate, not just dictate. Mention creating a decision framework (RFC?), ensuring both feel heard, and making a timely call when consensus isn't possible.",
-        },
-        {
-          question: `Your team's velocity has dropped 30% over two quarters. What's your diagnostic process?`,
-          category: "Team Performance",
-          tip: "Don't jump to solutions. Walk through your investigation: 1:1s, process review, technical debt assessment, morale check. The best answer shows systematic thinking, not gut reactions.",
-        },
-        {
-          question: `How do you decide when to shield your team from organizational chaos vs. being transparent about it?`,
-          category: "Management Philosophy",
-          tip: "This is a values question. Show nuance — pure shielding creates trust issues; pure transparency creates anxiety. Discuss how context and team maturity influence your approach.",
-        }
-      );
-    }
-
-    if (category === "product") {
-      roleSpecific.push(
-        {
-          question: `Walk me through how you'd prioritize a backlog with 50 items, conflicting stakeholder requests, and a tight deadline.`,
-          category: "Prioritization",
-          tip: "Name your framework (RICE, ICE, impact mapping) but show it's a tool, not a religion. Mention stakeholder alignment, saying no gracefully, and communicating the 'why' behind cuts.",
-        },
-        {
-          question: `You have strong data suggesting Feature A will outperform Feature B, but your CEO wants Feature B. What do you do?`,
-          category: "Stakeholder Management",
-          tip: "This tests political savvy + data integrity. Show you'd present the data clearly, understand the CEO's context (strategic reasons?), and propose a way to test both hypotheses.",
-        },
-        {
-          question: `Describe a product you launched that failed. What did you learn?`,
-          category: "Failure & Learning",
-          tip: "Authenticity wins here. Don't pick a fake failure. Describe what went wrong (assumptions, market, execution), what you'd do differently, and how it changed your process.",
-        }
-      );
-    }
-
-    if (category === "data" || category === "ai") {
-      roleSpecific.push(
-        {
-          question: `Walk me through your approach to a new ML/data problem: from understanding the business need to production deployment.`,
-          category: "End-to-End Thinking",
-          tip: "Start with the business question, not the model. Show you think about data quality, feature engineering, evaluation metrics that matter to the business, and monitoring in production.",
-        },
-        {
-          question: `Your model achieves great offline metrics but stakeholders say it's not delivering value in production. What's your debugging process?`,
-          category: "ML Operations",
-          tip: "Cover: data drift, train/serve skew, latency issues, wrong evaluation metric, and the possibility that the model works but the product integration is broken.",
-        },
-        {
-          question: `How do you explain complex technical concepts (like model limitations or uncertainty) to non-technical stakeholders?`,
-          category: "Communication",
-          tip: "Use an example. Show you can translate 'precision vs. recall trade-off' into business language without being condescending or oversimplifying to the point of inaccuracy.",
-        }
-      );
-    }
-
-    if (category === "design") {
-      roleSpecific.push(
-        {
-          question: `Walk me through a design decision you made where user research contradicted your initial intuition. What did you do?`,
-          category: "Research-Driven Design",
-          tip: "This tests ego vs. evidence. Show you can kill your darlings when data disagrees. Describe your process for synthesizing conflicting signals.",
-        },
-        {
-          question: `How do you balance business goals, user needs, and engineering constraints when they conflict?`,
-          category: "Design Strategy",
-          tip: "Don't default to 'user always wins.' Show you understand the triangle — and that the best designs find creative ways to satisfy all three, not just compromise.",
-        },
-        {
-          question: `Describe your process for scaling a design system from 1 product to 5 products with different needs.`,
-          category: "Design Systems",
-          tip: "Cover governance, component flexibility, adoption strategy, and how you handle teams that want exceptions. Show you think about systems, not just screens.",
-        }
-      );
-    }
-
-    if (category === "marketing") {
-      roleSpecific.push(
-        {
-          question: `You have a $50K monthly marketing budget for a new product. Walk me through how you'd allocate it in the first 3 months.`,
-          category: "Strategy & Budgeting",
-          tip: "Show structured thinking: awareness vs. conversion split, channel testing framework, measurement plan, and when you'd reallocate based on data.",
-        },
-        {
-          question: `Your highest-performing ad campaign suddenly drops 40% in ROAS. What's your diagnostic and response process?`,
-          category: "Performance Marketing",
-          tip: "Walk through the funnel: creative fatigue, audience saturation, landing page issues, competitor changes, platform algorithm shifts. Show systematic debugging, not panic.",
-        },
-        {
-          question: `How do you measure the impact of brand marketing activities that don't have direct attribution?`,
-          category: "Measurement",
-          tip: "This is the holy grail question. Mention brand lift studies, organic search trends, direct traffic, surveys, and the honest tension between measurability and long-term brand building.",
-        }
-      );
-    }
-  } else {
-    // Fallback role-specific questions
+  if (category === "engineering" || category === "devops" || category === "security") {
     roleSpecific.push(
       {
-        question: `A ${targetRole} needs to master ${roadmapSkills.slice(0, 2).join(" and ")}. What's your concrete plan to develop these skills in the next 6 months?`,
+        question: `You'll need to develop ${roadmapSkills.slice(0, 2).join(" and ")}. Walk me through how you'd approach learning a complex technical topic you've never touched before.`,
+        category: "Learning Ability",
+        tip: "Show your learning system — not just 'I'd Google it.' Mention specific strategies: reading source code, building toy projects, teaching it back, finding mentors.",
+      },
+      {
+        question: `Describe a system you designed or significantly contributed to. What were the key trade-offs?`,
+        category: "System Design",
+        tip: "The 'what would you change' part is the real test. It shows intellectual honesty and growth. Don't just describe — analyze your own decisions critically.",
+      }
+    );
+  } else if (category === "management") {
+    roleSpecific.push(
+      {
+        question: `Two strong engineers on your team have a fundamental disagreement about architecture. How do you resolve it?`,
+        category: "Conflict Resolution",
+        tip: "Show you can facilitate, not just dictate. Mention creating a decision framework, ensuring both feel heard, and making a timely call when consensus isn't possible.",
+      },
+      {
+        question: `Your team's velocity has dropped 30% over two quarters. What's your diagnostic process?`,
+        category: "Team Performance",
+        tip: "Don't jump to solutions. Walk through your investigation: 1:1s, process review, tech debt assessment, morale check. Systematic thinking beats gut reactions.",
+      }
+    );
+  } else if (category === "product") {
+    roleSpecific.push(
+      {
+        question: `Walk me through how you'd prioritize a backlog with 50 items, conflicting stakeholders, and a tight deadline.`,
+        category: "Prioritization",
+        tip: "Name your framework (RICE, ICE) but show it's a tool, not a religion. Mention stakeholder alignment and communicating the 'why' behind cuts.",
+      },
+      {
+        question: `Describe a product you launched that failed. What did you learn?`,
+        category: "Failure & Learning",
+        tip: "Authenticity wins. Don't pick a fake failure. Describe what went wrong, what you'd do differently, and how it changed your process.",
+      }
+    );
+  } else {
+    roleSpecific.push(
+      {
+        question: `A ${targetRole} needs to master ${roadmapSkills.slice(0, 2).join(" and ")}. What's your concrete plan?`,
         category: "Growth Plan",
         tip: "Be specific: name courses, projects, mentors, and milestones. Vague answers like 'I'll practice more' don't inspire confidence.",
       },
       {
-        question: `Describe a time you had to influence a decision without having direct authority. How did you build alignment?`,
+        question: `Describe a time you had to influence a decision without having direct authority.`,
         category: "Influence",
-        tip: "This tests soft skills. Focus on your communication strategy, how you understood others' concerns, and the outcome. Evidence of empathy wins.",
-      },
-      {
-        question: `How would you handle a situation where you strongly disagree with your team's technical direction?`,
-        category: "Collaboration",
-        tip: "Show you can disagree and commit. Mention presenting your case with evidence, being open to being wrong, and supporting the decision once it's made.",
+        tip: "This tests soft skills. Focus on communication strategy, understanding others' concerns, and the outcome. Evidence of empathy wins.",
       }
     );
   }
 
-  // Closing question everyone gets
   const closing: InterviewQuestion = {
-    question: `It's 12 months from now and you've been in the ${targetRole} role. What does success look like — what have you shipped, changed, or built?`,
+    question: `It's 12 months from now and you've been in the ${targetRole} role. What does success look like?`,
     category: "Vision",
-    tip: "Be concrete and ambitious but realistic. Mention specific deliverables, team impact, and personal growth. Show you've thought deeply about what the role actually entails day-to-day.",
+    tip: "Be concrete and ambitious but realistic. Mention specific deliverables, team impact, and personal growth milestones.",
   };
 
   return [...core, ...roleSpecific, closing];
