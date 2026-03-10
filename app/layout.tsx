@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 const baseUrl =
-  process.env.NEXT_PUBLIC_BASE_URL || "https://skillbridge.app";
+  process.env.NEXT_PUBLIC_BASE_URL || "https://tryskillbridge.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -117,7 +117,7 @@ export default function RootLayout({
         {/* Plausible Analytics — privacy-friendly, no cookies */}
         <script
           defer
-          data-domain="skillbridge.app"
+          data-domain="tryskillbridge.com"
           src="https://plausible.io/js/script.js"
         />
       </head>

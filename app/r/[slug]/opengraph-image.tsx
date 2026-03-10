@@ -229,7 +229,7 @@ export default async function OGImage({
             color: "#52525b",
           }}
         >
-          skillbridge.app — Generate your own career blueprint
+          tryskillbridge.com — Generate your own career blueprint
         </div>
       </div>
     ),
