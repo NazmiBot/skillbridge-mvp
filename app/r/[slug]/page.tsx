@@ -187,9 +187,9 @@ export default async function SharedRoadmap({
                     {step.resources.map((r) => (
                       <li
                         key={r}
-                        className="flex items-center gap-2 text-sm text-zinc-400"
+                        className="text-sm text-zinc-400 leading-relaxed"
                       >
-                        <span className="text-zinc-600">→</span> {r}
+                        {r}
                       </li>
                     ))}
                   </ul>
@@ -222,6 +222,18 @@ export default async function SharedRoadmap({
           </p>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-white/5 px-6 py-8">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-2 text-center text-sm text-zinc-600">
+          <p>
+            <Link href="/" className="transition hover:text-zinc-400">
+              SkillBridge
+            </Link>{" "}
+            — Career blueprints, engineered.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
