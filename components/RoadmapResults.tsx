@@ -79,8 +79,8 @@ export default function RoadmapResults({
           </button>
         ) : (
           <div className="flex flex-col items-center gap-3">
-            <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2">
-              <span className="max-w-xs truncate font-mono text-sm text-zinc-400">
+            <div className="flex w-full max-w-md items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 sm:px-4">
+              <span className="min-w-0 flex-1 truncate font-mono text-xs text-zinc-400 sm:text-sm">
                 {shareUrl}
               </span>
               <button
@@ -90,14 +90,14 @@ export default function RoadmapResults({
                 {copied ? "✓ Copied!" : "Copy"}
               </button>
             </div>
-            <div className="flex gap-3">
+            <div className="flex w-full max-w-md gap-3">
               <a
                 href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
                   `Just mapped my career path: ${lastInput?.currentRole || "where I am"} → ${lastInput?.targetRole}\n\nSkillBridge built me a personalized 3-phase roadmap in seconds 🚀`
                 )}&url=${encodeURIComponent(shareUrl)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg border border-white/10 px-4 py-2 text-sm text-zinc-400 transition hover:bg-white/5 hover:text-white"
+                className="flex-1 rounded-lg border border-white/10 px-4 py-3 text-center text-sm text-zinc-400 transition active:scale-95 hover:bg-white/5 hover:text-white"
               >
                 Share on X
               </a>
@@ -105,7 +105,7 @@ export default function RoadmapResults({
                 href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg border border-white/10 px-4 py-2 text-sm text-zinc-400 transition hover:bg-white/5 hover:text-white"
+                className="flex-1 rounded-lg border border-white/10 px-4 py-3 text-center text-sm text-zinc-400 transition active:scale-95 hover:bg-white/5 hover:text-white"
               >
                 Share on LinkedIn
               </a>
@@ -116,7 +116,7 @@ export default function RoadmapResults({
 
       {/* Mock Interview Upsell */}
       {shareUrl && (
-        <div className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 p-8 text-center">
+        <div className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 p-5 text-center sm:p-8">
           <div className="mb-3 text-4xl">🎙️</div>
           <h3 className="mb-2 text-xl font-bold text-white">
             Ready to nail the interview?
@@ -139,7 +139,7 @@ export default function RoadmapResults({
                 if (data.url) window.location.href = data.url;
               } catch {}
             }}
-            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition hover:from-emerald-500 hover:to-teal-500"
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition active:scale-[0.98] hover:from-emerald-500 hover:to-teal-500"
           >
             Unlock Mock Interview — $9
           </button>

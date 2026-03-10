@@ -29,7 +29,7 @@ export default function CareerForm({
     <form
       id="career-form"
       onSubmit={onSubmit}
-      className="mx-auto mb-20 max-w-2xl rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 sm:p-8"
+      className="mx-auto mb-12 max-w-2xl rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:mb-20 sm:p-8"
     >
       <div className="mb-6">
         <label className="mb-1.5 block text-sm font-medium text-zinc-400">
@@ -55,7 +55,7 @@ export default function CareerForm({
             value={currentRole}
             onChange={(e) => onCurrentRoleChange(e.target.value)}
             placeholder="e.g. Junior Developer"
-            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25"
+            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white placeholder-zinc-600 outline-none transition focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25"
           />
         </div>
         <div>
@@ -68,7 +68,7 @@ export default function CareerForm({
             onChange={(e) => onExperienceChange(e.target.value)}
             placeholder="e.g. 2"
             min="0"
-            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25"
+            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white placeholder-zinc-600 outline-none transition focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25"
           />
         </div>
       </div>
@@ -86,14 +86,14 @@ export default function CareerForm({
           value={skills}
           onChange={(e) => onSkillsChange(e.target.value)}
           placeholder="e.g. React, TypeScript, CSS, Node.js"
-          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25"
+          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white placeholder-zinc-600 outline-none transition focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25"
         />
       </div>
 
       <button
         type="submit"
         disabled={loading || !dreamCareer.trim()}
-        className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4 text-base font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:from-blue-500 hover:to-purple-500 hover:shadow-blue-500/30 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+        className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4 text-base font-semibold text-white shadow-lg shadow-blue-500/20 transition active:scale-[0.98] hover:from-blue-500 hover:to-purple-500 hover:shadow-blue-500/30 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
       >
         {loading ? (
           <span className="flex items-center justify-center gap-2">

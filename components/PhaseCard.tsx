@@ -126,12 +126,12 @@ export default function PhaseCard({
               onChange={(e) => onUnlockEmailChange(e.target.value)}
               placeholder="you@company.com"
               required
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-zinc-600 outline-none transition focus:border-purple-500/50"
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-base text-white placeholder-zinc-600 outline-none transition focus:border-purple-500/50"
             />
             <button
               type="submit"
               disabled={unlockLoading}
-              className="w-full rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-2 text-sm font-semibold text-white transition hover:from-purple-500 hover:to-pink-500 disabled:opacity-50"
+              className="w-full rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-3 text-sm font-semibold text-white transition active:scale-[0.98] hover:from-purple-500 hover:to-pink-500 disabled:opacity-50"
             >
               {unlockLoading ? (
                 <span className="flex items-center justify-center gap-2">

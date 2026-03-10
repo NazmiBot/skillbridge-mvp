@@ -174,7 +174,7 @@ export default function Home() {
     <div className="min-h-screen bg-[#0a0a0a] text-white">
       <Header />
 
-      <main className="mx-auto max-w-6xl px-6">
+      <main className="mx-auto max-w-6xl px-4 sm:px-6">
         <HeroSection onCareerSelect={setDreamCareer} />
 
         <CareerForm
