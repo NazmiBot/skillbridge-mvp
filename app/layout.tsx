@@ -47,7 +47,7 @@ export const metadata: Metadata = {
       "Generate a personalized 3-phase career roadmap in 10 seconds. Foundation → Execution → Authority.",
     images: [
       {
-        url: `${baseUrl}/og-image.png`,
+        url: `${baseUrl}/opengraph-image`,
         width: 1200,
         height: 630,
         alt: "SkillBridge — Career Blueprint Architect",
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     title: "SkillBridge — AI Career Blueprint Architect",
     description:
       "Generate a personalized 3-phase career roadmap in 10 seconds. Free, no signup required.",
-    images: [`${baseUrl}/og-image.png`],
+    images: [`${baseUrl}/opengraph-image`],
   },
   robots: {
     index: true,
