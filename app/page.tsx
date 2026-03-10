@@ -129,6 +129,27 @@ export default function Home() {
       if (data.success) {
         setAuthorityUnlocked(true);
         analytics.emailUnlock();
+
+        // Fire blueprint email in the background (non-blocking)
+        if (result && lastInput) {
+          fetch("/api/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: unlockEmail,
+              targetRole: lastInput.targetRole,
+              currentRole: lastInput.currentRole,
+              phases: result.roadmap.map((p) => ({
+                title: p.title,
+                duration: p.duration,
+                skills: p.skills,
+                milestone: p.milestone,
+              })),
+              estimatedTimeline: result.estimatedTimeline,
+              shareUrl: shareUrl || undefined,
+            }),
+          }).catch(() => {});
+        }
       } else {
         throw new Error("Server did not confirm save");
       }
