@@ -114,11 +114,11 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        {/* Plausible Analytics — privacy-friendly, no cookies */}
+        {/* Umami Analytics — privacy-friendly, no cookies */}
         <script
           defer
-          data-domain="tryskillbridge.com"
-          src="https://plausible.io/js/script.js"
+          data-website-id="08b8a72d-8500-4cfd-aac5-21454827fa92"
+          src="https://cloud.umami.is/script.js"
         />
       </head>
       <body

@@ -1,12 +1,14 @@
-// Plausible custom event tracking
-// Fires only if Plausible is loaded (noop otherwise)
+// Umami custom event tracking
+// Fires only if Umami is loaded (noop otherwise)
 
 declare global {
   interface Window {
-    plausible?: (
-      event: string,
-      options?: { props?: Record<string, string | number> }
-    ) => void;
+    umami?: {
+      track: (
+        event: string,
+        data?: Record<string, string | number>
+      ) => void;
+    };
   }
 }
 
@@ -14,8 +16,8 @@ export function trackEvent(
   event: string,
   props?: Record<string, string | number>
 ) {
-  if (typeof window !== "undefined" && window.plausible) {
-    window.plausible(event, props ? { props } : undefined);
+  if (typeof window !== "undefined" && window.umami) {
+    window.umami.track(event, props);
   }
 }
 
