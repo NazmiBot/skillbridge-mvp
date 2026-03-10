@@ -27,6 +27,17 @@ const phaseConfig: Record<
   },
 };
 
+const POPULAR_CAREERS = [
+  "Senior Frontend Engineer",
+  "Staff Engineer",
+  "Engineering Manager",
+  "Data Scientist",
+  "Product Manager",
+  "DevOps Engineer",
+  "AI/ML Engineer",
+  "CTO",
+];
+
 export default function Home() {
   const [dreamCareer, setDreamCareer] = useState("");
   const [currentRole, setCurrentRole] = useState("");
@@ -152,6 +163,12 @@ export default function Home() {
     }
   }
 
+  function selectPopularCareer(career: string) {
+    setDreamCareer(career);
+    // Scroll to form
+    document.getElementById("career-form")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
       {/* Header */}
@@ -161,11 +178,12 @@ export default function Home() {
             <span className="text-white">Skill</span>
             <span className="text-blue-400">Bridge</span>
           </h1>
-          <div className="flex items-center gap-3">
-            <span className="hidden rounded-full border border-white/10 px-3 py-1 font-mono text-xs text-zinc-500 sm:inline-flex">
-              2,847 blueprints generated
-            </span>
-          </div>
+          <a
+            href="#career-form"
+            className="hidden rounded-lg bg-white/5 px-4 py-2 text-sm font-medium text-zinc-300 transition hover:bg-white/10 sm:inline-flex"
+          >
+            Get Started →
+          </a>
         </div>
       </header>
 
@@ -176,7 +194,7 @@ export default function Home() {
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />
             Free — no signup required
           </div>
-          <h2 className="mb-6 text-5xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl">
+          <h2 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-7xl">
             Your next career move,
             <br />
             <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
@@ -186,26 +204,46 @@ export default function Home() {
           <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-zinc-400 sm:text-xl">
             Tell us where you are and where you want to be. SkillBridge generates
             a personalized 3-phase roadmap — from foundation skills to industry
-            authority — in under 10 seconds.
+            authority — with specific resources, milestones, and timelines.
           </p>
 
-          {/* Social Proof */}
-          <div className="mb-12 flex flex-wrap items-center justify-center gap-6 text-sm text-zinc-500">
-            <span className="flex items-center gap-1.5">
-              <span className="text-yellow-400">★★★★★</span> 4.9 avg rating
-            </span>
-            <span className="hidden h-4 w-px bg-zinc-800 sm:block" />
-            <span>Used by engineers at Google, Meta & Stripe</span>
-            <span className="hidden h-4 w-px bg-zinc-800 sm:block" />
-            <span>10s generation time</span>
+          {/* Popular careers — reduces friction */}
+          <div className="mb-12">
+            <p className="mb-3 text-sm font-medium text-zinc-500">Popular career paths</p>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {POPULAR_CAREERS.map((career) => (
+                <button
+                  key={career}
+                  onClick={() => selectPopularCareer(career)}
+                  className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 text-sm text-zinc-400 transition hover:border-blue-500/30 hover:bg-blue-500/5 hover:text-blue-300"
+                >
+                  {career}
+                </button>
+              ))}
+            </div>
           </div>
         </section>
 
         {/* Input Form */}
         <form
+          id="career-form"
           onSubmit={handleSubmit}
           className="mx-auto mb-20 max-w-2xl rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 sm:p-8"
         >
+          <div className="mb-6">
+            <label className="mb-1.5 block text-sm font-medium text-zinc-400">
+              Dream Career <span className="text-blue-400">*</span>
+            </label>
+            <input
+              type="text"
+              value={dreamCareer}
+              onChange={(e) => setDreamCareer(e.target.value)}
+              placeholder="e.g. Staff Engineer, Product Manager, CTO..."
+              required
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-lg text-white placeholder-zinc-600 outline-none transition focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25"
+            />
+          </div>
+
           <div className="mb-6 grid gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1.5 block text-sm font-medium text-zinc-400">
@@ -234,10 +272,10 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mb-4">
+          <div className="mb-6">
             <label className="mb-1.5 block text-sm font-medium text-zinc-400">
               Your Skills
-              <span className="text-zinc-600"> (comma-separated)</span>
+              <span className="text-zinc-600"> (comma-separated, helps personalize your roadmap)</span>
             </label>
             <input
               type="text"
@@ -245,20 +283,6 @@ export default function Home() {
               onChange={(e) => setSkills(e.target.value)}
               placeholder="e.g. React, TypeScript, CSS, Node.js"
               className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25"
-            />
-          </div>
-
-          <div className="mb-6">
-            <label className="mb-1.5 block text-sm font-medium text-zinc-400">
-              Dream Career
-            </label>
-            <input
-              type="text"
-              value={dreamCareer}
-              onChange={(e) => setDreamCareer(e.target.value)}
-              placeholder="e.g. Staff Engineer, Engineering Manager, CTO..."
-              required
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-lg text-white placeholder-zinc-600 outline-none transition focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25"
             />
           </div>
 
@@ -366,16 +390,16 @@ export default function Home() {
                           {step.resources.map((r) => (
                             <li
                               key={r}
-                              className="flex items-center gap-2 text-sm text-zinc-400"
+                              className="text-sm text-zinc-400 leading-relaxed"
                             >
-                              <span className="text-zinc-600">→</span> {r}
+                              {r}
                             </li>
                           ))}
                         </ul>
                       </div>
 
                       <div className="rounded-lg border border-white/5 bg-white/[0.02] px-3 py-2">
-                        <p className="text-xs text-zinc-500">Milestone</p>
+                        <p className="text-xs text-zinc-500">🏁 Milestone</p>
                         <p className="text-sm font-medium text-zinc-300">
                           {step.milestone}
                         </p>
@@ -444,7 +468,7 @@ export default function Home() {
                       <Spinner /> Generating link...
                     </>
                   ) : (
-                    "Share This Blueprint"
+                    "🔗 Share This Blueprint"
                   )}
                 </button>
               ) : (
@@ -457,13 +481,13 @@ export default function Home() {
                       onClick={copyLink}
                       className="rounded-lg bg-white/10 px-3 py-1 text-xs font-medium text-white transition hover:bg-white/20"
                     >
-                      {copied ? "Copied!" : "Copy"}
+                      {copied ? "✓ Copied!" : "Copy"}
                     </button>
                   </div>
                   <div className="flex gap-3">
                     <a
                       href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                        `My career roadmap from ${lastInput?.currentRole} to ${lastInput?.targetRole}\n\nGenerated by @SkillBridge`
+                        `Just mapped my career path: ${lastInput?.currentRole || "where I am"} → ${lastInput?.targetRole}\n\nSkillBridge built me a personalized 3-phase roadmap in seconds 🚀`
                       )}&url=${encodeURIComponent(shareUrl)}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -521,42 +545,91 @@ export default function Home() {
               </div>
             )}
 
+            {/* Generate another */}
+            <div className="text-center">
+              <button
+                onClick={() => {
+                  setResult(null);
+                  setShareUrl(null);
+                  setAuthorityUnlocked(false);
+                  setUnlockEmail("");
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+                className="text-sm text-zinc-500 transition hover:text-zinc-300"
+              >
+                ← Generate another blueprint
+              </button>
+            </div>
+
             <p className="text-center font-mono text-xs text-zinc-600">
               Generated {new Date(result.generatedAt).toLocaleString()}
             </p>
           </div>
         )}
 
-        {/* Bottom CTA — only shown before generation */}
+        {/* How It Works — only shown before generation */}
         {!result && (
-          <section className="border-t border-white/5 pb-20 pt-16 text-center">
-            <h3 className="mb-4 text-2xl font-bold tracking-tight">
+          <section className="border-t border-white/5 pb-20 pt-16">
+            <h3 className="mb-10 text-center text-2xl font-bold tracking-tight">
               How it works
             </h3>
-            <div className="mx-auto grid max-w-3xl gap-8 sm:grid-cols-3">
-              <div>
-                <div className="mb-3 text-3xl">1</div>
-                <h4 className="mb-1 font-semibold text-white">Tell us your goal</h4>
-                <p className="text-sm text-zinc-500">
-                  Enter your current role and dream career. Add your skills for
-                  a more precise roadmap.
+            <div className="mx-auto grid max-w-4xl gap-8 sm:grid-cols-3">
+              <div className="text-center">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/10 text-xl font-bold text-blue-400">
+                  1
+                </div>
+                <h4 className="mb-2 font-semibold text-white">Tell us your goal</h4>
+                <p className="text-sm leading-relaxed text-zinc-500">
+                  Enter your target role, current position, and skills. The more
+                  context, the more personalized your roadmap.
                 </p>
               </div>
-              <div>
-                <div className="mb-3 text-3xl">2</div>
-                <h4 className="mb-1 font-semibold text-white">Get your blueprint</h4>
-                <p className="text-sm text-zinc-500">
-                  We generate a 3-phase plan: Foundation, Execution, Authority —
-                  tailored to your experience level.
+              <div className="text-center">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-500/10 text-xl font-bold text-purple-400">
+                  2
+                </div>
+                <h4 className="mb-2 font-semibold text-white">Get your blueprint</h4>
+                <p className="text-sm leading-relaxed text-zinc-500">
+                  We generate a 3-phase plan — Foundation, Execution, Authority —
+                  with specific skills, real resources, and concrete milestones.
                 </p>
               </div>
-              <div>
-                <div className="mb-3 text-3xl">3</div>
-                <h4 className="mb-1 font-semibold text-white">Share &amp; execute</h4>
-                <p className="text-sm text-zinc-500">
-                  Get a unique link with an OG preview image. Share it on
-                  LinkedIn, X, or with your team.
+              <div className="text-center">
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-pink-500/10 text-xl font-bold text-pink-400">
+                  3
+                </div>
+                <h4 className="mb-2 font-semibold text-white">Share & execute</h4>
+                <p className="text-sm leading-relaxed text-zinc-500">
+                  Get a shareable link with a custom OG image. Post it on
+                  LinkedIn or X, or keep it as your personal career compass.
                 </p>
+              </div>
+            </div>
+
+            {/* Coverage section */}
+            <div className="mx-auto mt-16 max-w-3xl text-center">
+              <p className="mb-4 text-sm font-medium text-zinc-500">
+                Covering 15+ career paths across
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-3 text-sm text-zinc-400">
+                {[
+                  "🛠 Engineering",
+                  "📊 Data & AI",
+                  "🎨 Design",
+                  "📋 Product",
+                  "☁️ DevOps & Cloud",
+                  "🔒 Security",
+                  "📱 Mobile",
+                  "📈 Marketing",
+                  "👔 Leadership",
+                ].map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full border border-white/5 bg-white/[0.02] px-3 py-1"
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
             </div>
           </section>
@@ -564,8 +637,13 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 px-6 py-8 text-center text-sm text-zinc-600">
-        SkillBridge — Career blueprints, engineered.
+      <footer className="border-t border-white/5 px-6 py-8">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-2 text-center text-sm text-zinc-600">
+          <p>SkillBridge — Career blueprints, engineered.</p>
+          <p className="text-xs text-zinc-700">
+            Built for people who take their careers seriously.
+          </p>
+        </div>
       </footer>
     </div>
   );
