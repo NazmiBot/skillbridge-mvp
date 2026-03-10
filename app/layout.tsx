@@ -114,6 +114,12 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {/* Plausible Analytics — privacy-friendly, no cookies */}
+        <script
+          defer
+          data-domain="skillbridge.app"
+          src="https://plausible.io/js/script.js"
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

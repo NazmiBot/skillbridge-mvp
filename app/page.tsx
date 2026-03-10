@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { RoadmapResponse } from "@/lib/types";
+import { analytics } from "@/lib/analytics";
 
 const phaseConfig: Record<
   string,
@@ -99,6 +100,7 @@ export default function Home() {
       const data: RoadmapResponse = await res.json();
       setResult(data);
       setLastInput(input);
+      analytics.generateBlueprint(input.targetRole);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -120,6 +122,7 @@ export default function Home() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setShareUrl(data.url);
+      analytics.shareCreated(lastInput?.targetRole || "");
     } catch {
       // Silently fail
     } finally {
@@ -131,6 +134,7 @@ export default function Home() {
     if (!shareUrl) return;
     await navigator.clipboard.writeText(shareUrl);
     setCopied(true);
+    analytics.linkCopied();
     setTimeout(() => setCopied(false), 2000);
   }
 
@@ -151,6 +155,7 @@ export default function Home() {
       if (!res.ok) throw new Error(data.error || "Failed to unlock");
       if (data.success) {
         setAuthorityUnlocked(true);
+        analytics.emailUnlock();
       } else {
         throw new Error("Server did not confirm save");
       }
@@ -165,7 +170,7 @@ export default function Home() {
 
   function selectPopularCareer(career: string) {
     setDreamCareer(career);
-    // Scroll to form
+    analytics.popularCareerClick(career);
     document.getElementById("career-form")?.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
