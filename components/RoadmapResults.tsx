@@ -5,7 +5,7 @@ import Spinner from "./Spinner";
 
 interface RoadmapResultsProps {
   result: RoadmapResponse;
-  lastInput: { currentRole: string; targetRole: string } | null;
+  lastInput: { currentRole: string; targetRole: string; skills: string[]; experience: number } | null;
   authorityUnlocked: boolean;
   unlockEmail: string;
   unlockLoading: boolean;
@@ -38,7 +38,6 @@ export default function RoadmapResults({
 }: RoadmapResultsProps) {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [interviewPaid, setInterviewPaid] = useState(false);
-  const [pendingCheckout, setPendingCheckout] = useState(false);
 
   // Extract slug from share URL
   const slug = shareUrl?.split("/r/")[1] ?? null;
@@ -59,22 +58,31 @@ export default function RoadmapResults({
     if (slug) checkPaidStatus(slug);
   }, [slug, checkPaidStatus]);
 
-  // If we were waiting for a slug to checkout, fire it now
-  useEffect(() => {
-    if (pendingCheckout && slug) {
-      setPendingCheckout(false);
-      doCheckout(slug);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pendingCheckout, slug]);
-
-  async function doCheckout(s: string) {
+  // Self-contained checkout: saves roadmap if needed, then redirects to Stripe
+  async function handleCheckout() {
     setCheckoutLoading(true);
     try {
+      let checkoutSlug = slug;
+
+      // No slug yet — save the roadmap first to get one
+      if (!checkoutSlug && result && lastInput) {
+        const saveRes = await fetch("/api/roadmap/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ input: lastInput, result }),
+        });
+        const saveData = await saveRes.json();
+        if (!saveRes.ok) throw new Error(saveData.error);
+        checkoutSlug = saveData.url?.split("/r/")[1];
+        if (!checkoutSlug) throw new Error("No slug returned");
+      }
+
+      if (!checkoutSlug) return;
+
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug: s }),
+        body: JSON.stringify({ slug: checkoutSlug }),
       });
       const data = await res.json();
       if (data.alreadyPaid) {
@@ -86,16 +94,6 @@ export default function RoadmapResults({
       // Silently fail
     } finally {
       setCheckoutLoading(false);
-    }
-  }
-
-  function handleCheckout() {
-    if (slug) {
-      doCheckout(slug);
-    } else {
-      // Save roadmap first to get a slug, then checkout fires via effect
-      setPendingCheckout(true);
-      onShare();
     }
   }
 
@@ -147,13 +145,13 @@ export default function RoadmapResults({
 
             <button
               onClick={handleCheckout}
-              disabled={checkoutLoading || shareLoading}
+              disabled={checkoutLoading}
               className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-10 py-4 text-base font-bold text-white shadow-xl shadow-emerald-500/30 transition hover:scale-[1.02] hover:from-emerald-400 hover:to-teal-400 hover:shadow-emerald-500/40 active:scale-[0.98] disabled:opacity-50 disabled:hover:scale-100"
             >
-              {checkoutLoading || shareLoading ? (
+              {checkoutLoading ? (
                 <>
                   <Spinner />
-                  {shareLoading ? "Preparing..." : "Redirecting to checkout..."}
+                  Redirecting to checkout...
                 </>
               ) : (
                 "Unlock Mock Interview — $9"
