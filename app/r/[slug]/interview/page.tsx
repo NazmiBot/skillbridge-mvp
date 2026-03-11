@@ -220,61 +220,136 @@ export default function InterviewPage() {
 
         {/* Review Phase */}
         {state.phase === "review" && (
-          <div>
-            <div className="mb-8 text-center">
-              <div className="mb-4 text-5xl">✅</div>
-              <h1 className="mb-2 text-3xl font-bold">Interview Complete</h1>
-              <p className="text-zinc-400">
-                Review your answers below
-              </p>
-            </div>
-
-            <div className="space-y-6">
-              {state.questions.map((q, i) => (
-                <div
-                  key={i}
-                  className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6"
-                >
-                  <span className="mb-2 inline-block rounded-full bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-400">
-                    {q.category}
-                  </span>
-                  <h3 className="mb-3 font-bold">{q.question}</h3>
-                  <div className="rounded-lg border border-white/5 bg-white/[0.02] p-4">
-                    <p className="text-sm text-zinc-300">
-                      {state.answers[i] || (
-                        <span className="italic text-zinc-600">No answer provided</span>
-                      )}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-8 flex justify-center gap-4">
-              <Link
-                href={`/r/${slug}`}
-                className="rounded-xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-medium text-zinc-300 transition hover:bg-white/10"
-              >
-                Back to Roadmap
-              </Link>
-              <button
-                onClick={() => {
-                  setState((s) => ({
-                    ...s,
-                    currentIndex: 0,
-                    answers: new Array(s.questions.length).fill(""),
-                    phase: "ready",
-                  }));
-                  setCurrentAnswer("");
-                }}
-                className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-3 text-sm font-semibold text-white transition hover:from-emerald-500 hover:to-teal-500"
-              >
-                Retake Interview
-              </button>
-            </div>
-          </div>
+          <ReviewPhase
+            slug={slug}
+            questions={state.questions}
+            answers={state.answers}
+            onRetake={() => {
+              setState((s) => ({
+                ...s,
+                currentIndex: 0,
+                answers: new Array(s.questions.length).fill(""),
+                phase: "ready",
+              }));
+              setCurrentAnswer("");
+            }}
+          />
         )}
       </main>
+    </div>
+  );
+}
+
+function ReviewPhase({
+  slug,
+  questions,
+  answers,
+  onRetake,
+}: {
+  slug: string;
+  questions: InterviewQuestion[];
+  answers: string[];
+  onRetake: () => void;
+}) {
+  const router = useRouter();
+  const [evaluating, setEvaluating] = useState(false);
+  const [evalError, setEvalError] = useState<string | null>(null);
+
+  async function handleEvaluate() {
+    setEvaluating(true);
+    setEvalError(null);
+    try {
+      const res = await fetch("/api/evaluate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug, answers }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Evaluation failed");
+      }
+      // Success — redirect to results
+      router.push(`/r/${slug}/results`);
+    } catch (err) {
+      setEvalError(err instanceof Error ? err.message : "Something went wrong");
+      setEvaluating(false);
+    }
+  }
+
+  return (
+    <div>
+      <div className="mb-8 text-center">
+        <div className="mb-4 text-5xl">✅</div>
+        <h1 className="mb-2 text-3xl font-bold">Interview Complete</h1>
+        <p className="text-zinc-400">
+          Review your answers, then get your AI evaluation
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        {questions.map((q, i) => (
+          <div
+            key={i}
+            className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6"
+          >
+            <span className="mb-2 inline-block rounded-full bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-400">
+              {q.category}
+            </span>
+            <h3 className="mb-3 font-bold">{q.question}</h3>
+            <div className="rounded-lg border border-white/5 bg-white/[0.02] p-4">
+              <p className="text-sm text-zinc-300">
+                {answers[i] || (
+                  <span className="italic text-zinc-600">No answer provided</span>
+                )}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Evaluation CTA */}
+      <div className="mt-10 rounded-2xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-blue-500/10 p-8 text-center">
+        <div className="mb-3 text-4xl">🧠</div>
+        <h3 className="mb-2 text-xl font-bold text-white">
+          Ready for Your Score?
+        </h3>
+        <p className="mx-auto mb-6 max-w-md text-sm text-zinc-400">
+          Our AI will analyze your answers and generate a detailed readiness report
+          with your score, strengths, and areas to improve.
+        </p>
+        <button
+          onClick={handleEvaluate}
+          disabled={evaluating}
+          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 px-10 py-4 text-base font-bold text-white shadow-xl shadow-purple-500/25 transition hover:from-purple-500 hover:to-blue-500 hover:shadow-purple-500/35 active:scale-[0.98] disabled:opacity-50"
+        >
+          {evaluating ? (
+            <>
+              <Spinner />
+              Analyzing your answers...
+            </>
+          ) : (
+            "Get My Evaluation →"
+          )}
+        </button>
+        {evalError && (
+          <p className="mt-3 text-sm text-red-400">{evalError}</p>
+        )}
+      </div>
+
+      <div className="mt-6 flex justify-center gap-4">
+        <Link
+          href={`/r/${slug}`}
+          className="rounded-xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-medium text-zinc-300 transition hover:bg-white/10"
+        >
+          Back to Roadmap
+        </Link>
+        <button
+          onClick={onRetake}
+          className="rounded-xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-medium text-zinc-300 transition hover:bg-white/10"
+        >
+          Retake Interview
+        </button>
+      </div>
     </div>
   );
 }
