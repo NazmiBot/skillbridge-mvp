@@ -1,21 +1,57 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { analytics } from "@/lib/analytics";
 
 export default function InterviewCTA({
   slug,
-  paid,
+  paid: initialPaid,
 }: {
   slug: string;
   paid: boolean;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [paid, setPaid] = useState(initialPaid);
+  const searchParams = useSearchParams();
+
+  // Poll for payment confirmation after Stripe redirect
+  useEffect(() => {
+    if (paid) return;
+    if (searchParams.get("paid") !== "true") return;
+
+    let cancelled = false;
+    let attempts = 0;
+    const maxAttempts = 10;
+
+    async function pollPayment() {
+      while (!cancelled && attempts < maxAttempts) {
+        attempts++;
+        try {
+          const res = await fetch(`/api/interview/${slug}`);
+          if (res.ok) {
+            // Payment confirmed — webhook landed
+            setPaid(true);
+            return;
+          }
+        } catch {
+          // ignore, retry
+        }
+        // Wait 2s between polls (webhook typically arrives in 1-5s)
+        await new Promise((r) => setTimeout(r, 2000));
+      }
+    }
+
+    pollPayment();
+    return () => { cancelled = true; };
+  }, [paid, slug, searchParams]);
 
   async function handleCheckout() {
     setLoading(true);
     setError(null);
+    analytics.checkoutStarted();
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
@@ -43,6 +79,25 @@ export default function InterviewCTA({
     } finally {
       setLoading(false);
     }
+  }
+
+  // Show confirming state while polling after Stripe redirect
+  const isPolling = !paid && searchParams.get("paid") === "true";
+
+  if (isPolling) {
+    return (
+      <div className="mb-12 rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 p-8 text-center">
+        <div className="mb-3 flex items-center justify-center gap-3">
+          <Spinner />
+          <span className="text-lg font-semibold text-emerald-400">
+            Confirming your payment...
+          </span>
+        </div>
+        <p className="text-sm text-zinc-500">
+          This usually takes a few seconds.
+        </p>
+      </div>
+    );
   }
 
   if (paid) {

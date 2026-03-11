@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import type { RoadmapResponse } from "@/lib/types";
+import { analytics } from "@/lib/analytics";
 import PhaseCard from "./PhaseCard";
 import Spinner from "./Spinner";
 
@@ -63,6 +64,7 @@ export default function RoadmapResults({
   async function handleCheckout() {
     setCheckoutLoading(true);
     setCheckoutError(null);
+    analytics.checkoutStarted();
     try {
       let checkoutSlug = slug;
 
