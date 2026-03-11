@@ -37,6 +37,7 @@ export default function RoadmapResults({
   onReset,
 }: RoadmapResultsProps) {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [interviewPaid, setInterviewPaid] = useState(false);
 
   // Extract slug from share URL
@@ -61,6 +62,7 @@ export default function RoadmapResults({
   // Self-contained checkout: saves roadmap if needed, then redirects to Stripe
   async function handleCheckout() {
     setCheckoutLoading(true);
+    setCheckoutError(null);
     try {
       let checkoutSlug = slug;
 
@@ -72,12 +74,14 @@ export default function RoadmapResults({
           body: JSON.stringify({ input: lastInput, result }),
         });
         const saveData = await saveRes.json();
-        if (!saveRes.ok) throw new Error(saveData.error);
-        checkoutSlug = saveData.url?.split("/r/")[1];
-        if (!checkoutSlug) throw new Error("No slug returned");
+        if (!saveRes.ok) throw new Error(saveData.error || "Failed to save roadmap");
+        checkoutSlug = saveData.slug;
+        if (!checkoutSlug) throw new Error("No slug returned from save");
       }
 
-      if (!checkoutSlug) return;
+      if (!checkoutSlug) {
+        throw new Error("Unable to prepare roadmap for checkout");
+      }
 
       const res = await fetch("/api/checkout", {
         method: "POST",
@@ -85,13 +89,22 @@ export default function RoadmapResults({
         body: JSON.stringify({ slug: checkoutSlug }),
       });
       const data = await res.json();
+
+      if (!res.ok && !data.alreadyPaid) {
+        throw new Error(data.error || "Checkout failed");
+      }
+
       if (data.alreadyPaid) {
         setInterviewPaid(true);
         return;
       }
-      if (data.url) window.location.href = data.url;
-    } catch {
-      // Silently fail
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL returned from Stripe");
+      }
+    } catch (err) {
+      setCheckoutError(err instanceof Error ? err.message : "Checkout failed. Please try again.");
     } finally {
       setCheckoutLoading(false);
     }
@@ -160,6 +173,9 @@ export default function RoadmapResults({
             <p className="mt-4 text-xs text-zinc-600">
               One-time payment • Instant access • Powered by Stripe
             </p>
+            {checkoutError && (
+              <p className="mt-3 text-sm text-red-400">{checkoutError}</p>
+            )}
           </div>
         </div>
       )}

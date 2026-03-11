@@ -10,11 +10,19 @@ import {
 const RATE_LIMIT = 3;
 const RATE_WINDOW = 60 * 60 * 24;
 
+// IPs exempt from rate limiting (owner/dev testing)
+const RATE_LIMIT_WHITELIST = new Set(
+  (process.env.RATE_LIMIT_WHITELIST || "").split(",").map((s) => s.trim()).filter(Boolean)
+);
+
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 async function checkRateLimit(
   ip: string
 ): Promise<{ allowed: boolean; remaining: number }> {
+  if (RATE_LIMIT_WHITELIST.has(ip)) {
+    return { allowed: true, remaining: RATE_LIMIT };
+  }
   const key = `ratelimit:generate:${ip}`;
   const db = getRedis();
   const count = await db.incr(key);

@@ -39,9 +39,9 @@ export async function POST(request: NextRequest) {
 
     const baseUrl =
       process.env.NEXT_PUBLIC_BASE_URL ||
-      process.env.VERCEL_PROJECT_PRODUCTION_URL
+      (process.env.VERCEL_PROJECT_PRODUCTION_URL
         ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-        : "http://localhost:3000";
+        : "http://localhost:3000");
 
     return NextResponse.json({
       success: true,

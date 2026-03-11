@@ -11,9 +11,11 @@ export default function InterviewCTA({
   paid: boolean;
 }) {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleCheckout() {
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
@@ -27,11 +29,17 @@ export default function InterviewCTA({
         return;
       }
 
+      if (!res.ok) {
+        throw new Error(data.error || "Checkout failed");
+      }
+
       if (data.url) {
         window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL returned");
       }
-    } catch {
-      // Silently fail
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Checkout failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -93,6 +101,9 @@ export default function InterviewCTA({
         <p className="mt-4 text-xs text-zinc-600">
           One-time payment • Instant access • Powered by Stripe
         </p>
+        {error && (
+          <p className="mt-3 text-sm text-red-400">{error}</p>
+        )}
       </div>
     </div>
   );
