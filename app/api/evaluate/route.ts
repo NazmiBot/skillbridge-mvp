@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRedis } from "@/lib/redis";
+import { checkRateLimit } from "@/lib/rate-limit";
 import type { SavedRoadmap, EvaluationResult, InterviewQuestion } from "@/lib/types";
 import OpenAI from "openai";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+let _openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!_openai) {
+    _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  return _openai;
+}
 
 export async function POST(request: NextRequest) {
   let slug: string | undefined;
@@ -20,6 +27,12 @@ export async function POST(request: NextRequest) {
         { error: "Missing slug or answers" },
         { status: 400 }
       );
+    }
+
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
+    const { allowed } = await checkRateLimit("evaluate", ip, 5, 3600);
+    if (!allowed) {
+      return NextResponse.json({ error: "Too many evaluation requests. Please try again later." }, { status: 429 });
     }
 
     const db = getRedis();
@@ -102,7 +115,7 @@ async function evaluateInterview(
   questionCount: number
 ): Promise<EvaluationResult> {
   try {
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {

@@ -15,7 +15,13 @@ const RATE_LIMIT_WHITELIST = new Set(
   (process.env.RATE_LIMIT_WHITELIST || "").split(",").map((s) => s.trim()).filter(Boolean)
 );
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+let _openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!_openai) {
+    _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  return _openai;
+}
 
 async function checkRateLimit(
   ip: string
@@ -197,7 +203,7 @@ ${profileContext}
 Generate a deeply personalized 3-phase roadmap. Remove any skills they already have. Be specific with resource names — use real courses, books, and communities.`;
 
   try {
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         { role: "system", content: systemPrompt },

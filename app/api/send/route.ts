@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import BlueprintEmail from "@/emails/BlueprintEmail";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 let _resend: Resend | null = null;
 function getResend() {
@@ -13,7 +14,7 @@ function getResend() {
   return _resend;
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const resend = getResend();
     const body = await req.json();
@@ -24,6 +25,12 @@ export async function POST(req: Request) {
         { error: "Missing required fields: email, targetRole, phases" },
         { status: 400 }
       );
+    }
+
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "unknown";
+    const { allowed } = await checkRateLimit("send", ip, 5, 3600);
+    if (!allowed) {
+      return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 });
     }
 
     const { data, error } = await resend.emails.send({

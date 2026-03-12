@@ -4,7 +4,13 @@ import type { SavedRoadmap } from "@/lib/types";
 import OpenAI from "openai";
 import { matchCareerProfile, CAREER_PROFILES } from "@/lib/career-data";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+let _openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!_openai) {
+    _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  return _openai;
+}
 
 type Params = Promise<{ slug: string }>;
 
@@ -91,7 +97,7 @@ async function generateQuestions(
     : "";
 
   try {
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
