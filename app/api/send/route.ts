@@ -47,13 +47,15 @@ export async function POST(req: NextRequest) {
     });
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      console.error("[Send] Resend error:", error.message);
+      return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, id: data?.id });
   } catch (err) {
+    console.error("[Send] Failed:", err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Failed to send email" },
+      { error: "Something went wrong. Please try again." },
       { status: 500 }
     );
   }

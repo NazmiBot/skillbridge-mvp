@@ -31,8 +31,8 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString(),
     };
 
-    // Store with 90-day TTL
-    await db.set(`roadmap:${slug}`, JSON.stringify(saved), "EX", 90 * 86400);
+    // Store with 7-day TTL for free users; extended to 90 days on payment
+    await db.set(`roadmap:${slug}`, JSON.stringify(saved), "EX", 7 * 86400);
 
     // Track total saves
     await db.incr("roadmaps:count");
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("[Roadmap Save] Failed:", error);
     return NextResponse.json(
-      { error: "Failed to save roadmap" },
+      { error: "Something went wrong. Please try again." },
       { status: 500 }
     );
   }

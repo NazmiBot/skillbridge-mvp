@@ -36,6 +36,8 @@ export async function POST(request: NextRequest) {
       const db = getRedis();
       // Mark as paid — no TTL, persists as long as the roadmap exists
       await db.set(`interview:paid:${slug}`, "true");
+      // Extend roadmap TTL to 90 days on payment
+      await db.expire(`roadmap:${slug}`, 90 * 86400);
       // Track revenue
       await db.incr("interviews:paid:count");
       console.log(`[Stripe Webhook] Interview unlocked for roadmap: ${slug}`);

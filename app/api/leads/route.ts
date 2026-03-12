@@ -31,7 +31,9 @@ export async function POST(request: NextRequest) {
         roadmapSlug: body.roadmapSlug ?? null,
         capturedAt: new Date().toISOString(),
         source: "authority-gate",
-      })
+      }),
+      "EX",
+      7 * 86400
     );
 
     // Track total leads count
@@ -44,7 +46,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("[Leads] Capture failed:", error);
     return NextResponse.json(
-      { error: "Failed to save — please try again" },
+      { error: "Something went wrong. Please try again." },
       { status: 500 }
     );
   }
