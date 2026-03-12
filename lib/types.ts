@@ -30,6 +30,8 @@ export interface EvaluationResult {
   summary: string;
   strengths: string[];
   weaknesses: string[];
+  starRewrites?: string[];    // STAR method rewrites of weak answers
+  aiGenerated: boolean;       // true if Claude responded, false if fallback
   evaluatedAt: string;
 }
 

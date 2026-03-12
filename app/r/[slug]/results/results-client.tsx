@@ -222,6 +222,27 @@ export default function ResultsClient({
       y += lines.length * 5 + 3;
     }
 
+    // -- STAR Rewrites (if available) --
+    if (evaluation.starRewrites && evaluation.starRewrites.length > 0) {
+      y += 12;
+      if (y > 265) { doc.addPage(); y = 25; }
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.setTextColor(139, 92, 246); // purple
+      doc.text("[*]  HOW TO IMPROVE - STAR REWRITES", margin, y);
+      y += 8;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(51, 65, 85);
+      for (const rewrite of evaluation.starRewrites) {
+        if (y > 240) { doc.addPage(); y = 25; }
+        const lines = doc.splitTextToSize(rewrite, contentW - 4);
+        doc.text(lines, margin + 2, y);
+        y += lines.length * 4.5 + 6;
+      }
+    }
+
     // -- Footer --
     const pageCount = doc.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
@@ -314,17 +335,41 @@ export default function ResultsClient({
         </div>
       </div>
 
-      {/* PDF Download */}
+      {/* STAR Rewrites */}
+      {evaluation.starRewrites && evaluation.starRewrites.length > 0 && (
+        <div className="mb-8 rounded-2xl border border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-blue-500/5 p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <span className="text-xl">✍️</span>
+            <h2 className="text-lg font-bold text-purple-400">How to Improve — STAR Rewrites</h2>
+          </div>
+          <div className="space-y-4">
+            {evaluation.starRewrites.map((r, i) => (
+              <div key={i} className="rounded-lg border border-white/5 bg-white/[0.02] p-4 text-sm text-zinc-300 leading-relaxed whitespace-pre-line">
+                {r}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* PDF Download or AI failure notice */}
       <div className="flex justify-center">
-        <button
-          onClick={handleDownloadPDF}
-          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-purple-500/20 transition hover:from-purple-500 hover:to-blue-500 hover:shadow-purple-500/30"
-        >
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-          </svg>
-          Download Premium Readiness Report
-        </button>
+        {evaluation.aiGenerated === false ? (
+          <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-6 text-center">
+            <p className="text-amber-400 font-medium mb-2">Premium Report Unavailable</p>
+            <p className="text-sm text-zinc-400">Our AI engine couldn&apos;t generate your personalized evaluation. Your report will be ready shortly — please refresh this page in 30 seconds.</p>
+          </div>
+        ) : (
+          <button
+            onClick={handleDownloadPDF}
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-purple-500/20 transition hover:from-purple-500 hover:to-blue-500 hover:shadow-purple-500/30"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+            Download Premium Readiness Report
+          </button>
+        )}
       </div>
     </div>
   );
