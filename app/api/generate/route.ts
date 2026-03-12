@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRedis } from "@/lib/redis";
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 import {
   CAREER_PROFILES,
   matchCareerProfile,
@@ -15,12 +15,12 @@ const RATE_LIMIT_WHITELIST = new Set(
   (process.env.RATE_LIMIT_WHITELIST || "").split(",").map((s) => s.trim()).filter(Boolean)
 );
 
-let _openai: OpenAI | null = null;
-function getOpenAI() {
-  if (!_openai) {
-    _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+let _anthropic: Anthropic | null = null;
+function getAnthropic() {
+  if (!_anthropic) {
+    _anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   }
-  return _openai;
+  return _anthropic;
 }
 
 async function checkRateLimit(
@@ -187,7 +187,7 @@ Rules:
 - Resources must be REAL (actual course names, actual book titles, actual communities)
 - Tailor everything to the specific transition from "${input.currentRole}" to "${input.targetRole}"
 - Focus preference: ${focus}
-- Output ONLY the JSON object, no markdown, no explanation`;
+- Output ONLY the JSON object, no markdown, no explanation. Do not wrap the JSON in markdown code fences.`;
 
   const userPrompt = `Generate a career roadmap for this person:
 
@@ -203,18 +203,19 @@ ${profileContext}
 Generate a deeply personalized 3-phase roadmap. Remove any skills they already have. Be specific with resource names — use real courses, books, and communities.`;
 
   try {
-    const completion = await getOpenAI().chat.completions.create({
-      model: "gpt-4o-mini",
+    const response = await getAnthropic().messages.create({
+      model: "claude-sonnet-4-20250514",
+      system: systemPrompt,
+      max_tokens: 2000,
+      temperature: 0.7,
       messages: [
-        { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
       ],
-      temperature: 0.7,
-      max_tokens: 2000,
-      response_format: { type: "json_object" },
     });
 
-    const content = completion.choices[0]?.message?.content;
+    const block = response.content[0];
+    if (block.type !== "text") throw new Error("Non-text response from AI");
+    const content = block.text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
     if (!content) throw new Error("Empty response from AI");
 
     const parsed = JSON.parse(content);
@@ -250,7 +251,7 @@ Generate a deeply personalized 3-phase roadmap. Remove any skills they already h
       generatedAt: new Date().toISOString(),
     };
   } catch (error) {
-    console.error("[AI Engine] OpenAI call failed, falling back:", error);
+    console.error("[AI Engine] Anthropic call failed, falling back:", error);
     // Fall back to template-based generation
     return fallbackGenerate(input, seniority, profile, pace, focus);
   }

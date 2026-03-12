@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRedis } from "@/lib/redis";
 import type { SavedRoadmap } from "@/lib/types";
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 import { matchCareerProfile, CAREER_PROFILES } from "@/lib/career-data";
 
-let _openai: OpenAI | null = null;
-function getOpenAI() {
-  if (!_openai) {
-    _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+let _anthropic: Anthropic | null = null;
+function getAnthropic() {
+  if (!_anthropic) {
+    _anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   }
-  return _openai;
+  return _anthropic;
 }
 
 type Params = Promise<{ slug: string }>;
@@ -96,13 +96,7 @@ async function generateQuestions(
     ? `Career category: ${profile.category}. Key authority skills: ${profile.authority.skills.join(", ")}.`
     : "";
 
-  try {
-    const completion = await getOpenAI().chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: `You are an expert career interview coach. Generate personalized mock interview questions for someone transitioning careers.
+  const systemPrompt = `You are an expert career interview coach. Generate personalized mock interview questions for someone transitioning careers.
 
 Output a JSON array of exactly 6 interview question objects. Each must have:
 - "question": A specific, challenging interview question (not generic)
@@ -117,24 +111,29 @@ Rules:
 - Questions should be ones a real hiring manager for ${targetRole} would ask
 - Make questions progressively harder (start accessible, end challenging)
 
-Output ONLY the JSON array, no markdown.`,
-        },
-        {
-          role: "user",
-          content: `Generate 6 interview questions for:
+Output ONLY the JSON array, no markdown. Do not wrap the JSON in markdown code fences.`;
+
+  const userPrompt = `Generate 6 interview questions for:
 Current Role: ${currentRole || "Career Starter"}
 Target Role: ${targetRole}
 Current Skills: ${currentSkills.join(", ") || "Not specified"}
 Roadmap Skills to Develop: ${roadmapSkills.slice(0, 8).join(", ")}
-${categoryContext}`,
-        },
-      ],
-      temperature: 0.8,
+${categoryContext}`;
+
+  try {
+    const response = await getAnthropic().messages.create({
+      model: "claude-sonnet-4-20250514",
+      system: systemPrompt,
       max_tokens: 2000,
-      response_format: { type: "json_object" },
+      temperature: 0.8,
+      messages: [
+        { role: "user", content: userPrompt },
+      ],
     });
 
-    const content = completion.choices[0]?.message?.content;
+    const block = response.content[0];
+    if (block.type !== "text") throw new Error("Non-text response from AI");
+    const content = block.text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
     if (!content) throw new Error("Empty AI response");
 
     const parsed = JSON.parse(content);
