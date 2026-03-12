@@ -177,13 +177,14 @@ ${transcript}`,
 }
 
 function fallbackEvaluation(transcript: string): EvaluationResult {
-  // Count answered vs unanswered
-  const lines = transcript.split("\nA: ");
-  const answered = lines.filter(
+  // Count answered vs unanswered (skip the first segment which is header text before the first "A:")
+  const segments = transcript.split("\nA: ");
+  const answerSegments = segments.slice(1); // skip header
+  const total = Math.max(1, answerSegments.length);
+  const answered = answerSegments.filter(
     (l) => !l.includes("(No answer provided)") && l.trim().length > 20
   ).length;
-  const total = Math.max(1, lines.length - 1);
-  const ratio = answered / total;
+  const ratio = total > 0 ? answered / total : 0;
 
   const score = Math.round(ratio * 60 + 20); // 20-80 range based on completion
 

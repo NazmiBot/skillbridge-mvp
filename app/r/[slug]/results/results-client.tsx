@@ -101,7 +101,14 @@ export default function ResultsClient({
     doc.setFont("helvetica", "bold");
     doc.setFontSize(13);
     doc.setTextColor(255, 255, 255);
-    doc.text(`${currentRole}  →  ${targetRole}`, W / 2, y + 10, { align: "center" });
+    // Truncate long role names to fit the banner
+    const transitionText = `${currentRole}  >  ${targetRole}`;
+    const maxBannerW = contentW - 10;
+    doc.setFontSize(13);
+    if (doc.getTextWidth(transitionText) > maxBannerW) {
+      doc.setFontSize(10);
+    }
+    doc.text(transitionText, W / 2, y + 10, { align: "center", maxWidth: maxBannerW });
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.setTextColor(148, 163, 184);
@@ -156,7 +163,7 @@ export default function ResultsClient({
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
     doc.setTextColor(16, 185, 129);
-    doc.text("✦  STRENGTHS", margin, y);
+    doc.text("[+]  STRENGTHS", margin, y);
     y += 8;
 
     doc.setFont("helvetica", "normal");
@@ -164,7 +171,7 @@ export default function ResultsClient({
     doc.setTextColor(51, 65, 85);
     for (const s of (evaluation.strengths ?? [])) {
       if (y > 265) { doc.addPage(); y = 25; }
-      const lines = doc.splitTextToSize(`•  ${s}`, contentW - 4);
+      const lines = doc.splitTextToSize(`-  ${s}`, contentW - 4);
       doc.text(lines, margin + 2, y);
       y += lines.length * 5 + 3;
     }
@@ -176,7 +183,7 @@ export default function ResultsClient({
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
     doc.setTextColor(245, 158, 11);
-    doc.text("▲  AREAS FOR IMPROVEMENT", margin, y);
+    doc.text("[!]  AREAS FOR IMPROVEMENT", margin, y);
     y += 8;
 
     doc.setFont("helvetica", "normal");
@@ -184,7 +191,7 @@ export default function ResultsClient({
     doc.setTextColor(51, 65, 85);
     for (const w of (evaluation.weaknesses ?? [])) {
       if (y > 265) { doc.addPage(); y = 25; }
-      const lines = doc.splitTextToSize(`•  ${w}`, contentW - 4);
+      const lines = doc.splitTextToSize(`-  ${w}`, contentW - 4);
       doc.text(lines, margin + 2, y);
       y += lines.length * 5 + 3;
     }
@@ -196,7 +203,7 @@ export default function ResultsClient({
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
     doc.setTextColor(99, 102, 241); // indigo
-    doc.text("→  NEXT STEPS", margin, y);
+    doc.text("[>]  NEXT STEPS", margin, y);
     y += 8;
 
     const nextSteps = [
@@ -210,7 +217,7 @@ export default function ResultsClient({
     doc.setTextColor(51, 65, 85);
     for (const step of nextSteps) {
       if (y > 265) { doc.addPage(); y = 25; }
-      const lines = doc.splitTextToSize(`•  ${step}`, contentW - 4);
+      const lines = doc.splitTextToSize(`-  ${step}`, contentW - 4);
       doc.text(lines, margin + 2, y);
       y += lines.length * 5 + 3;
     }
