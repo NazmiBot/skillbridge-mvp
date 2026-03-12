@@ -147,7 +147,10 @@ export default function ResultsClient({
     doc.setDrawColor(226, 232, 240);
     doc.setLineWidth(0.3);
     doc.line(margin, y, W - margin, y);
-    y += 10;
+    y += 12;
+
+    // Ensure enough room before starting strengths
+    if (y > 200) { doc.addPage(); y = 25; }
 
     // -- Strengths --
     doc.setFont("helvetica", "bold");
@@ -159,17 +162,17 @@ export default function ResultsClient({
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9.5);
     doc.setTextColor(51, 65, 85);
-    for (const s of evaluation.strengths) {
-      if (y > 270) { doc.addPage(); y = 20; }
+    for (const s of (evaluation.strengths ?? [])) {
+      if (y > 265) { doc.addPage(); y = 25; }
       const lines = doc.splitTextToSize(`•  ${s}`, contentW - 4);
       doc.text(lines, margin + 2, y);
-      y += lines.length * 4.5 + 3;
+      y += lines.length * 5 + 3;
     }
 
-    y += 6;
+    y += 12;
 
     // -- Weaknesses --
-    if (y > 250) { doc.addPage(); y = 20; }
+    if (y > 265) { doc.addPage(); y = 25; }
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
     doc.setTextColor(245, 158, 11);
@@ -179,11 +182,37 @@ export default function ResultsClient({
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9.5);
     doc.setTextColor(51, 65, 85);
-    for (const w of evaluation.weaknesses) {
-      if (y > 270) { doc.addPage(); y = 20; }
+    for (const w of (evaluation.weaknesses ?? [])) {
+      if (y > 265) { doc.addPage(); y = 25; }
       const lines = doc.splitTextToSize(`•  ${w}`, contentW - 4);
       doc.text(lines, margin + 2, y);
-      y += lines.length * 4.5 + 3;
+      y += lines.length * 5 + 3;
+    }
+
+    y += 12;
+
+    // -- Next Steps --
+    if (y > 265) { doc.addPage(); y = 25; }
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.setTextColor(99, 102, 241); // indigo
+    doc.text("→  NEXT STEPS", margin, y);
+    y += 8;
+
+    const nextSteps = [
+      "Practice with the STAR framework (Situation, Task, Action, Result) to structure your answers clearly.",
+      "Research the target role's key competencies and prepare specific examples for each.",
+      "Record yourself answering common questions and review for clarity, pace, and confidence.",
+    ];
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9.5);
+    doc.setTextColor(51, 65, 85);
+    for (const step of nextSteps) {
+      if (y > 265) { doc.addPage(); y = 25; }
+      const lines = doc.splitTextToSize(`•  ${step}`, contentW - 4);
+      doc.text(lines, margin + 2, y);
+      y += lines.length * 5 + 3;
     }
 
     // -- Footer --
@@ -244,12 +273,16 @@ export default function ResultsClient({
             <h2 className="text-lg font-bold text-emerald-400">Strengths</h2>
           </div>
           <ul className="space-y-3">
-            {evaluation.strengths.map((s, i) => (
-              <li key={i} className="flex gap-3 text-sm text-zinc-300 leading-relaxed">
-                <span className="mt-0.5 text-emerald-500">✓</span>
-                <span>{s}</span>
-              </li>
-            ))}
+            {(evaluation.strengths ?? []).length > 0 ? (
+              (evaluation.strengths ?? []).map((s, i) => (
+                <li key={i} className="flex gap-3 text-sm text-zinc-300 leading-relaxed">
+                  <span className="mt-0.5 text-emerald-500">✓</span>
+                  <span>{s}</span>
+                </li>
+              ))
+            ) : (
+              <li className="text-sm text-zinc-500 italic">No strengths data available.</li>
+            )}
           </ul>
         </div>
 
@@ -260,12 +293,16 @@ export default function ResultsClient({
             <h2 className="text-lg font-bold text-amber-400">Areas to Improve</h2>
           </div>
           <ul className="space-y-3">
-            {evaluation.weaknesses.map((w, i) => (
-              <li key={i} className="flex gap-3 text-sm text-zinc-300 leading-relaxed">
-                <span className="mt-0.5 text-amber-500">▲</span>
-                <span>{w}</span>
-              </li>
-            ))}
+            {(evaluation.weaknesses ?? []).length > 0 ? (
+              (evaluation.weaknesses ?? []).map((w, i) => (
+                <li key={i} className="flex gap-3 text-sm text-zinc-300 leading-relaxed">
+                  <span className="mt-0.5 text-amber-500">▲</span>
+                  <span>{w}</span>
+                </li>
+              ))
+            ) : (
+              <li className="text-sm text-zinc-500 italic">No improvement areas identified.</li>
+            )}
           </ul>
         </div>
       </div>

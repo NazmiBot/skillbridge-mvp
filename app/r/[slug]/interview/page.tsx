@@ -33,6 +33,7 @@ export default function InterviewPage() {
   const [currentAnswer, setCurrentAnswer] = useState("");
   const [timeLeft, setTimeLeft] = useState(120); // 2 min per question
   const [timerActive, setTimerActive] = useState(false);
+  const [showNudge, setShowNudge] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -78,6 +79,14 @@ export default function InterviewPage() {
   }, []);
 
   const nextQuestion = useCallback(() => {
+    // If answer is short and nudge hasn't been shown yet, show it instead of proceeding
+    if (currentAnswer.trim().length < 50 && !showNudge) {
+      setShowNudge(true);
+      return;
+    }
+
+    // Proceed (either answer is long enough, or user clicked again after nudge)
+    setShowNudge(false);
     setState((s) => {
       const newAnswers = [...s.answers];
       newAnswers[s.currentIndex] = currentAnswer;
@@ -94,7 +103,7 @@ export default function InterviewPage() {
     });
     setCurrentAnswer("");
     setTimeLeft(120);
-  }, [currentAnswer]);
+  }, [currentAnswer, showNudge]);
 
   const formatTime = (s: number) =>
     `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
@@ -201,11 +210,28 @@ export default function InterviewPage() {
             {/* Answer Input */}
             <textarea
               value={currentAnswer}
-              onChange={(e) => setCurrentAnswer(e.target.value)}
+              onChange={(e) => {
+                setCurrentAnswer(e.target.value);
+                if (showNudge && e.target.value.trim().length >= 50) {
+                  setShowNudge(false);
+                }
+              }}
               placeholder="Type your answer here..."
               rows={6}
               className="mb-4 w-full resize-none rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 outline-none transition focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/25"
             />
+
+            {/* Short-answer nudge */}
+            {showNudge && (
+              <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3">
+                <p className="text-sm text-amber-300">
+                  💬 Can you tell me a bit more? Try to include specific examples or tools you&apos;ve used.
+                </p>
+                <p className="mt-1 text-xs text-amber-500">
+                  Click &quot;{state.currentIndex >= state.questions.length - 1 ? "Finish Interview" : "Next Question"}&quot; again to continue anyway.
+                </p>
+              </div>
+            )}
 
             <button
               onClick={nextQuestion}

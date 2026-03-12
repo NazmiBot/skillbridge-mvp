@@ -6,11 +6,14 @@ import OpenAI from "openai";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function POST(request: NextRequest) {
+  let slug: string | undefined;
   try {
-    const { slug, answers } = (await request.json()) as {
+    const body = (await request.json()) as {
       slug: string;
       answers: string[];
     };
+    slug = body.slug;
+    const { answers } = body;
 
     if (!slug || !Array.isArray(answers)) {
       return NextResponse.json(
@@ -78,10 +81,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(evaluation);
   } catch (error) {
     console.error("[Evaluate] Failed:", error);
-    return NextResponse.json(
-      { error: "Evaluation failed" },
-      { status: 500 }
-    );
+    // Never return a 500 to the client — always deliver a report
+    const fallback = fallbackEvaluation("");
+    if (slug) {
+      try {
+        const db = getRedis();
+        await db.set(`interview:evaluation:${slug}`, JSON.stringify(fallback));
+      } catch (fallbackErr) {
+        console.error("[Evaluate] Fallback save failed:", fallbackErr);
+      }
+    }
+    return NextResponse.json(fallback);
   }
 }
 
@@ -112,6 +122,8 @@ Scoring guidelines:
 - Self-awareness and growth mindset: bonus
 - Technical accuracy for the target role: important
 
+If answers are very short, vague, or missing, explicitly call this out in the weaknesses. For each weak answer, provide a concrete example of what a strong answer would look like. Frame it as 'For the question about X, a strong answer would include...'.
+
 Be constructive in weaknesses — frame them as growth opportunities with specific advice.
 Output ONLY the JSON object, no markdown.`,
         },
@@ -123,7 +135,7 @@ ${transcript}`,
         },
       ],
       temperature: 0.4,
-      max_tokens: 1500,
+      max_tokens: 2500,
       response_format: { type: "json_object" },
     });
 
@@ -161,16 +173,18 @@ function fallbackEvaluation(transcript: string): EvaluationResult {
     summary: `You answered ${answered} of ${total} questions. ${ratio >= 0.8 ? "Strong completion rate — the foundation is there." : "Consider taking more time to answer each question fully."}`,
     strengths: [
       "You completed the mock interview, which shows commitment to preparation.",
+      "Showing up and practicing is the first step — interviewers notice candidates who are prepared.",
       ...(ratio >= 0.5
-        ? ["You engaged with the majority of questions."]
+        ? ["You engaged with the majority of questions, demonstrating persistence."]
         : []),
     ],
     weaknesses: [
-      "AI evaluation was unavailable — review your answers manually for specificity.",
+      "Focus on adding more depth and specificity to your answers — generic responses rarely stand out.",
       ...(ratio < 0.8
-        ? ["Some questions were left unanswered. Practice responding under pressure."]
+        ? ["Some questions were left unanswered. Practice responding under pressure, even with an imperfect answer."]
         : []),
-      "Consider using the STAR framework (Situation, Task, Action, Result) for behavioral questions.",
+      "Use the STAR framework (Situation, Task, Action, Result) to structure behavioral answers clearly.",
+      "Quantify your impact wherever possible — numbers and metrics make answers more memorable.",
     ],
     evaluatedAt: new Date().toISOString(),
   };

@@ -9,14 +9,27 @@ type Params = Promise<{ slug: string }>;
 
 async function getData(slug: string) {
   const db = getRedis();
-  const [roadmapRaw, evalRaw] = await Promise.all([
+  const [roadmapRaw, evalRaw, paidRaw] = await Promise.all([
     db.get(`roadmap:${slug}`),
     db.get(`interview:evaluation:${slug}`),
+    db.get(`interview:paid:${slug}`),
   ]);
+
+  if (!roadmapRaw && !evalRaw) return null;
+
+  // Evaluation not ready yet but payment was made — processing state
+  if (!evalRaw && roadmapRaw && paidRaw === "true") {
+    return {
+      processing: true,
+      roadmap: JSON.parse(roadmapRaw) as SavedRoadmap,
+      evaluation: null,
+    };
+  }
 
   if (!roadmapRaw || !evalRaw) return null;
 
   return {
+    processing: false,
     roadmap: JSON.parse(roadmapRaw) as SavedRoadmap,
     evaluation: JSON.parse(evalRaw) as EvaluationResult,
   };
@@ -30,6 +43,12 @@ export async function generateMetadata({
   const { slug } = await params;
   const data = await getData(slug);
   if (!data) return { title: "Results Not Found — SkillBridge" };
+  if (data.processing || !data.evaluation) {
+    return {
+      title: "Processing Your Results — SkillBridge",
+      other: { refresh: "30" },
+    };
+  }
 
   const { roadmap, evaluation } = data;
   return {
@@ -46,6 +65,32 @@ export default async function ResultsPage({
   const { slug } = await params;
   const data = await getData(slug);
   if (!data) notFound();
+
+  // Evaluation is still being processed — show friendly waiting UI
+  if (data.processing || !data.evaluation) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-[#0a0a0a] px-6 text-center text-white">
+        <div className="text-5xl">⏳</div>
+        <h1 className="text-2xl font-bold">Processing Your Deep-Dive Feedback</h1>
+        <p className="max-w-md text-zinc-400">
+          We&apos;re processing your deep-dive feedback — please refresh in about 30 seconds.
+        </p>
+        <div className="flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-5 py-2 text-sm text-blue-400">
+          <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+          Auto-refreshing shortly…
+        </div>
+        <Link
+          href={`/r/${slug}`}
+          className="mt-2 rounded-xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-medium text-zinc-300 transition hover:bg-white/10"
+        >
+          ← Back to Roadmap
+        </Link>
+      </div>
+    );
+  }
 
   const { roadmap, evaluation } = data;
 
