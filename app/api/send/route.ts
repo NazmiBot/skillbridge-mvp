@@ -2,10 +2,20 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import BlueprintEmail from "@/emails/BlueprintEmail";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let _resend: Resend | null = null;
+function getResend() {
+  if (!_resend) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY is not configured");
+    }
+    _resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return _resend;
+}
 
 export async function POST(req: Request) {
   try {
+    const resend = getResend();
     const body = await req.json();
     const { email, targetRole, currentRole, phases, estimatedTimeline, shareUrl } = body;
 
