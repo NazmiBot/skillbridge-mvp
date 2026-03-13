@@ -254,7 +254,7 @@ export default function ResultsClient({
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
       doc.setTextColor(59, 130, 246); // blue-500
-      doc.text("[🗺️]  YOUR CUSTOM LEARNING ROADMAP", margin, y);
+      doc.text("[*]  YOUR CUSTOM LEARNING ROADMAP", margin, y);
       y += 10;
 
       // What to Study
