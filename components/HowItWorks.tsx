@@ -49,16 +49,6 @@ export default function HowItWorks() {
         </div>
       </div>
 
-      {/* CTA back to form */}
-      <div className="mt-12 text-center">
-        <a
-          href="#career-form"
-          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:from-blue-500 hover:to-purple-500 hover:shadow-blue-500/30 active:scale-[0.98]"
-        >
-          Build Your Blueprint — Free →
-        </a>
-      </div>
-
       {/* Trust bar */}
       <div className="mx-auto mt-14 flex max-w-2xl flex-wrap items-center justify-center gap-x-8 gap-y-3 border-t border-white/5 pt-10">
         <div className="flex items-center gap-2 text-sm text-zinc-500">

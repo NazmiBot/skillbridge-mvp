@@ -177,6 +177,8 @@ export default function Home() {
       <main className="mx-auto max-w-6xl px-4 sm:px-6">
         <HeroSection onCareerSelect={setDreamCareer} />
 
+        {!result && <HowItWorks />}
+
         <CareerForm
           dreamCareer={dreamCareer}
           currentRole={currentRole}
@@ -216,8 +218,6 @@ export default function Home() {
             onReset={handleReset}
           />
         )}
-
-        {!result && <HowItWorks />}
       </main>
 
       <Footer />
