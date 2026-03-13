@@ -39,11 +39,13 @@ function ScoreRing({ score }: { score: number }) {
           className={`${ring} transition-all duration-1000`}
         />
       </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className={`text-4xl font-bold ${ring}`}>{score}</span>
-        <span className="text-xs text-zinc-500">/ 100</span>
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
+        <div className="flex items-baseline gap-1">
+          <span className={`text-3xl font-bold ${ring}`}>{score}</span>
+          <span className="text-xs text-zinc-500">/ 100</span>
+        </div>
+        <span className={`text-xs font-medium ${ring}`}>{label}</span>
       </div>
-      <span className={`mt-2 text-sm font-medium ${ring}`}>{label}</span>
     </div>
   );
 }
@@ -135,10 +137,11 @@ export default function ResultsClient({
       doc.setTextColor(239, 68, 68); // red
     }
     doc.text(scoreStr, margin, y + 12);
+    const scoreStrWidth = doc.getTextWidth(scoreStr);
 
     doc.setFontSize(14);
     doc.setTextColor(148, 163, 184);
-    doc.text(`/ 100  —  ${label}`, margin + doc.getTextWidth(scoreStr) + 3, y + 12);
+    doc.text(`/ 100  —  ${label}`, margin + scoreStrWidth + 3, y + 12);
 
     y += 22;
 
