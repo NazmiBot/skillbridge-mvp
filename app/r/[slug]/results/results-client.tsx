@@ -246,6 +246,77 @@ export default function ResultsClient({
       }
     }
 
+    // -- Learning Roadmap --
+    if (evaluation.learningRoadmap) {
+      const lr = evaluation.learningRoadmap;
+      y += 12;
+      if (y > 240) { doc.addPage(); y = 25; }
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.setTextColor(59, 130, 246); // blue-500
+      doc.text("[🗺️]  YOUR CUSTOM LEARNING ROADMAP", margin, y);
+      y += 10;
+
+      // What to Study
+      if (lr.topicsToStudy.length > 0) {
+        if (y > 255) { doc.addPage(); y = 25; }
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9.5);
+        doc.setTextColor(96, 165, 250); // blue-400
+        doc.text("What to Study", margin + 2, y);
+        y += 6;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9.5);
+        doc.setTextColor(51, 65, 85);
+        for (const topic of lr.topicsToStudy) {
+          if (y > 265) { doc.addPage(); y = 25; }
+          const lines = doc.splitTextToSize(`-  ${topic}`, contentW - 4);
+          doc.text(lines, margin + 2, y);
+          y += lines.length * 5 + 3;
+        }
+        y += 4;
+      }
+
+      // What to Watch
+      if (lr.resourcesToWatch.length > 0) {
+        if (y > 255) { doc.addPage(); y = 25; }
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9.5);
+        doc.setTextColor(96, 165, 250);
+        doc.text("What to Watch", margin + 2, y);
+        y += 6;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9.5);
+        doc.setTextColor(51, 65, 85);
+        for (const resource of lr.resourcesToWatch) {
+          if (y > 265) { doc.addPage(); y = 25; }
+          const lines = doc.splitTextToSize(`-  ${resource}`, contentW - 4);
+          doc.text(lines, margin + 2, y);
+          y += lines.length * 5 + 3;
+        }
+        y += 4;
+      }
+
+      // Action Plan
+      if (lr.milestones.length > 0) {
+        if (y > 255) { doc.addPage(); y = 25; }
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9.5);
+        doc.setTextColor(96, 165, 250);
+        doc.text("Action Plan", margin + 2, y);
+        y += 6;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9.5);
+        doc.setTextColor(51, 65, 85);
+        for (const milestone of lr.milestones) {
+          if (y > 265) { doc.addPage(); y = 25; }
+          const lines = doc.splitTextToSize(`-  ${milestone}`, contentW - 4);
+          doc.text(lines, margin + 2, y);
+          y += lines.length * 5 + 3;
+        }
+      }
+    }
+
     // -- Footer --
     const pageCount = doc.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
@@ -351,6 +422,60 @@ export default function ResultsClient({
                 {r}
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Learning Roadmap */}
+      {evaluation.learningRoadmap && (
+        <div className="mb-8 rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 p-6">
+          <div className="mb-6 flex items-center gap-2">
+            <span className="text-xl">🗺️</span>
+            <h2 className="text-lg font-bold text-blue-400">Your Custom Learning Roadmap</h2>
+          </div>
+          <div className="space-y-6">
+            {/* What to Study */}
+            {evaluation.learningRoadmap.topicsToStudy.length > 0 && (
+              <div>
+                <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-blue-300/70">What to Study</h3>
+                <ul className="space-y-2">
+                  {evaluation.learningRoadmap.topicsToStudy.map((t, i) => (
+                    <li key={i} className="flex gap-3 text-sm text-zinc-300 leading-relaxed">
+                      <span className="mt-0.5 text-blue-500">📘</span>
+                      <span>{t}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {/* What to Watch */}
+            {evaluation.learningRoadmap.resourcesToWatch.length > 0 && (
+              <div>
+                <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-blue-300/70">What to Watch</h3>
+                <ul className="space-y-2">
+                  {evaluation.learningRoadmap.resourcesToWatch.map((r, i) => (
+                    <li key={i} className="flex gap-3 text-sm text-zinc-300 leading-relaxed">
+                      <span className="mt-0.5 text-red-500">▶</span>
+                      <span>{r}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {/* Action Plan */}
+            {evaluation.learningRoadmap.milestones.length > 0 && (
+              <div>
+                <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-blue-300/70">Action Plan</h3>
+                <ul className="space-y-2">
+                  {evaluation.learningRoadmap.milestones.map((m, i) => (
+                    <li key={i} className="flex gap-3 text-sm text-zinc-300 leading-relaxed">
+                      <span className="mt-0.5 text-emerald-500">✓</span>
+                      <span>{m}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       )}
