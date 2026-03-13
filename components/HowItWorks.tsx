@@ -12,7 +12,7 @@ const CATEGORIES = [
 
 export default function HowItWorks() {
   return (
-    <section className="border-t border-white/5 pb-16 pt-14">
+    <section className="border-t border-white/5 pb-10 pt-14">
       <h3 className="mb-10 text-center text-2xl font-bold tracking-tight">
         How it works
       </h3>
@@ -50,7 +50,7 @@ export default function HowItWorks() {
       </div>
 
       {/* Trust bar */}
-      <div className="mx-auto mt-14 flex max-w-2xl flex-wrap items-center justify-center gap-x-8 gap-y-3 border-t border-white/5 pt-10">
+      <div className="mx-auto mt-10 flex max-w-2xl flex-wrap items-center justify-center gap-x-8 gap-y-3 border-t border-white/5 pt-8">
         <div className="flex items-center gap-2 text-sm text-zinc-500">
           <span className="text-emerald-500">✓</span>
           No account required
@@ -65,7 +65,7 @@ export default function HowItWorks() {
         </div>
       </div>
 
-      <div className="mx-auto mt-10 max-w-3xl text-center">
+      <div className="mx-auto mt-8 max-w-3xl text-center">
         <p className="mb-4 text-sm font-medium text-zinc-500">
           Covering 15+ career paths across
         </p>

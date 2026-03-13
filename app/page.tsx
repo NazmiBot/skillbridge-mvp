@@ -179,39 +179,6 @@ export default function Home() {
 
         {!result && <HowItWorks />}
 
-        {!result && (
-          <div className="mb-8 text-center">
-            <p className="mb-3 text-sm font-medium text-zinc-500">
-              Popular career paths
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              {[
-                "Senior Frontend Engineer",
-                "Staff Engineer",
-                "Engineering Manager",
-                "Data Scientist",
-                "Product Manager",
-                "DevOps Engineer",
-                "AI/ML Engineer",
-                "CTO",
-              ].map((career) => (
-                <button
-                  key={career}
-                  onClick={() => {
-                    setDreamCareer(career);
-                    document
-                      .getElementById("career-form")
-                      ?.scrollIntoView({ behavior: "smooth", block: "center" });
-                  }}
-                  className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm text-zinc-400 transition active:scale-95 hover:border-blue-500/30 hover:bg-blue-500/5 hover:text-blue-300 sm:py-1.5"
-                >
-                  {career}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
         <CareerForm
           dreamCareer={dreamCareer}
           currentRole={currentRole}
