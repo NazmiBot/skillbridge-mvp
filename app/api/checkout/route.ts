@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
         {
           price_data: {
             currency: "usd",
-            unit_amount: 900, // $9.00
+            unit_amount: 100, // TEMP $1.00 for live payment test — revert to 900 ($9.00) before launch
             product_data: {
               name: "SkillBridge Mock Interview",
               description: "AI-powered mock interview tailored to your career roadmap",
