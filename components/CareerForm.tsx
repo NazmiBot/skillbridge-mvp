@@ -29,7 +29,7 @@ export default function CareerForm({
     <form
       id="career-form"
       onSubmit={onSubmit}
-      className="mx-auto mb-12 max-w-2xl rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:mb-20 sm:p-8"
+      className="mx-auto mb-12 max-w-2xl rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:mb-14 sm:p-8"
     >
       <div className="mb-6">
         <label className="mb-1.5 block text-sm font-medium text-zinc-400">

@@ -12,7 +12,7 @@ const CATEGORIES = [
 
 export default function HowItWorks() {
   return (
-    <section className="border-t border-white/5 pb-20 pt-16">
+    <section className="border-t border-white/5 pb-16 pt-14">
       <h3 className="mb-10 text-center text-2xl font-bold tracking-tight">
         How it works
       </h3>
@@ -49,7 +49,33 @@ export default function HowItWorks() {
         </div>
       </div>
 
-      <div className="mx-auto mt-16 max-w-3xl text-center">
+      {/* CTA back to form */}
+      <div className="mt-12 text-center">
+        <a
+          href="#career-form"
+          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-blue-500/20 transition hover:from-blue-500 hover:to-purple-500 hover:shadow-blue-500/30 active:scale-[0.98]"
+        >
+          Build Your Blueprint — Free →
+        </a>
+      </div>
+
+      {/* Trust bar */}
+      <div className="mx-auto mt-14 flex max-w-2xl flex-wrap items-center justify-center gap-x-8 gap-y-3 border-t border-white/5 pt-10">
+        <div className="flex items-center gap-2 text-sm text-zinc-500">
+          <span className="text-emerald-500">✓</span>
+          No account required
+        </div>
+        <div className="flex items-center gap-2 text-sm text-zinc-500">
+          <span className="text-emerald-500">✓</span>
+          AI-powered in seconds
+        </div>
+        <div className="flex items-center gap-2 text-sm text-zinc-500">
+          <span className="text-emerald-500">✓</span>
+          Shareable with custom link
+        </div>
+      </div>
+
+      <div className="mx-auto mt-10 max-w-3xl text-center">
         <p className="mb-4 text-sm font-medium text-zinc-500">
           Covering 15+ career paths across
         </p>
