@@ -91,6 +91,14 @@ export async function POST(request: NextRequest) {
       JSON.stringify(evaluation)
     );
 
+    // Auto-email the report (non-blocking)
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://tryskillbridge.com";
+    fetch(`${baseUrl}/api/send-report`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug }),
+    }).catch((err) => console.error("[Evaluate] Report email fire failed:", err));
+
     return NextResponse.json(evaluation);
   } catch (error) {
     console.error("[Evaluate] Failed:", error);

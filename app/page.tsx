@@ -121,7 +121,7 @@ export default function Home() {
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: unlockEmail }),
+        body: JSON.stringify({ email: unlockEmail, roadmapSlug: shareUrl?.split("/r/")[1] ?? null }),
       });
 
       const data = await res.json();
