@@ -41,7 +41,7 @@ export default function ReportEmail({
   return (
     <Html>
       <Head />
-      <Preview>Your SkillBridge Readiness Report: {score}/100 — {currentRole} → {targetRole}</Preview>
+      <Preview>{`Your SkillBridge Readiness Report: ${score}/100 — ${currentRole} → ${targetRole}`}</Preview>
       <Body style={main}>
         <Container style={container}>
           {/* Header */}
