@@ -10,6 +10,7 @@ import CareerForm from "@/components/CareerForm";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import RoadmapResults from "@/components/RoadmapResults";
 import HowItWorks from "@/components/HowItWorks";
+import CareerPaths from "@/components/CareerPaths";
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -191,6 +192,8 @@ export default function Home() {
           onExperienceChange={setExperience}
           onSubmit={handleSubmit}
         />
+
+        {!result && <CareerPaths />}
 
         {error && (
           <div className="mx-auto mb-8 max-w-2xl rounded-xl border border-red-500/20 bg-red-500/5 px-5 py-4 text-center text-sm text-red-400">
