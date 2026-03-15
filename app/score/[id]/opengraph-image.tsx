@@ -1,7 +1,6 @@
 import { ImageResponse } from "next/og";
-import { getRedis } from "@/lib/redis";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const alt = "SkillBridge Career Gap Score";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -15,6 +14,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
   let targetRole = "";
 
   try {
+    const { getRedis } = await import("@/lib/redis");
     const db = getRedis();
     const raw = await db.get(`score:${id}`);
     if (raw) {
@@ -49,16 +49,16 @@ export default async function Image({ params }: { params: Promise<{ id: string }
           SkillBridge
         </div>
         <div style={{ display: "flex", fontSize: 24, color: "#71717a", marginBottom: 40 }}>
-          {currentRole} → {targetRole}
+          {currentRole || "You"} → {targetRole || "Your Dream Role"}
         </div>
         <div style={{ display: "flex", fontSize: 140, fontWeight: 800, color, lineHeight: 1 }}>
           {score}
         </div>
         <div style={{ display: "flex", fontSize: 28, color: "#71717a", marginTop: 10 }}>
-          / 100 — {label}
+          / 100 — {label || "Career Gap Score"}
         </div>
         <div style={{ display: "flex", fontSize: 22, color: "#52525b", marginTop: 40 }}>
-          How ready are you? → tryskillbridge.com/score
+          How ready are you? → tryskillbridge.com
         </div>
       </div>
     ),
