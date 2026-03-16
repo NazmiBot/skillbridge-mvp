@@ -12,6 +12,9 @@ export default function Footer() {
           Career blueprints, engineered.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-zinc-600">
+          <Link href="/sample" className="transition hover:text-zinc-400">
+            Sample Report
+          </Link>
           <Link href="/privacy" className="transition hover:text-zinc-400">
             Privacy Policy
           </Link>
