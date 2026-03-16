@@ -4,6 +4,7 @@ import type { SavedRoadmap } from "@/lib/types";
 import type { Metadata } from "next";
 import Link from "next/link";
 import InterviewCTA from "./interview-cta";
+import ProgressSection from "./progress-section";
 
 type Params = Promise<{ slug: string }>;
 
@@ -205,6 +206,9 @@ export default async function SharedRoadmap({
             );
           })}
         </div>
+
+        {/* Progress Tracker */}
+        <ProgressSection roadmap={result.roadmap} slug={slug} />
 
         {/* Mock Interview CTA — primary conversion */}
         <InterviewCTA slug={slug} paid={paid} />
