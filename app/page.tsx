@@ -132,6 +132,19 @@ export default function Home() {
         setAuthorityUnlocked(true);
         analytics.emailUnlock();
 
+        // Store email for progress tracking
+        localStorage.setItem("sb_progress_email", unlockEmail);
+
+        // Auto-subscribe to progress nudges if we have a slug
+        const progressSlug = shareUrl?.split("/r/")[1] ?? null;
+        if (progressSlug) {
+          fetch("/api/progress/subscribe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: unlockEmail, slug: progressSlug }),
+          }).catch(() => {});
+        }
+
         // Fire blueprint email in the background (non-blocking)
         if (result && lastInput) {
           fetch("/api/send", {
