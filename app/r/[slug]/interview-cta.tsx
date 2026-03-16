@@ -156,6 +156,12 @@ export default function InterviewCTA({
         <p className="mt-4 text-xs text-zinc-600">
           One-time payment • Instant access • Powered by Stripe
         </p>
+        <a
+          href="/sample"
+          className="mt-3 inline-block text-sm text-zinc-500 transition hover:text-zinc-300"
+        >
+          View a Sample Report →
+        </a>
         {error && (
           <p className="mt-3 text-sm text-red-400">{error}</p>
         )}
