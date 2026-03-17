@@ -1,16 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRedis } from "@/lib/redis";
 import type { SavedRoadmap } from "@/lib/types";
-import Anthropic from "@anthropic-ai/sdk";
 import { matchCareerProfile, CAREER_PROFILES } from "@/lib/career-data";
-
-let _anthropic: Anthropic | null = null;
-function getAnthropic() {
-  if (!_anthropic) {
-    _anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-  }
-  return _anthropic;
-}
+import { getAnthropic } from "@/lib/anthropic";
 
 type Params = Promise<{ slug: string }>;
 

@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRedis } from "@/lib/redis";
-import Anthropic from "@anthropic-ai/sdk";
 import {
   CAREER_PROFILES,
   matchCareerProfile,
   inferSeniority,
 } from "@/lib/career-data";
+import { getAnthropic } from "@/lib/anthropic";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const RATE_LIMIT = 3;
 const RATE_WINDOW = 60 * 60 * 24;
@@ -15,28 +16,13 @@ const RATE_LIMIT_WHITELIST = new Set(
   (process.env.RATE_LIMIT_WHITELIST || "").split(",").map((s) => s.trim()).filter(Boolean)
 );
 
-let _anthropic: Anthropic | null = null;
-function getAnthropic() {
-  if (!_anthropic) {
-    _anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-  }
-  return _anthropic;
-}
-
-async function checkRateLimit(
+async function checkGenerateRateLimit(
   ip: string
 ): Promise<{ allowed: boolean; remaining: number }> {
   if (RATE_LIMIT_WHITELIST.has(ip)) {
     return { allowed: true, remaining: RATE_LIMIT };
   }
-  const key = `ratelimit:generate:${ip}`;
-  const db = getRedis();
-  const count = await db.incr(key);
-  if (count === 1) await db.expire(key, RATE_WINDOW);
-  return {
-    allowed: count <= RATE_LIMIT,
-    remaining: Math.max(0, RATE_LIMIT - count),
-  };
+  return checkRateLimit("generate", ip, RATE_LIMIT, RATE_WINDOW);
 }
 
 interface RoadmapRequest {
@@ -72,7 +58,7 @@ export async function POST(request: NextRequest) {
       request.headers.get("x-real-ip") ||
       "unknown";
 
-    const { allowed, remaining } = await checkRateLimit(ip);
+    const { allowed, remaining } = await checkGenerateRateLimit(ip);
     if (!allowed) {
       return NextResponse.json(
         {

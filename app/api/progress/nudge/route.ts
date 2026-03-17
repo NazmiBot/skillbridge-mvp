@@ -5,8 +5,12 @@ import type { SavedRoadmap } from "@/lib/types";
 import { Resend } from "resend";
 import NudgeEmail from "@/emails/NudgeEmail";
 
+let _resend: Resend | null = null;
 function getResend() {
-  return new Resend(process.env.RESEND_API_KEY);
+  if (!_resend) {
+    _resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return _resend;
 }
 
 export async function POST(req: NextRequest) {

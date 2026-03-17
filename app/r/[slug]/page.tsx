@@ -5,32 +5,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import InterviewCTA from "./interview-cta";
 import ProgressSection from "./progress-section";
+import Footer from "@/components/Footer";
+import { phaseConfig, defaultPhaseConfig } from "@/lib/phase-config";
 
 type Params = Promise<{ slug: string }>;
-
-const phaseConfig: Record<
-  string,
-  { icon: string; gradient: string; border: string; badge: string }
-> = {
-  Foundation: {
-    icon: "🧱",
-    gradient: "from-amber-500/10 to-orange-500/5",
-    border: "border-amber-500/20",
-    badge: "bg-amber-500/15 text-amber-400",
-  },
-  Execution: {
-    icon: "⚡",
-    gradient: "from-blue-500/10 to-cyan-500/5",
-    border: "border-blue-500/20",
-    badge: "bg-blue-500/15 text-blue-400",
-  },
-  Authority: {
-    icon: "👑",
-    gradient: "from-purple-500/10 to-pink-500/5",
-    border: "border-purple-500/20",
-    badge: "bg-purple-500/15 text-purple-400",
-  },
-};
 
 async function getRoadmap(slug: string): Promise<SavedRoadmap | null> {
   try {
@@ -136,12 +114,7 @@ export default async function SharedRoadmap({
         {/* Bento Grid */}
         <div className="mb-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {result.roadmap.map((step) => {
-            const config = phaseConfig[step.title] ?? {
-              icon: "📍",
-              gradient: "from-zinc-500/10 to-zinc-500/5",
-              border: "border-zinc-500/20",
-              badge: "bg-zinc-500/15 text-zinc-400",
-            };
+            const config = phaseConfig[step.title] ?? defaultPhaseConfig;
 
             return (
               <div
@@ -227,17 +200,7 @@ export default async function SharedRoadmap({
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-white/5 px-6 py-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-2 text-center text-sm text-zinc-600">
-          <p>
-            <Link href="/" className="transition hover:text-zinc-400">
-              SkillBridge
-            </Link>{" "}
-            — Career blueprints, engineered.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

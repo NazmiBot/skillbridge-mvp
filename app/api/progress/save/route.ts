@@ -9,12 +9,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "email and slug are required" }, { status: 400 });
     }
 
-    const data = await saveProgress(
-      email,
-      slug,
-      completedSkills || [],
-      completedMilestones || []
-    );
+    // Validate input sizes to prevent Redis bloat
+    const skills = Array.isArray(completedSkills) ? completedSkills.slice(0, 50) : [];
+    const milestones = Array.isArray(completedMilestones)
+      ? completedMilestones.filter((m: unknown) => typeof m === "number" && m >= 1 && m <= 10).slice(0, 10)
+      : [];
+
+    const data = await saveProgress(email, slug, skills, milestones);
 
     return NextResponse.json({ success: true, data });
   } catch (err) {

@@ -2,15 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getRedis } from "@/lib/redis";
 import { checkRateLimit } from "@/lib/rate-limit";
 import type { SavedRoadmap, EvaluationResult, InterviewQuestion } from "@/lib/types";
-import Anthropic from "@anthropic-ai/sdk";
-
-let _anthropic: Anthropic | null = null;
-function getAnthropic() {
-  if (!_anthropic) {
-    _anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-  }
-  return _anthropic;
-}
+import { getAnthropic } from "@/lib/anthropic";
 
 export async function POST(request: NextRequest) {
   let slug: string | undefined;
@@ -166,11 +158,12 @@ async function evaluateInterview(
   try {
     const response = await getAnthropic().messages.create({
       model: "claude-sonnet-4-20250514",
+      system: systemPrompt,
       max_tokens: 3000,
       messages: [
         {
           role: "user",
-          content: `<system>${systemPrompt}</system>\n\nEvaluate this mock interview for a ${currentRole} → ${targetRole} career transition (${questionCount} questions):\n\n${transcript}`,
+          content: `Evaluate this mock interview for a ${currentRole} → ${targetRole} career transition (${questionCount} questions):\n\n${transcript}`,
         },
       ],
     });
