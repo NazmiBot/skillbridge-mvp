@@ -148,15 +148,49 @@ async function handler(req: NextRequest) {
     }
 
     // Like the tweet first (feels natural)
+    const me = await client.v2.me();
     try {
-      const me = await client.v2.me();
       await client.v2.like(me.data.id, targetTweet.id);
     } catch {
       // Like failed — not critical, continue
     }
 
-    // Post the reply
-    const result = await client.v2.reply(reply, targetTweet.id);
+    // Post the reply (may fail for new accounts due to X restrictions)
+    let result;
+    let replyPosted = false;
+    try {
+      result = await client.v2.tweet({
+        text: reply,
+        reply: { in_reply_to_tweet_id: targetTweet.id },
+      });
+      replyPosted = true;
+    } catch (replyErr: unknown) {
+      const detail = (replyErr as { data?: { detail?: string } }).data?.detail || "";
+      if (detail.includes("not allowed") || detail.includes("not been mentioned")) {
+        // X reply restriction for new accounts — log the draft and like only
+        await logActivity(db, "like_only", {
+          account: targetAccount,
+          originalTweet: targetTweet.text,
+          tweetId: targetTweet.id,
+          draftReply: reply,
+          reason: "Reply restricted — new account. Like posted instead.",
+        });
+
+        return NextResponse.json({
+          success: true,
+          mode: "like_only",
+          account: targetAccount,
+          originalTweet: targetTweet.text,
+          draftReply: reply,
+          message: "Reply restricted by X (new account). Liked the tweet and saved draft reply.",
+        });
+      }
+      throw replyErr; // Re-throw if it's a different error
+    }
+
+    if (!replyPosted || !result) {
+      return NextResponse.json({ error: "Reply failed unexpectedly" }, { status: 500 });
+    }
 
     // Update tracking
     repliedTweetIds.push(targetTweet.id);
