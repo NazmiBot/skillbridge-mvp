@@ -34,6 +34,11 @@ export async function POST(request: NextRequest) {
     // Store with 7-day TTL for free users; extended to 90 days on payment
     await db.set(`roadmap:${slug}`, JSON.stringify(saved), "EX", 7 * 86400);
 
+    // Index by creation time for follow-up cron (sorted set, score = timestamp)
+    await db.zadd("roadmaps:created", Date.now(), slug);
+    // Prune entries older than 7 days to keep the set lean
+    await db.zremrangebyscore("roadmaps:created", 0, Date.now() - 7 * 86400 * 1000);
+
     // Track total saves
     await db.incr("roadmaps:count");
 

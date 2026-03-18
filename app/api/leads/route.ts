@@ -36,6 +36,11 @@ export async function POST(request: NextRequest) {
       7 * 86400
     );
 
+    // Index slug → email for follow-up cron (avoids keyspace scan)
+    if (body.roadmapSlug) {
+      await db.set(`lead:by-slug:${body.roadmapSlug}`, email, "EX", 7 * 86400);
+    }
+
     // Track total leads count
     await db.incr("leads:count");
 
