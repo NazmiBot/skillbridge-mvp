@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import InterviewCTA from "./interview-cta";
 import ProgressSection from "./progress-section";
+import DownloadPDF from "@/components/roadmap/DownloadPDF";
 import Footer from "@/components/Footer";
 import { phaseConfig, defaultPhaseConfig } from "@/lib/phase-config";
 
@@ -108,6 +109,18 @@ export default async function SharedRoadmap({
             <span>{input.experience} years experience</span>
             <span>•</span>
             <span>{input.skills.length} current skills</span>
+          </div>
+
+          <div className="mt-6 flex justify-center">
+            <DownloadPDF
+              slug={slug}
+              currentRole={input.currentRole}
+              targetRole={input.targetRole}
+              estimatedTimeline={result.estimatedTimeline}
+              experience={input.experience}
+              skills={input.skills}
+              roadmap={result.roadmap}
+            />
           </div>
         </div>
 
