@@ -38,9 +38,10 @@ export async function GET(req: NextRequest) {
     const db = getRedis();
     const now = Date.now();
 
-    // Window: roadmaps created 47–49 hours ago
-    const windowStart = now - 49 * 60 * 60 * 1000;
-    const windowEnd = now - 47 * 60 * 60 * 1000;
+    // Window: roadmaps created 24–48 hours ago
+    // Runs once daily on Hobby plan, so wider window ensures no one is missed
+    const windowStart = now - 48 * 60 * 60 * 1000;
+    const windowEnd = now - 24 * 60 * 60 * 1000;
 
     // O(log N) lookup via sorted set — no SCAN needed
     const slugs = await db.zrangebyscore("roadmaps:created", windowStart, windowEnd);
