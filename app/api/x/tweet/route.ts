@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRedis } from "@/lib/redis";
 import { getTwitterClient } from "@/lib/twitter";
+import { getAnthropic } from "@/lib/anthropic";
 import { TWEET_BANK } from "@/lib/x-content";
 
 function verifyCron(req: NextRequest): boolean {
@@ -52,55 +53,210 @@ async function handler(req: NextRequest) {
       });
     }
 
-    // Pick based on day-of-week pillar preference
+    // Every 3rd day, try a curiosity stats tweet instead of the bank
     const day = new Date().getDay(); // 0=Sun ... 6=Sat
-    const pillarPreference: Record<number, string> = {
-      0: "wisdom",     // Sunday
-      1: "wisdom",     // Monday
-      2: "tip",        // Tuesday
-      3: "engagement", // Wednesday
-      4: "insight",    // Thursday
-      5: "wisdom",     // Friday
-      6: "tip",        // Saturday
-    };
+    const dayOfMonth = new Date().getDate();
+    const isCuriosityDay = dayOfMonth % 3 === 0;
 
-    const preferred = pillarPreference[day] || "wisdom";
-    let tweet = available.find((t) => t.pillar === preferred) || available[0];
+    let tweetText: string;
+    let tweetPillar: string;
+    let tweetIndex: number | null = null;
 
-    if (preview) {
-      return NextResponse.json({
-        preview: true,
-        tweet: tweet.text,
-        pillar: tweet.pillar,
-        remaining: available.length - 1,
-      });
+    if (isCuriosityDay) {
+      // Try to generate a curiosity stats tweet from real data
+      const statsTweet = await generateCuriosityTweet(db);
+      if (statsTweet) {
+        tweetText = statsTweet;
+        tweetPillar = "curiosity_stats";
+
+        if (preview) {
+          return NextResponse.json({
+            preview: true,
+            tweet: tweetText,
+            pillar: tweetPillar,
+            remaining: available.length,
+            source: "curiosity_stats",
+          });
+        }
+      } else {
+        // Not enough data — fall through to bank
+        tweetText = "";
+        tweetPillar = "";
+      }
+    } else {
+      tweetText = "";
+      tweetPillar = "";
+    }
+
+    // Fall back to tweet bank if no curiosity tweet was generated
+    if (!tweetText) {
+      const pillarPreference: Record<number, string> = {
+        0: "wisdom",     // Sunday
+        1: "wisdom",     // Monday
+        2: "tip",        // Tuesday
+        3: "engagement", // Wednesday
+        4: "insight",    // Thursday
+        5: "wisdom",     // Friday
+        6: "tip",        // Saturday
+      };
+
+      const preferred = pillarPreference[day] || "wisdom";
+      const tweet = available.find((t) => t.pillar === preferred) || available[0];
+      tweetText = tweet.text;
+      tweetPillar = tweet.pillar;
+      tweetIndex = tweet.index;
+
+      if (preview) {
+        return NextResponse.json({
+          preview: true,
+          tweet: tweetText,
+          pillar: tweetPillar,
+          remaining: available.length - 1,
+          source: "bank",
+        });
+      }
     }
 
     // Post it
     const client = getTwitterClient();
-    const result = await client.v2.tweet(tweet.text);
+    const result = await client.v2.tweet(tweetText);
 
-    // Mark as posted
-    posted.push(tweet.index);
-    await db.set("x:posted_tweets", JSON.stringify(posted));
+    // Mark bank tweet as posted (curiosity tweets don't consume bank)
+    if (tweetIndex !== null) {
+      posted.push(tweetIndex);
+      await db.set("x:posted_tweets", JSON.stringify(posted));
+    }
 
     // Log activity
     await logActivity(db, "tweet", {
       tweetId: result.data.id,
-      text: tweet.text,
-      pillar: tweet.pillar,
+      text: tweetText,
+      pillar: tweetPillar,
     });
 
     return NextResponse.json({
       success: true,
       tweetId: result.data.id,
-      text: tweet.text,
-      pillar: tweet.pillar,
-      remaining: available.length - 1,
+      text: tweetText,
+      pillar: tweetPillar,
+      remaining: tweetIndex !== null ? available.length - 1 : available.length,
+      source: tweetIndex !== null ? "bank" : "curiosity_stats",
     });
   } catch (err) {
     console.error("[X Tweet] Failed:", err);
     return NextResponse.json({ error: "Failed to post tweet" }, { status: 500 });
+  }
+}
+
+/**
+ * Scans recent scores in Redis and generates an anonymized curiosity tweet.
+ * Returns null if there isn't enough data to be interesting.
+ */
+async function generateCuriosityTweet(
+  db: ReturnType<typeof getRedis>
+): Promise<string | null> {
+  try {
+    // Scan for score:* keys to gather anonymized stats
+    const scores: { score: number; targetRole: string; missingSkills: string[] }[] = [];
+    let cursor = "0";
+
+    // Scan up to 500 keys
+    for (let i = 0; i < 10; i++) {
+      const [nextCursor, keys] = await db.scan(cursor, "MATCH", "score:*", "COUNT", 50);
+      for (const key of keys) {
+        try {
+          const raw = await db.get(key);
+          if (raw) {
+            const data = JSON.parse(raw);
+            scores.push({
+              score: data.score,
+              targetRole: data.targetRole,
+              missingSkills: data.missingSkills || [],
+            });
+          }
+        } catch {
+          // skip malformed entries
+        }
+      }
+      cursor = nextCursor;
+      if (cursor === "0") break;
+    }
+
+    // Need at least 5 scores to make stats interesting
+    if (scores.length < 5) return null;
+
+    // Compute stats
+    const avgScore = Math.round(scores.reduce((sum, s) => sum + s.score, 0) / scores.length);
+
+    // Most popular target roles
+    const roleCounts: Record<string, number> = {};
+    for (const s of scores) {
+      const role = s.targetRole.toLowerCase().trim();
+      roleCounts[role] = (roleCounts[role] || 0) + 1;
+    }
+    const topRoles = Object.entries(roleCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([role]) => role);
+
+    // Most common skill gaps
+    const skillCounts: Record<string, number> = {};
+    for (const s of scores) {
+      for (const skill of s.missingSkills.slice(0, 5)) {
+        const sk = skill.toLowerCase().trim();
+        skillCounts[sk] = (skillCounts[sk] || 0) + 1;
+      }
+    }
+    const topGaps = Object.entries(skillCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([skill]) => skill);
+
+    // Score distribution
+    const below50 = scores.filter((s) => s.score < 50).length;
+    const below50Pct = Math.round((below50 / scores.length) * 100);
+
+    // Use Claude to craft the tweet from raw stats
+    const anthropic = getAnthropic();
+    const response = await anthropic.messages.create({
+      model: "claude-sonnet-4-20250514",
+      system: `You write short, punchy Twitter posts for @tryskillbridge — a career readiness tool. You turn anonymized user data into curiosity-driven tweets that make people want to check their own score.
+
+RULES:
+- Under 250 characters. Punchy, not clickbait.
+- NEVER link to the website or mention the product name.
+- Use the stats naturally — don't list them robotically.
+- Sound like an interesting observation, not a press release.
+- No hashtags. No emojis (max 1 if it fits naturally).
+- Output ONLY the tweet text.`,
+      max_tokens: 150,
+      temperature: 0.9,
+      messages: [
+        {
+          role: "user",
+          content: `Write a curiosity tweet from these anonymized career data stats:
+- ${scores.length} people checked their career readiness recently
+- Average readiness score: ${avgScore}/100
+- ${below50Pct}% scored below 50 (not ready)
+- Most popular target roles: ${topRoles.join(", ") || "various tech roles"}
+- Biggest skill gaps: ${topGaps.join(", ") || "system design, communication, leadership"}`,
+        },
+      ],
+    });
+
+    const block = response.content[0];
+    if (block.type !== "text") return null;
+
+    const tweet = block.text.replace(/^["']|["']$/g, "").trim();
+    // Safety: reject if it accidentally mentions the product
+    if (tweet.toLowerCase().includes("skillbridge") || tweet.includes("tryskillbridge")) {
+      return null;
+    }
+
+    return tweet;
+  } catch (err) {
+    console.error("[X Tweet] Curiosity stats generation failed:", err);
+    return null;
   }
 }
 
