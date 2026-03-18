@@ -166,14 +166,24 @@ async function handler(req: NextRequest) {
       replyPosted = true;
     } catch (replyErr: unknown) {
       const detail = (replyErr as { data?: { detail?: string } }).data?.detail || "";
-      if (detail.includes("not allowed") || detail.includes("not been mentioned")) {
-        // X reply restriction for new accounts — log the draft and like only
+      const status = (replyErr as { code?: number; status?: number }).code
+        ?? (replyErr as { code?: number; status?: number }).status;
+
+      // Gracefully degrade to like-only on 403s (reply restrictions,
+      // new-account limits, suspended targets, etc.) or known error messages
+      if (
+        status === 403 ||
+        detail.includes("not allowed") ||
+        detail.includes("not been mentioned")
+      ) {
+        const reason = detail || `Reply blocked (HTTP ${status ?? "unknown"})`;
+
         await logActivity(db, "like_only", {
           account: targetAccount,
           originalTweet: targetTweet.text,
           tweetId: targetTweet.id,
           draftReply: reply,
-          reason: "Reply restricted — new account. Like posted instead.",
+          reason,
         });
 
         return NextResponse.json({
@@ -182,10 +192,10 @@ async function handler(req: NextRequest) {
           account: targetAccount,
           originalTweet: targetTweet.text,
           draftReply: reply,
-          message: "Reply restricted by X (new account). Liked the tweet and saved draft reply.",
+          message: `Reply blocked by X: ${reason}. Liked the tweet and saved draft reply.`,
         });
       }
-      throw replyErr; // Re-throw if it's a different error
+      throw replyErr; // Re-throw if it's a genuinely unexpected error
     }
 
     if (!replyPosted || !result) {
