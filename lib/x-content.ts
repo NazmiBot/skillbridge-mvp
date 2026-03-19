@@ -135,6 +135,96 @@ export const TWEET_BANK: { pillar: string; text: string }[] = [
     pillar: "engagement",
     text: "Be honest: do you have a career plan, or are you just winging it?\n\n🗺️ = I have a plan\n🎲 = Making it up as I go",
   },
+
+  // ── New Batch (March 2026) ────────────────────────────────
+
+  // Career Wisdom
+  {
+    pillar: "wisdom",
+    text: "The engineers who grow fastest aren't the ones who work the most hours. They're the ones who figured out which skills compound.",
+  },
+  {
+    pillar: "wisdom",
+    text: "Your manager won't build your career roadmap for you. That's not their job. It's yours.",
+  },
+  {
+    pillar: "wisdom",
+    text: "The gap between Senior and Staff isn't technical depth. It's the ability to make an entire team more effective — not just yourself.",
+  },
+  {
+    pillar: "wisdom",
+    text: "Every career plateau has the same root cause: you're still solving last year's problems with last year's skills.",
+  },
+  {
+    pillar: "wisdom",
+    text: "The most dangerous career move: staying comfortable. Growth happens at the edge of what you know.",
+  },
+  {
+    pillar: "wisdom",
+    text: "Two engineers start the same job. One asks 'what should I learn?' The other asks 'what should I learn FIRST?' The second one gets promoted.",
+  },
+  {
+    pillar: "wisdom",
+    text: "Seniority isn't about knowing all the answers. It's about knowing which questions to ask — and who to ask them to.",
+  },
+  {
+    pillar: "wisdom",
+    text: "The best career investment isn't a course or a cert. It's a 30-minute conversation with someone who's already where you want to be.",
+  },
+
+  // Industry Insights
+  {
+    pillar: "insight",
+    text: "Notice how the best job postings don't list 15 required technologies?\n\nThey list 3-4 core skills and say 'willingness to learn.'\n\nThat tells you what actually matters.",
+  },
+  {
+    pillar: "insight",
+    text: "The return on learning a new framework: diminishing.\n\nThe return on learning to communicate technical tradeoffs clearly: compounding forever.",
+  },
+  {
+    pillar: "insight",
+    text: "Every time the market shifts, the same pattern repeats:\n\nSpecialists panic. Generalists scramble. Intentional learners adapt.\n\nBe the third one.",
+  },
+  {
+    pillar: "insight",
+    text: "The hiring market doesn't reward the most skilled. It rewards the most legible.\n\nIf a hiring manager can't understand your impact in 30 seconds, your skills don't matter.",
+  },
+
+  // Practical Tips
+  {
+    pillar: "tip",
+    text: "Career hack that nobody talks about:\n\nRead your target company's engineering blog before applying. Reference specific posts in your cover letter.\n\nYou'll already be in the top 5% of applicants.",
+  },
+  {
+    pillar: "tip",
+    text: "How to figure out if you're ready for your next role:\n\n1. List 10 problems that role solves daily\n2. Count how many you could handle today\n3. If it's 6+, you're closer than you think\n4. The remaining 4 are your study plan",
+  },
+  {
+    pillar: "tip",
+    text: "The fastest way to learn system design:\n\nDon't read about it. Pick a real product you use daily and draw how you think it works. Then find out how it actually works.\n\nThe gap is your curriculum.",
+  },
+  {
+    pillar: "tip",
+    text: "Next time you finish a project, write a 3-sentence summary:\n\n1. What problem did it solve?\n2. What decision did you make that mattered?\n3. What was the measurable result?\n\nDo this for 6 months. You'll never struggle with resume bullets again.",
+  },
+
+  // Engagement
+  {
+    pillar: "engagement",
+    text: "What's one piece of career advice you received that turned out to be completely wrong? 👇",
+  },
+  {
+    pillar: "engagement",
+    text: "You can only pick two:\n\n🏠 Remote work\n💰 Top-tier salary\n🚀 Rapid career growth\n\nWhich two? 👇",
+  },
+  {
+    pillar: "engagement",
+    text: "Biggest green flag in a job interview:\n\nWhen the interviewer talks more about the team's problems than the company's perks.\n\nAgree or disagree?",
+  },
+  {
+    pillar: "engagement",
+    text: "Rank these career skills by importance:\n\n1. Deep technical expertise\n2. Communication\n3. Knowing what to learn next\n4. Building relationships\n\nMost people get the order wrong.",
+  },
 ];
 
 /** Target accounts for engagement (reply strategy) */
