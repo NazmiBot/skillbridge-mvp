@@ -76,6 +76,20 @@ export default function Home() {
       setResult(data);
       setLastInput(input);
       analytics.generateBlueprint(input.targetRole);
+
+      // Auto-save roadmap so the slug exists immediately
+      // (powers the follow-up cron + lead:by-slug index)
+      try {
+        const saveRes = await fetch("/api/roadmap/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ input, result: data }),
+        });
+        const saveData = await saveRes.json();
+        if (saveData.url) setShareUrl(saveData.url);
+      } catch {
+        // Non-blocking — share button still works as manual fallback
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -119,10 +133,13 @@ export default function Home() {
     setUnlockError(null);
 
     try {
+      // Extract slug from shareUrl — now always available via auto-save
+      const roadmapSlug = shareUrl?.split("/r/")[1] ?? null;
+
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: unlockEmail, roadmapSlug: shareUrl?.split("/r/")[1] ?? null }),
+        body: JSON.stringify({ email: unlockEmail, roadmapSlug }),
       });
 
       const data = await res.json();
