@@ -4,6 +4,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import type { Metadata } from "next";
 
+// Re-render on each request so Redis-stored posts appear immediately
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Blog — SkillBridge | Career Roadmap Insights",
   description:
