@@ -110,6 +110,19 @@ export default async function BlogPost({ params }: { params: Params }) {
           </div>
         </header>
 
+        {/* Hero image */}
+        {post.heroImage && (
+          <div className="mb-10 overflow-hidden rounded-2xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={post.heroImage}
+              alt={post.heroAlt || post.title}
+              className="w-full h-auto object-cover"
+              style={{ maxHeight: "400px" }}
+            />
+          </div>
+        )}
+
         {/* Article body */}
         <article
           className="prose prose-invert prose-zinc max-w-none

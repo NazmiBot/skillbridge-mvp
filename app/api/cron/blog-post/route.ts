@@ -111,8 +111,15 @@ OUTPUT FORMAT (JSON):
   "description": "Meta description for search results (140-160 chars)",
   "tags": ["tag1", "tag2", "tag3"],
   "readingTime": "X min read",
+  "heroImageQuery": "one or two word Unsplash search term for the hero image",
+  "sectionImageQueries": ["query1", "query2"],
   "content": "<p>Full HTML content...</p>"
 }
+
+For images: include 2 inline images in the content using this exact format:
+<img src="SECTION_IMAGE_1" alt="descriptive alt text" style="width:100%;border-radius:12px;margin:24px 0;" />
+
+Place them between major sections (after every 2-3 paragraphs). Use SECTION_IMAGE_1 and SECTION_IMAGE_2 as placeholders — they'll be replaced with real URLs.
 
 Output ONLY the JSON. No explanation, no markdown fences.`,
       max_tokens: 4000,
@@ -145,6 +152,24 @@ Output ONLY the JSON. No explanation, no markdown fences.`,
 
     const today = new Date().toISOString().slice(0, 10);
 
+    // Build Unsplash image URLs from queries
+    const heroQuery = encodeURIComponent(post.heroImageQuery || topic.angle);
+    const heroImage = `https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=500&fit=crop&q=80`;
+    // Use Unsplash source for dynamic images based on query
+    const heroUrl = `https://source.unsplash.com/1200x500/?${heroQuery}`;
+
+    // Replace section image placeholders with Unsplash URLs
+    let content = post.content;
+    const sectionQueries: string[] = post.sectionImageQueries || [topic.angle, "technology"];
+    content = content.replace(
+      /SECTION_IMAGE_1/g,
+      `https://source.unsplash.com/800x400/?${encodeURIComponent(sectionQueries[0] || topic.angle)}`
+    );
+    content = content.replace(
+      /SECTION_IMAGE_2/g,
+      `https://source.unsplash.com/800x400/?${encodeURIComponent(sectionQueries[1] || "career")}`
+    );
+
     const blogPost = {
       slug,
       title: post.title,
@@ -153,7 +178,9 @@ Output ONLY the JSON. No explanation, no markdown fences.`,
       author: "SkillBridge",
       readingTime: post.readingTime || "7 min read",
       tags: post.tags || topic.keywords,
-      content: post.content,
+      heroImage: heroUrl,
+      heroAlt: post.title,
+      content,
       generatedBy: "claude",
       topic: topic.angle,
     };

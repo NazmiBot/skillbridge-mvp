@@ -7,6 +7,8 @@ export interface BlogPost {
   author: string;
   readingTime: string;
   tags: string[];
+  heroImage?: string; // Unsplash URL
+  heroAlt?: string;
   content: string; // HTML content
 }
 
@@ -20,10 +22,14 @@ export const BLOG_POSTS: BlogPost[] = [
     author: "SkillBridge",
     readingTime: "8 min read",
     tags: ["staff engineer", "career growth", "engineering leadership"],
+    heroImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=500&fit=crop&q=80",
+    heroAlt: "Engineers collaborating at a whiteboard",
     content: `
 <p>Ask ten Senior Engineers what a Staff Engineer <em>does</em>, and you'll get ten different answers. That's part of the problem. The role is poorly defined, inconsistently leveled across companies, and almost never taught.</p>
 
 <p>But here's what's consistent: <strong>the jump from Senior to Staff is the single hardest promotion in software engineering.</strong> It's not about writing more code. It's about changing the kind of problems you solve.</p>
+
+<img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&h=400&fit=crop&q=80" alt="Team discussion at a tech office" style="width:100%;border-radius:12px;margin:24px 0;" />
 
 <h2>Why Most Senior Engineers Get Stuck</h2>
 
@@ -36,6 +42,8 @@ export const BLOG_POSTS: BlogPost[] = [
 <li><strong>Influence over authority.</strong> You'll rarely have direct reports. Your impact comes from convincing teams, writing design docs that change direction, and mentoring without a formal title.</li>
 <li><strong>Problem selection over problem solving.</strong> The hardest part isn't solving the problem — it's knowing which problem is worth solving.</li>
 </ul>
+
+<img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop&q=80" alt="Career planning with sticky notes on a board" style="width:100%;border-radius:12px;margin:24px 0;" />
 
 <h2>The Three Phases of the Transition</h2>
 
@@ -103,12 +111,16 @@ export const BLOG_POSTS: BlogPost[] = [
     author: "SkillBridge",
     readingTime: "6 min read",
     tags: ["career roadmap", "software engineer", "career planning"],
+    heroImage: "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=1200&h=500&fit=crop&q=80",
+    heroAlt: "Planning and roadmap with notebook",
     content: `
 <p>Here's an uncomfortable truth: <strong>most software engineers spend more time planning a sprint than planning their career.</strong></p>
 
 <p>They pick up whatever skills their current job requires, learn frameworks because they're trending on Twitter, and hope that "being good at code" is enough. For a while, it is. Then they look up one day and realize they've been a Mid-level Engineer for four years with no clear path forward.</p>
 
 <p>A career roadmap fixes this. Not a vague "5-year plan" that becomes irrelevant in 6 months — a specific, skill-based roadmap that tells you exactly what to learn next.</p>
+
+<img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&h=400&fit=crop&q=80" alt="Person working at a desk with a laptop" style="width:100%;border-radius:12px;margin:24px 0;" />
 
 <h2>Why Skill-Based Planning Beats Title-Based Planning</h2>
 
@@ -127,6 +139,8 @@ export const BLOG_POSTS: BlogPost[] = [
 </ol>
 
 <p>This works because it's <em>specific</em>. "Become a better engineer" is a wish. "Learn system design patterns for distributed systems, practice writing RFCs, and lead one cross-team project this quarter" is a plan.</p>
+
+<img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=400&fit=crop&q=80" alt="Strategic planning with charts" style="width:100%;border-radius:12px;margin:24px 0;" />
 
 <h2>The Three-Phase Framework</h2>
 
@@ -166,6 +180,8 @@ export const BLOG_POSTS: BlogPost[] = [
     author: "SkillBridge",
     readingTime: "7 min read",
     tags: ["skill gap", "career change", "career transition"],
+    heroImage: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1200&h=500&fit=crop&q=80",
+    heroAlt: "Person studying and taking notes",
     content: `
 <p>Everyone tells you to "upskill." Nobody tells you <em>which</em> skills to focus on.</p>
 
@@ -184,6 +200,8 @@ export const BLOG_POSTS: BlogPost[] = [
 </ol>
 
 <p>That third question is the one most people skip — and it's the most important. Not all gaps are equal. Some missing skills are blockers. Others are nice-to-haves that you can learn on the job.</p>
+
+<img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=400&fit=crop&q=80" alt="Analysis and brainstorming with team" style="width:100%;border-radius:12px;margin:24px 0;" />
 
 <h2>How to Do It Properly</h2>
 
@@ -246,6 +264,8 @@ export const BLOG_POSTS: BlogPost[] = [
 </table>
 
 <p>Now you know: spend the next 3 months on coaching skills, project planning, and interview training. Skip budget management entirely for now. That clarity is worth everything.</p>
+
+<img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=400&fit=crop&q=80" alt="Person at a crossroads making a decision" style="width:100%;border-radius:12px;margin:24px 0;" />
 
 <h2>The Cost of Skipping This Step</h2>
 
