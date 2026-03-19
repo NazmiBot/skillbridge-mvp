@@ -86,7 +86,11 @@ export default function Home() {
           body: JSON.stringify({ input, result: data }),
         });
         const saveData = await saveRes.json();
-        if (saveData.url) setShareUrl(saveData.url);
+        if (saveData.url) {
+          setShareUrl(saveData.url);
+          const savedSlug = saveData.url.split("/r/")[1];
+          if (savedSlug) analytics.roadmapSaved(savedSlug, input.targetRole);
+        }
       } catch {
         // Non-blocking — share button still works as manual fallback
       }
@@ -147,7 +151,7 @@ export default function Home() {
       if (!res.ok) throw new Error(data.error || "Failed to unlock");
       if (data.success) {
         setAuthorityUnlocked(true);
-        analytics.emailUnlock();
+        analytics.emailUnlock(roadmapSlug ?? undefined);
 
         // Store email for progress tracking
         localStorage.setItem("sb_progress_email", unlockEmail);

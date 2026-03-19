@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getPost, getAllPosts } from "@/lib/blog";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import BlogTracker from "./blog-tracker";
 import type { Metadata } from "next";
 
 type Params = Promise<{ slug: string }>;
@@ -58,6 +59,7 @@ export default async function BlogPost({ params }: { params: Params }) {
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
       <Header />
+      <BlogTracker slug={slug} />
 
       <main className="mx-auto max-w-3xl px-6 py-16">
         {/* Breadcrumb */}

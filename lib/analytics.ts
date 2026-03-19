@@ -28,7 +28,15 @@ export const analytics = {
     trackEvent("Generate Blueprint", { targetRole }),
 
   /** User unlocked Authority phase with email */
-  emailUnlock: () => trackEvent("Email Unlock"),
+  emailUnlock: (slug?: string) =>
+    trackEvent("Email Unlock", slug ? { slug } : undefined),
+
+  /** Roadmap was auto-saved (slug created) */
+  roadmapSaved: (slug: string, targetRole: string) =>
+    trackEvent("Roadmap Saved", { slug, targetRole }),
+
+  /** User viewed a blog post */
+  blogView: (slug: string) => trackEvent("Blog View", { slug }),
 
   /** User created a shareable link */
   shareCreated: (targetRole: string) =>
