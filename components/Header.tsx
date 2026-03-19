@@ -10,6 +10,9 @@ export default function Header() {
           <a href="/explore" className="text-sm text-zinc-500 transition hover:text-zinc-300">
             Explore
           </a>
+          <a href="/blog" className="text-sm text-zinc-500 transition hover:text-zinc-300">
+            Blog
+          </a>
           <a
             href="#career-form"
             className="rounded-lg bg-white/5 px-4 py-2 text-sm font-medium text-zinc-300 transition hover:bg-white/10"

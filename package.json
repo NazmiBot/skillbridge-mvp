@@ -12,6 +12,7 @@
     "@anthropic-ai/sdk": "^0.78.0",
     "@react-email/components": "^1.0.8",
     "@react-email/render": "^2.0.4",
+    "@tailwindcss/typography": "^0.5.19",
     "@vercel/kv": "^3.0.0",
     "ioredis": "^5.10.0",
     "jspdf": "^4.2.0",
