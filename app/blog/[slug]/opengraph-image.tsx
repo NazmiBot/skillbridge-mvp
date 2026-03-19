@@ -12,7 +12,7 @@ export default async function OGImage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = await getPost(slug);
 
   const title = post?.title || "SkillBridge Blog";
   const description = post?.description || "";

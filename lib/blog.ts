@@ -262,12 +262,54 @@ export const BLOG_POSTS: BlogPost[] = [
   },
 ];
 
-export function getPost(slug: string): BlogPost | undefined {
+import { getRedis } from "./redis";
+
+/** Get a post by slug — checks static bank first, then Redis */
+export function getPostStatic(slug: string): BlogPost | undefined {
   return BLOG_POSTS.find((p) => p.slug === slug);
 }
 
-export function getAllPosts(): BlogPost[] {
+/** Sync version for static bank only */
+export function getAllPostsStatic(): BlogPost[] {
   return [...BLOG_POSTS].sort(
+    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  );
+}
+
+/** Get a post by slug — checks static bank first, then Redis */
+export async function getPost(slug: string): Promise<BlogPost | undefined> {
+  const staticPost = BLOG_POSTS.find((p) => p.slug === slug);
+  if (staticPost) return staticPost;
+
+  try {
+    const db = getRedis();
+    const raw = await db.get(`blog:post:${slug}`);
+    if (raw) return JSON.parse(raw) as BlogPost;
+  } catch {
+    // Redis unavailable — fall back to static only
+  }
+  return undefined;
+}
+
+/** Get all posts — merges static bank + Redis-stored posts */
+export async function getAllPosts(): Promise<BlogPost[]> {
+  const posts = [...BLOG_POSTS];
+
+  try {
+    const db = getRedis();
+    const slugs = await db.zrevrangebyscore("blog:posts", "+inf", "-inf");
+
+    for (const slug of slugs) {
+      // Skip if already in static bank
+      if (posts.some((p) => p.slug === slug)) continue;
+      const raw = await db.get(`blog:post:${slug}`);
+      if (raw) posts.push(JSON.parse(raw) as BlogPost);
+    }
+  } catch {
+    // Redis unavailable — return static posts only
+  }
+
+  return posts.sort(
     (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
   );
 }

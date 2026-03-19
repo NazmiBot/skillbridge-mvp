@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getPost, getAllPosts } from "@/lib/blog";
+import { getPost, getAllPosts, getAllPostsStatic } from "@/lib/blog";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogTracker from "./blog-tracker";
@@ -9,8 +9,12 @@ import type { Metadata } from "next";
 type Params = Promise<{ slug: string }>;
 
 export async function generateStaticParams() {
-  return getAllPosts().map((post) => ({ slug: post.slug }));
+  // Only static bank posts get pre-rendered; Redis posts are rendered on-demand
+  return getAllPostsStatic().map((post) => ({ slug: post.slug }));
 }
+
+// Allow dynamic blog posts from Redis to be rendered on-demand
+export const dynamicParams = true;
 
 export async function generateMetadata({
   params,
@@ -18,7 +22,7 @@ export async function generateMetadata({
   params: Params;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = await getPost(slug);
   if (!post) return { title: "Not Found — SkillBridge" };
 
   const baseUrl =
@@ -53,7 +57,7 @@ export async function generateMetadata({
 
 export default async function BlogPost({ params }: { params: Params }) {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = await getPost(slug);
   if (!post) notFound();
 
   return (
