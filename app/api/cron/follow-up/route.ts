@@ -1,27 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRedis } from "@/lib/redis";
 import { getAnthropic } from "@/lib/anthropic";
-import { Resend } from "resend";
+import { getResend } from "@/lib/resend";
+import { verifyCron } from "@/lib/cron";
 import FollowUpEmail from "@/emails/FollowUpEmail";
 import CaseStudyEmail from "@/emails/CaseStudyEmail";
 import type { SavedRoadmap } from "@/lib/types";
-
-let _resend: Resend | null = null;
-function getResend() {
-  if (!_resend) {
-    if (!process.env.RESEND_API_KEY) throw new Error("RESEND_API_KEY not set");
-    _resend = new Resend(process.env.RESEND_API_KEY);
-  }
-  return _resend;
-}
-
-function verifyCron(req: NextRequest): boolean {
-  const auth = req.headers.get("authorization");
-  if (auth === `Bearer ${process.env.CRON_SECRET}`) return true;
-  const header = req.headers.get("x-cron-secret");
-  if (header === process.env.CRON_SECRET) return true;
-  return false;
-}
 
 /**
  * GET /api/cron/follow-up — Vercel Cron handler

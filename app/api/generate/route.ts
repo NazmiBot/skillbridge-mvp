@@ -7,6 +7,7 @@ import {
 } from "@/lib/career-data";
 import { getAnthropic } from "@/lib/anthropic";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { getClientIp } from "@/lib/ip";
 
 const RATE_LIMIT = 3;
 const RATE_WINDOW = 60 * 60 * 24;
@@ -53,10 +54,7 @@ interface RoadmapResponse {
 
 export async function POST(request: NextRequest) {
   try {
-    const ip =
-      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-      request.headers.get("x-real-ip") ||
-      "unknown";
+    const ip = getClientIp(request);
 
     const { allowed, remaining } = await checkGenerateRateLimit(ip);
     if (!allowed) {

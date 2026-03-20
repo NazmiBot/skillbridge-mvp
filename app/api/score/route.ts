@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRedis } from "@/lib/redis";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { getClientIp } from "@/lib/ip";
 import { CAREER_PROFILES, matchCareerProfile } from "@/lib/career-data";
 import { randomBytes } from "crypto";
 
@@ -25,7 +26,7 @@ interface ScoreResult {
 
 export async function POST(request: NextRequest) {
   try {
-    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
+    const ip = getClientIp(request);
     const { allowed } = await checkRateLimit("score", ip, 20, 3600);
     if (!allowed) {
       return NextResponse.json({ error: "Too many requests." }, { status: 429 });

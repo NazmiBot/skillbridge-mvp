@@ -1,21 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSubscribers, loadProgress } from "@/lib/progress";
 import { getRedis } from "@/lib/redis";
+import { getResend } from "@/lib/resend";
+import { verifyCron } from "@/lib/cron";
 import type { SavedRoadmap } from "@/lib/types";
-import { Resend } from "resend";
 import NudgeEmail from "@/emails/NudgeEmail";
 
-let _resend: Resend | null = null;
-function getResend() {
-  if (!_resend) {
-    _resend = new Resend(process.env.RESEND_API_KEY);
-  }
-  return _resend;
-}
-
 export async function POST(req: NextRequest) {
-  const cronSecret = req.headers.get("x-cron-secret");
-  if (!cronSecret || cronSecret !== process.env.CRON_SECRET) {
+  if (!verifyCron(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

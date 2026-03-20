@@ -1,14 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRedis } from "@/lib/redis";
 import { getAnthropic } from "@/lib/anthropic";
-
-function verifyCron(req: NextRequest): boolean {
-  const auth = req.headers.get("authorization");
-  if (auth === `Bearer ${process.env.CRON_SECRET}`) return true;
-  const header = req.headers.get("x-cron-secret");
-  if (header === process.env.CRON_SECRET) return true;
-  return false;
-}
+import { verifyCron } from "@/lib/cron";
 
 const TOPIC_POOL = [
   {

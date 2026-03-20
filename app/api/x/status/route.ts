@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRedis } from "@/lib/redis";
+import { verifyCron } from "@/lib/cron";
 import { TWEET_BANK } from "@/lib/x-content";
 
 /**
@@ -8,10 +9,7 @@ import { TWEET_BANK } from "@/lib/x-content";
  * Protected by CRON_SECRET.
  */
 export async function GET(req: NextRequest) {
-  const cronSecret =
-    req.headers.get("x-cron-secret") ||
-    req.nextUrl.searchParams.get("secret");
-  if (!cronSecret || cronSecret !== process.env.CRON_SECRET) {
+  if (!verifyCron(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

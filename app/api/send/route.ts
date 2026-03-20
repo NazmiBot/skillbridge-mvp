@@ -1,18 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
 import BlueprintEmail from "@/emails/BlueprintEmail";
 import { checkRateLimit } from "@/lib/rate-limit";
-
-let _resend: Resend | null = null;
-function getResend() {
-  if (!_resend) {
-    if (!process.env.RESEND_API_KEY) {
-      throw new Error("RESEND_API_KEY is not configured");
-    }
-    _resend = new Resend(process.env.RESEND_API_KEY);
-  }
-  return _resend;
-}
+import { getResend } from "@/lib/resend";
+import { getClientIp } from "@/lib/ip";
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,7 +17,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "unknown";
+    const ip = getClientIp(req);
     const { allowed } = await checkRateLimit("send", ip, 5, 3600);
     if (!allowed) {
       return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 });

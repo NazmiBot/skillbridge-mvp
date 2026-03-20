@@ -1,18 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
 import { getRedis } from "@/lib/redis";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { getResend } from "@/lib/resend";
+import { getClientIp } from "@/lib/ip";
 import ReportEmail from "@/emails/ReportEmail";
 import type { EvaluationResult, SavedRoadmap } from "@/lib/types";
-
-let _resend: Resend | null = null;
-function getResend() {
-  if (!_resend) {
-    if (!process.env.RESEND_API_KEY) throw new Error("RESEND_API_KEY is not configured");
-    _resend = new Resend(process.env.RESEND_API_KEY);
-  }
-  return _resend;
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,7 +14,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing slug" }, { status: 400 });
     }
 
-    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
+    const ip = getClientIp(request);
     const { allowed } = await checkRateLimit("send-report", ip, 5, 3600);
     if (!allowed) {
       return NextResponse.json({ error: "Too many requests." }, { status: 429 });
@@ -49,22 +41,8 @@ export async function POST(request: NextRequest) {
     const evaluation: EvaluationResult = JSON.parse(evalRaw);
     const roadmap: SavedRoadmap = JSON.parse(roadmapRaw);
 
-    // Find the email: check lead stored with this roadmap, or fall back to request body
-    let email: string | null = null;
-
-    // Scan for lead that references this slug
-    const leadKeys = await db.keys("lead:*");
-    for (const key of leadKeys) {
-      const leadData = await db.get(key);
-      if (!leadData) continue;
-      try {
-        const lead = JSON.parse(leadData);
-        if (lead.roadmapSlug === slug) {
-          email = lead.email;
-          break;
-        }
-      } catch { /* skip malformed */ }
-    }
+    // Find the email via the indexed lead key for this slug
+    const email = await db.get(`lead:by-slug:${slug}`);
 
     if (!email) {
       return NextResponse.json({ error: "No email found for this roadmap. User must unlock Authority phase first." }, { status: 400 });

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRedis } from "@/lib/redis";
 import { checkRateLimit } from "@/lib/rate-limit";
-import type { SavedRoadmap, EvaluationResult, InterviewQuestion } from "@/lib/types";
+import { getClientIp } from "@/lib/ip";
 import { getAnthropic } from "@/lib/anthropic";
+import type { SavedRoadmap, EvaluationResult, InterviewQuestion } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
   let slug: string | undefined;
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
+    const ip = getClientIp(request);
     const { allowed } = await checkRateLimit("evaluate", ip, 5, 3600);
     if (!allowed) {
       return NextResponse.json({ error: "Too many evaluation requests. Please try again later." }, { status: 429 });
@@ -178,7 +179,6 @@ async function evaluateInterview(
   try {
     const response = await getAnthropic().messages.create({
       model: "claude-sonnet-4-20250514",
-      system: systemPrompt,
       max_tokens: 3000,
       system: SYSTEM_PROMPT,
       messages: [

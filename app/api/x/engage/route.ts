@@ -2,15 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getRedis } from "@/lib/redis";
 import { getTwitterClient } from "@/lib/twitter";
 import { getAnthropic } from "@/lib/anthropic";
+import { verifyCron } from "@/lib/cron";
 import { TARGET_ACCOUNTS, RELEVANT_TOPICS } from "@/lib/x-content";
-
-function verifyCron(req: NextRequest): boolean {
-  const auth = req.headers.get("authorization");
-  if (auth === `Bearer ${process.env.CRON_SECRET}`) return true;
-  const header = req.headers.get("x-cron-secret");
-  if (header === process.env.CRON_SECRET) return true;
-  return false;
-}
 
 /**
  * GET /api/x/engage — Vercel Cron handler
