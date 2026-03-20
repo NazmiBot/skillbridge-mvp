@@ -115,9 +115,9 @@
 ## Last 3 Commits
 
 ```
+93e3cfb feat(x): attach stats image to curiosity tweets + spicier system prompt
+9ac74c9 docs: add CORE_CONTEXT.md — project long-term memory file
 13837f2 refactor: deduplicate shared utils — getResend, verifyCron, getClientIp
-8ec64b6 refactor: brutal STAR evaluator — native system prompt, R-or-Fail rubric, claude-sonnet-4
-773fb60 feat: add images to blog posts — hero images + inline section photos
 ```
 
 ---
