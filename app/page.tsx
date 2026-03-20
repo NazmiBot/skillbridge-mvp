@@ -153,8 +153,9 @@ export default function Home() {
         setAuthorityUnlocked(true);
         analytics.emailUnlock(roadmapSlug ?? undefined);
 
-        // Store email for progress tracking
+        // Store email for progress tracking + flag to skip future email gates
         localStorage.setItem("sb_progress_email", unlockEmail);
+        localStorage.setItem("skillbridge_email_captured", "true");
 
         // Auto-subscribe to progress nudges if we have a slug
         const progressSlug = shareUrl?.split("/r/")[1] ?? null;

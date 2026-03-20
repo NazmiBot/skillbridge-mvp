@@ -13,6 +13,21 @@ interface Props {
   roadmap: RoadmapStep[];
 }
 
+// Strip emojis and replace Unicode arrows for jsPDF compatibility
+function sanitizeForPDF(text: string): string {
+  return text
+    .replace(/→/g, "->")
+    .replace(/←/g, "<-")
+    .replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/gu, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+function hasEmailBeenCaptured(): boolean {
+  if (typeof window === "undefined") return false;
+  return localStorage.getItem("skillbridge_email_captured") === "true";
+}
+
 export default function DownloadPDF({
   slug,
   currentRole,
@@ -68,7 +83,7 @@ export default function DownloadPDF({
     doc.setFont("helvetica", "bold");
     doc.setFontSize(14);
     doc.setTextColor(255, 255, 255);
-    const transitionText = `${currentRole}  →  ${targetRole}`;
+    const transitionText = sanitizeForPDF(`${currentRole}  →  ${targetRole}`);
     const maxBannerW = contentW - 10;
     if (doc.getTextWidth(transitionText) > maxBannerW) doc.setFontSize(11);
     doc.text(transitionText, W / 2, y + 10, { align: "center", maxWidth: maxBannerW });
@@ -87,9 +102,9 @@ export default function DownloadPDF({
 
     // ── Phase cards ──
     const phaseColors: Record<string, { r: number; g: number; b: number; accent: string }> = {
-      Foundation: { r: 245, g: 158, b: 11, accent: "🧱" },
-      Execution: { r: 59, g: 130, b: 246, accent: "⚡" },
-      Authority: { r: 168, g: 85, b: 247, accent: "👑" },
+      Foundation: { r: 245, g: 158, b: 11, accent: "[F]" },
+      Execution: { r: 59, g: 130, b: 246, accent: "[E]" },
+      Authority: { r: 168, g: 85, b: 247, accent: "[A]" },
     };
 
     for (const step of roadmap) {
@@ -105,7 +120,7 @@ export default function DownloadPDF({
       doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
       doc.setTextColor(color.r, color.g, color.b);
-      doc.text(`${color.accent}  Phase ${step.phase}: ${step.title}`, margin, y);
+      doc.text(sanitizeForPDF(`${color.accent}  Phase ${step.phase}: ${step.title}`), margin, y);
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
@@ -123,7 +138,7 @@ export default function DownloadPDF({
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
       doc.setTextColor(212, 212, 216);
-      const skillText = step.skills.map((s) => `▸ ${s}`).join("   ");
+      const skillText = step.skills.map((s) => `> ${sanitizeForPDF(s)}`).join("   ");
       const skillLines = doc.splitTextToSize(skillText, contentW - 4);
       doc.text(skillLines, margin + 2, y);
       y += skillLines.length * 4.5 + 4;
@@ -141,7 +156,7 @@ export default function DownloadPDF({
         doc.setTextColor(161, 161, 170);
         for (const resource of step.resources) {
           if (y > 265) { doc.addPage(); y = 25; }
-          const lines = doc.splitTextToSize(`- ${resource}`, contentW - 4);
+          const lines = doc.splitTextToSize(`- ${sanitizeForPDF(resource)}`, contentW - 4);
           doc.text(lines, margin + 2, y);
           y += lines.length * 4.5 + 2;
         }
@@ -155,11 +170,11 @@ export default function DownloadPDF({
       doc.setFont("helvetica", "bold");
       doc.setFontSize(8);
       doc.setTextColor(113, 113, 122);
-      doc.text("🏁 MILESTONE", margin + 6, y + 4);
+      doc.text("MILESTONE", margin + 6, y + 4);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
       doc.setTextColor(212, 212, 216);
-      doc.text(step.milestone, margin + 6, y + 9, { maxWidth: contentW - 16 });
+      doc.text(sanitizeForPDF(step.milestone), margin + 6, y + 9, { maxWidth: contentW - 16 });
 
       y += 20;
 
@@ -227,6 +242,9 @@ export default function DownloadPDF({
         throw new Error(data.error || "Failed to save email");
       }
 
+      // Flag email captured so future PDF downloads skip the modal
+      localStorage.setItem("skillbridge_email_captured", "true");
+
       // Generate and download PDF
       await generatePDF();
       setDownloaded(true);
@@ -242,7 +260,7 @@ export default function DownloadPDF({
     <>
       {/* Trigger button */}
       <button
-        onClick={() => (downloaded ? generatePDF() : setShowModal(true))}
+        onClick={() => (downloaded || hasEmailBeenCaptured() ? generatePDF() : setShowModal(true))}
         className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-gradient-to-r from-blue-600/20 to-purple-600/20 px-6 py-3.5 text-sm font-semibold text-white transition hover:from-blue-600/30 hover:to-purple-600/30 hover:border-white/20"
       >
         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
