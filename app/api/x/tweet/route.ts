@@ -53,12 +53,17 @@ async function handler(req: NextRequest) {
     let tweetPillar: string;
     let tweetIndex: number | null = null;
 
+    let mediaId: string | null = null;
+
     if (isCuriosityDay) {
       // Try to generate a curiosity stats tweet from real data
       const statsTweet = await generateCuriosityTweet(db);
       if (statsTweet) {
         tweetText = statsTweet;
         tweetPillar = "curiosity_stats";
+
+        // Generate and upload the stats image as media
+        mediaId = await uploadStatsImage(req);
 
         if (preview) {
           return NextResponse.json({
@@ -67,6 +72,7 @@ async function handler(req: NextRequest) {
             pillar: tweetPillar,
             remaining: available.length,
             source: "curiosity_stats",
+            hasMedia: !!mediaId,
           });
         }
       } else {
@@ -108,9 +114,11 @@ async function handler(req: NextRequest) {
       }
     }
 
-    // Post it
+    // Post it (with media if available)
     const client = getTwitterClient();
-    const result = await client.v2.tweet(tweetText);
+    const result = mediaId
+      ? await client.v2.tweet({ text: tweetText, media: { media_ids: [mediaId] } })
+      : await client.v2.tweet(tweetText);
 
     // Mark bank tweet as posted (curiosity tweets don't consume bank)
     if (tweetIndex !== null) {
@@ -132,10 +140,39 @@ async function handler(req: NextRequest) {
       pillar: tweetPillar,
       remaining: tweetIndex !== null ? available.length - 1 : available.length,
       source: tweetIndex !== null ? "bank" : "curiosity_stats",
+      hasMedia: !!mediaId,
     });
   } catch (err) {
     console.error("[X Tweet] Failed:", err);
     return NextResponse.json({ error: "Failed to post tweet" }, { status: 500 });
+  }
+}
+
+/**
+ * Fetches the stats image from our own /api/x/stats-image endpoint
+ * and uploads it to Twitter as media. Returns media_id or null on failure.
+ */
+async function uploadStatsImage(req: NextRequest): Promise<string | null> {
+  try {
+    const baseUrl = new URL(req.url).origin;
+    const secret = process.env.CRON_SECRET;
+    const imageRes = await fetch(
+      `${baseUrl}/api/x/stats-image?secret=${encodeURIComponent(secret || "")}`,
+      { headers: { authorization: `Bearer ${secret}` } }
+    );
+
+    if (!imageRes.ok) {
+      console.error("[X Tweet] Stats image fetch failed:", imageRes.status);
+      return null;
+    }
+
+    const buffer = Buffer.from(await imageRes.arrayBuffer());
+    const client = getTwitterClient();
+    const mediaId = await client.v1.uploadMedia(buffer, { mimeType: "image/png" });
+    return mediaId;
+  } catch (err) {
+    console.error("[X Tweet] Media upload failed:", err);
+    return null; // graceful fallback — tweet still goes out without image
   }
 }
 
@@ -211,15 +248,23 @@ async function generateCuriosityTweet(
     const anthropic = getAnthropic();
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
-      system: `You write short, punchy Twitter posts for @tryskillbridge — a career readiness tool. You turn anonymized user data into curiosity-driven tweets that make people want to check their own score.
+      system: `You write polarizing, opinionated Twitter posts for a career readiness account. You weaponize anonymized user data into takes so sharp people HAVE to quote-tweet.
+
+VOICE: You're the person at the meetup who says the thing everyone's thinking but nobody says out loud. Confident. Slightly unhinged. Never corporate.
+
+STYLE EXAMPLES (match this energy):
+- "The Invisible Developer is the most dangerous role in tech. You ship code nobody notices, get passed over for promo, and wonder why."
+- "Companies say they want Seniors but they actually just want 3 Juniors in a trench coat."
+- "68% of devs who checked their readiness scored below 50. The job market isn't broken — your self-assessment is."
+- "System design is the #1 skill gap we see. Not because it's hard. Because nobody practices it until the interview."
 
 RULES:
-- Under 250 characters. Punchy, not clickbait.
+- Under 250 characters. Make every word earn its spot.
 - NEVER link to the website or mention the product name.
-- Use the stats naturally — don't list them robotically.
-- Sound like an interesting observation, not a press release.
-- No hashtags. No emojis (max 1 if it fits naturally).
-- Output ONLY the tweet text.`,
+- Weave the stats in naturally — they're evidence for your hot take, not a report.
+- Lead with a provocative claim. Let the data back it up.
+- No hashtags. Max 1 emoji if it hits harder with one.
+- Output ONLY the tweet text. Nothing else.`,
       max_tokens: 150,
       temperature: 0.9,
       messages: [
