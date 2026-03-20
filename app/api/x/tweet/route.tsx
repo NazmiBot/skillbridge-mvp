@@ -9,7 +9,8 @@ import { TWEET_BANK } from "@/lib/x-content";
  * GET /api/x/tweet — Vercel Cron handler
  * POST /api/x/tweet — Manual trigger
  *
- * Posts a daily tweet from the content bank.
+ * Posts a daily tweet from the content bank (with Unsplash image)
+ * or a curiosity stats tweet (with inline-generated stats image).
  * Protected by CRON_SECRET.
  *
  * Query params:
@@ -17,6 +18,164 @@ import { TWEET_BANK } from "@/lib/x-content";
  */
 export async function GET(req: NextRequest) { return handler(req); }
 export async function POST(req: NextRequest) { return handler(req); }
+
+// ── Unsplash queries by pillar ──
+const PILLAR_IMAGE_QUERIES: Record<string, string[]> = {
+  wisdom: ["career growth", "mountain summit", "road ahead", "compass direction", "chess strategy"],
+  tip: ["coding laptop", "productivity desk", "notebook planning", "developer workspace", "whiteboard ideas"],
+  insight: ["data analytics", "tech industry", "city skyline night", "innovation technology", "circuit board"],
+  engagement: ["team collaboration", "conversation coffee", "community meetup", "brainstorm session", "diverse team"],
+};
+
+/**
+ * Fetches a random Unsplash image for the given pillar and uploads it to Twitter.
+ * Returns media_id or null on failure.
+ */
+async function uploadPillarImage(pillar: string): Promise<string | null> {
+  try {
+    const queries = PILLAR_IMAGE_QUERIES[pillar] || PILLAR_IMAGE_QUERIES.wisdom;
+    const query = queries[Math.floor(Math.random() * queries.length)];
+
+    // Use Unsplash Source for a random 1200x630 image (no API key needed)
+    const imageUrl = `https://source.unsplash.com/1200x630/?${encodeURIComponent(query)}`;
+    const res = await fetch(imageUrl, { redirect: "follow" });
+
+    if (!res.ok) {
+      console.error("[X Tweet] Unsplash fetch failed:", res.status);
+      return null;
+    }
+
+    const buffer = Buffer.from(await res.arrayBuffer());
+    const client = getTwitterClient();
+    const mediaId = await client.v1.uploadMedia(buffer, { mimeType: "image/jpeg" });
+    return mediaId;
+  } catch (err) {
+    console.error("[X Tweet] Pillar image upload failed:", err);
+    return null;
+  }
+}
+
+/**
+ * Generates the stats image directly (no self-fetch) and uploads to Twitter.
+ * Returns media_id or null on failure.
+ */
+async function generateAndUploadStatsImage(
+  db: ReturnType<typeof getRedis>
+): Promise<string | null> {
+  try {
+    const { ImageResponse } = await import("next/og");
+
+    // Gather anonymized stats
+    const scores: { score: number; targetRole: string; missingSkills: string[] }[] = [];
+    let cursor = "0";
+    for (let i = 0; i < 10; i++) {
+      const [nextCursor, keys] = await db.scan(cursor, "MATCH", "score:*", "COUNT", 50);
+      for (const key of keys) {
+        try {
+          const raw = await db.get(key);
+          if (raw) {
+            const data = JSON.parse(raw);
+            scores.push({
+              score: data.score,
+              targetRole: data.targetRole,
+              missingSkills: data.missingSkills || [],
+            });
+          }
+        } catch { /* skip malformed */ }
+      }
+      cursor = nextCursor;
+      if (cursor === "0") break;
+    }
+
+    const total = scores.length || 1;
+    const avgScore = scores.length
+      ? Math.round(scores.reduce((sum, s) => sum + s.score, 0) / total)
+      : 42;
+    const below50 = scores.length
+      ? Math.round((scores.filter((s) => s.score < 50).length / total) * 100)
+      : 68;
+
+    const skillCounts: Record<string, number> = {};
+    for (const s of scores) {
+      for (const skill of (s.missingSkills || []).slice(0, 5)) {
+        const sk = skill.trim();
+        if (sk) skillCounts[sk] = (skillCounts[sk] || 0) + 1;
+      }
+    }
+    const topGaps = Object.entries(skillCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([skill]) => skill);
+
+    const color =
+      avgScore >= 80 ? "#10b981" : avgScore >= 60 ? "#3b82f6" : avgScore >= 40 ? "#f59e0b" : "#ef4444";
+
+    const imageResponse = new ImageResponse(
+      (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "#0a0a0a",
+            padding: "60px",
+          }}
+        >
+          <div style={{ display: "flex", fontSize: 22, color: "#52525b", marginBottom: 8, letterSpacing: 2, textTransform: "uppercase" as const }}>
+            Career Readiness Data
+          </div>
+          <div style={{ display: "flex", fontSize: 16, color: "#3f3f46", marginBottom: 40 }}>
+            Anonymized stats from real developers
+          </div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+            <div style={{ display: "flex", fontSize: 140, fontWeight: 800, color, lineHeight: 1 }}>
+              {avgScore}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <div style={{ display: "flex", fontSize: 28, color: "#71717a" }}>/ 100</div>
+              <div style={{ display: "flex", fontSize: 20, color: "#52525b" }}>avg. score</div>
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 60, marginTop: 40, alignItems: "center" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <div style={{ display: "flex", fontSize: 48, fontWeight: 700, color: "#ef4444" }}>{below50}%</div>
+              <div style={{ display: "flex", fontSize: 16, color: "#71717a" }}>not ready</div>
+            </div>
+            <div style={{ display: "flex", width: 1, height: 60, backgroundColor: "#27272a" }} />
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <div style={{ display: "flex", fontSize: 48, fontWeight: 700, color: "#a1a1aa" }}>{scores.length || "—"}</div>
+              <div style={{ display: "flex", fontSize: 16, color: "#71717a" }}>devs checked</div>
+            </div>
+            {topGaps.length > 0 && (
+              <>
+                <div style={{ display: "flex", width: 1, height: 60, backgroundColor: "#27272a" }} />
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", maxWidth: 300 }}>
+                  <div style={{ display: "flex", fontSize: 20, fontWeight: 600, color: "#f59e0b" }}>#1 Gap</div>
+                  <div style={{ display: "flex", fontSize: 16, color: "#71717a", textAlign: "center" }}>{topGaps[0]}</div>
+                </div>
+              </>
+            )}
+          </div>
+          <div style={{ display: "flex", fontSize: 18, color: "#3f3f46", marginTop: 48 }}>
+            Check your score → tryskillbridge.com
+          </div>
+        </div>
+      ),
+      { width: 1200, height: 630 }
+    );
+
+    const buffer = Buffer.from(await imageResponse.arrayBuffer());
+    const client = getTwitterClient();
+    const mediaId = await client.v1.uploadMedia(buffer, { mimeType: "image/png" });
+    return mediaId;
+  } catch (err) {
+    console.error("[X Tweet] Stats image generation/upload failed:", err);
+    return null;
+  }
+}
 
 async function handler(req: NextRequest) {
   if (!verifyCron(req)) {
@@ -52,7 +211,6 @@ async function handler(req: NextRequest) {
     let tweetText: string;
     let tweetPillar: string;
     let tweetIndex: number | null = null;
-
     let mediaId: string | null = null;
 
     if (isCuriosityDay) {
@@ -62,8 +220,8 @@ async function handler(req: NextRequest) {
         tweetText = statsTweet;
         tweetPillar = "curiosity_stats";
 
-        // Generate and upload the stats image as media
-        mediaId = await uploadStatsImage(req);
+        // Generate stats image inline (no self-fetch)
+        mediaId = await generateAndUploadStatsImage(db);
 
         if (preview) {
           return NextResponse.json({
@@ -103,6 +261,9 @@ async function handler(req: NextRequest) {
       tweetPillar = tweet.pillar;
       tweetIndex = tweet.index;
 
+      // (A) Attach a pillar-themed Unsplash image to bank tweets
+      mediaId = await uploadPillarImage(tweetPillar);
+
       if (preview) {
         return NextResponse.json({
           preview: true,
@@ -110,6 +271,7 @@ async function handler(req: NextRequest) {
           pillar: tweetPillar,
           remaining: available.length - 1,
           source: "bank",
+          hasMedia: !!mediaId,
         });
       }
     }
@@ -131,6 +293,7 @@ async function handler(req: NextRequest) {
       tweetId: result.data.id,
       text: tweetText,
       pillar: tweetPillar,
+      hasMedia: !!mediaId,
     });
 
     return NextResponse.json({
@@ -149,34 +312,6 @@ async function handler(req: NextRequest) {
 }
 
 /**
- * Fetches the stats image from our own /api/x/stats-image endpoint
- * and uploads it to Twitter as media. Returns media_id or null on failure.
- */
-async function uploadStatsImage(req: NextRequest): Promise<string | null> {
-  try {
-    const baseUrl = new URL(req.url).origin;
-    const secret = process.env.CRON_SECRET;
-    const imageRes = await fetch(
-      `${baseUrl}/api/x/stats-image?secret=${encodeURIComponent(secret || "")}`,
-      { headers: { authorization: `Bearer ${secret}` } }
-    );
-
-    if (!imageRes.ok) {
-      console.error("[X Tweet] Stats image fetch failed:", imageRes.status);
-      return null;
-    }
-
-    const buffer = Buffer.from(await imageRes.arrayBuffer());
-    const client = getTwitterClient();
-    const mediaId = await client.v1.uploadMedia(buffer, { mimeType: "image/png" });
-    return mediaId;
-  } catch (err) {
-    console.error("[X Tweet] Media upload failed:", err);
-    return null; // graceful fallback — tweet still goes out without image
-  }
-}
-
-/**
  * Scans recent scores in Redis and generates an anonymized curiosity tweet.
  * Returns null if there isn't enough data to be interesting.
  */
@@ -184,11 +319,9 @@ async function generateCuriosityTweet(
   db: ReturnType<typeof getRedis>
 ): Promise<string | null> {
   try {
-    // Scan for score:* keys to gather anonymized stats
     const scores: { score: number; targetRole: string; missingSkills: string[] }[] = [];
     let cursor = "0";
 
-    // Scan up to 500 keys
     for (let i = 0; i < 10; i++) {
       const [nextCursor, keys] = await db.scan(cursor, "MATCH", "score:*", "COUNT", 50);
       for (const key of keys) {
@@ -202,21 +335,16 @@ async function generateCuriosityTweet(
               missingSkills: data.missingSkills || [],
             });
           }
-        } catch {
-          // skip malformed entries
-        }
+        } catch { /* skip malformed */ }
       }
       cursor = nextCursor;
       if (cursor === "0") break;
     }
 
-    // Need at least 5 scores to make stats interesting
     if (scores.length < 5) return null;
 
-    // Compute stats
     const avgScore = Math.round(scores.reduce((sum, s) => sum + s.score, 0) / scores.length);
 
-    // Most popular target roles
     const roleCounts: Record<string, number> = {};
     for (const s of scores) {
       const role = s.targetRole.toLowerCase().trim();
@@ -227,7 +355,6 @@ async function generateCuriosityTweet(
       .slice(0, 3)
       .map(([role]) => role);
 
-    // Most common skill gaps
     const skillCounts: Record<string, number> = {};
     for (const s of scores) {
       for (const skill of s.missingSkills.slice(0, 5)) {
@@ -240,11 +367,10 @@ async function generateCuriosityTweet(
       .slice(0, 3)
       .map(([skill]) => skill);
 
-    // Score distribution
     const below50 = scores.filter((s) => s.score < 50).length;
     const below50Pct = Math.round((below50 / scores.length) * 100);
 
-    // Use Claude to craft the tweet from raw stats
+    // (C) Bumped max_tokens and character target for meatier tweets
     const anthropic = getAnthropic();
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
@@ -253,19 +379,19 @@ async function generateCuriosityTweet(
 VOICE: You're the person at the meetup who says the thing everyone's thinking but nobody says out loud. Confident. Slightly unhinged. Never corporate.
 
 STYLE EXAMPLES (match this energy):
-- "The Invisible Developer is the most dangerous role in tech. You ship code nobody notices, get passed over for promo, and wonder why."
-- "Companies say they want Seniors but they actually just want 3 Juniors in a trench coat."
-- "68% of devs who checked their readiness scored below 50. The job market isn't broken — your self-assessment is."
-- "System design is the #1 skill gap we see. Not because it's hard. Because nobody practices it until the interview."
+- "The Invisible Developer is the most dangerous role in tech. You ship code nobody notices, get passed over for promo, and wonder why. Meanwhile the person who presents your work at standup got Staff."
+- "Companies say they want Seniors but they actually just want 3 Juniors in a trench coat. The JD is a wishlist, the interview is a hazing ritual, and the offer is 30% below market."
+- "68% of devs who checked their readiness scored below 50. The job market isn't broken — your self-assessment is. You think you're a 7 because nobody told you you're a 4."
+- "System design is the #1 skill gap we see. Not because it's hard. Because nobody practices it until the interview. Then they draw boxes on a whiteboard and pray."
 
 RULES:
-- Under 250 characters. Make every word earn its spot.
+- Aim for 200-280 characters. Pack in a hot take + the data to back it up. Make it feel like a mini-rant, not a fortune cookie.
 - NEVER link to the website or mention the product name.
 - Weave the stats in naturally — they're evidence for your hot take, not a report.
-- Lead with a provocative claim. Let the data back it up.
+- Lead with a provocative claim. Let the data back it up. End with a gut punch.
 - No hashtags. Max 1 emoji if it hits harder with one.
 - Output ONLY the tweet text. Nothing else.`,
-      max_tokens: 150,
+      max_tokens: 300,
       temperature: 0.9,
       messages: [
         {
@@ -284,7 +410,6 @@ RULES:
     if (block.type !== "text") return null;
 
     const tweet = block.text.replace(/^["']|["']$/g, "").trim();
-    // Safety: reject if it accidentally mentions the product
     if (tweet.toLowerCase().includes("skillbridge") || tweet.includes("tryskillbridge")) {
       return null;
     }
@@ -301,12 +426,7 @@ async function logActivity(
   type: string,
   data: Record<string, unknown>
 ) {
-  const entry = {
-    type,
-    ...data,
-    timestamp: new Date().toISOString(),
-  };
+  const entry = { type, ...data, timestamp: new Date().toISOString() };
   await db.lpush("x:activity_log", JSON.stringify(entry));
-  // Keep last 200 entries
   await db.ltrim("x:activity_log", 0, 199);
 }
