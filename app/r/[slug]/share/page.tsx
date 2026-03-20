@@ -38,6 +38,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const title = `I scored ${evaluation.score}/100 on my ${roadmap.input.targetRole} mock interview`;
   const description = `${sc.label} readiness for ${roadmap.input.currentRole} → ${roadmap.input.targetRole}. Check your career readiness at tryskillbridge.com`;
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://tryskillbridge.com";
+  const ogImage = `${baseUrl}/r/${slug}/share/opengraph-image`;
+
   return {
     title: `${title} — SkillBridge`,
     description,
@@ -46,11 +49,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       description,
       siteName: "SkillBridge",
       type: "website",
+      images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: [ogImage],
     },
   };
 }
