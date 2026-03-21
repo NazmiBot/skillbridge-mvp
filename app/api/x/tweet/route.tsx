@@ -28,24 +28,48 @@ const PILLAR_IMAGE_QUERIES: Record<string, string[]> = {
 };
 
 /**
- * Fetches a random Unsplash image for the given pillar and uploads it to Twitter.
+ * Fetches a random Pexels image for the given pillar and uploads it to Twitter.
  * Returns media_id or null on failure.
  */
 async function uploadPillarImage(pillar: string): Promise<string | null> {
   try {
-    const queries = PILLAR_IMAGE_QUERIES[pillar] || PILLAR_IMAGE_QUERIES.wisdom;
-    const query = queries[Math.floor(Math.random() * queries.length)];
-
-    // Use Unsplash Source for a random 1200x630 image (no API key needed)
-    const imageUrl = `https://source.unsplash.com/1200x630/?${encodeURIComponent(query)}`;
-    const res = await fetch(imageUrl, { redirect: "follow" });
-
-    if (!res.ok) {
-      console.error("[X Tweet] Unsplash fetch failed:", res.status);
+    const apiKey = process.env.PEXELS_API_KEY;
+    if (!apiKey) {
+      console.error("[X Tweet] PEXELS_API_KEY not set");
       return null;
     }
 
-    const buffer = Buffer.from(await res.arrayBuffer());
+    const queries = PILLAR_IMAGE_QUERIES[pillar] || PILLAR_IMAGE_QUERIES.wisdom;
+    const query = queries[Math.floor(Math.random() * queries.length)];
+
+    // Use Pexels API to search for a landscape image
+    const searchUrl = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&orientation=landscape&size=medium&per_page=15`;
+    const searchRes = await fetch(searchUrl, {
+      headers: { Authorization: apiKey },
+    });
+
+    if (!searchRes.ok) {
+      console.error("[X Tweet] Pexels search failed:", searchRes.status);
+      return null;
+    }
+
+    const data = await searchRes.json();
+    if (!data.photos || data.photos.length === 0) {
+      console.error("[X Tweet] Pexels returned no photos for:", query);
+      return null;
+    }
+
+    // Pick a random photo from results and use the landscape size
+    const photo = data.photos[Math.floor(Math.random() * data.photos.length)];
+    const imageUrl = photo.src.landscape; // 1200x627 — close to 1200x630
+
+    const imgRes = await fetch(imageUrl);
+    if (!imgRes.ok) {
+      console.error("[X Tweet] Pexels image download failed:", imgRes.status);
+      return null;
+    }
+
+    const buffer = Buffer.from(await imgRes.arrayBuffer());
     const client = getTwitterClient();
     const mediaId = await client.v1.uploadMedia(buffer, { mimeType: "image/jpeg" });
     return mediaId;
