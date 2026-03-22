@@ -136,21 +136,30 @@ export default async function BlogPost({ params }: { params: Params }) {
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
 
-        {/* CTA */}
-        <div className="mt-16 rounded-2xl border border-blue-500/20 bg-blue-500/[0.04] p-8 text-center">
-          <h3 className="mb-2 text-xl font-bold">
-            Ready to map your career transition?
-          </h3>
-          <p className="mb-6 text-sm text-zinc-400">
-            Get a personalized 3-phase roadmap in 10 seconds. Free, no signup
-            required.
-          </p>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 px-8 py-3.5 text-sm font-bold text-white shadow-xl shadow-blue-500/25 transition hover:shadow-blue-500/40"
-          >
-            Generate My Career Blueprint →
-          </Link>
+        {/* CTA — Blog-to-Roadmap Bridge */}
+        <div className="relative mt-16 overflow-hidden rounded-2xl border border-purple-500/20 bg-gradient-to-br from-purple-500/[0.08] via-blue-500/[0.04] to-indigo-500/[0.08] p-10 text-center sm:p-12">
+          <div className="pointer-events-none absolute -top-20 left-1/2 h-40 w-80 -translate-x-1/2 rounded-full bg-purple-500/10 blur-3xl" />
+          <div className="relative">
+            <p className="mb-3 font-mono text-xs font-medium uppercase tracking-widest text-purple-400">
+              Your move
+            </p>
+            <h3 className="mb-3 text-2xl font-bold text-white sm:text-3xl">
+              Stop guessing your next career move.
+            </h3>
+            <p className="mx-auto mb-8 max-w-lg text-base text-zinc-400">
+              Build your free AI-powered career roadmap in 10 seconds.
+              Personalized skills, real resources, concrete milestones — no signup required.
+            </p>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 via-purple-500 to-purple-600 px-10 py-4 text-base font-bold text-white shadow-xl shadow-purple-500/25 transition hover:scale-[1.02] hover:shadow-purple-500/40 active:scale-[0.98]"
+            >
+              Generate Free Roadmap →
+            </Link>
+            <p className="mt-4 text-xs text-zinc-600">
+              Free • 10 seconds • No account needed
+            </p>
+          </div>
         </div>
       </main>
 

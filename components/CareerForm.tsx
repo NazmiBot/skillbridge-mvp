@@ -141,6 +141,17 @@ export default function CareerForm({
       <p className="mt-3 text-center text-xs text-zinc-600">
         3 free blueprints per day — no account needed
       </p>
+
+      {/* Sample Report teaser */}
+      <div className="mt-5 flex items-center justify-center gap-2 text-sm">
+        <span className="text-zinc-600">Want to see the $9 evaluation first?</span>
+        <a
+          href="/sample"
+          className="font-medium text-purple-400 transition hover:text-purple-300"
+        >
+          View Sample Report →
+        </a>
+      </div>
     </form>
     </div>
   );
