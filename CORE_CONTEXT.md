@@ -121,9 +121,11 @@
 
 - **22 API routes** across checkout, cron, evaluation, generation, interviews, leads, progress, roadmaps, webhooks, and X automation
 - **13 components** — CareerForm, CareerPaths, Footer, Header, HeroSection, HowItWorks, LoadingSkeleton, PhaseCard, ProgressTracker, RoadmapResults, ScoreChecker, Spinner, DownloadPDF
-- **15 lib modules** — shared singletons, career data, analytics, blog, progress, types
+- **16 lib modules** — shared singletons, career data, analytics, blog, progress, types, validate-input
 - **12 pages** — home, blog (index + [slug]), explore, privacy, terms, sample, score/[id], roadmap/[slug] (view, interview, results, share)
+- **23 API routes** (added /api/stats)
 - **5 email templates** via React Email
+- **2 utility scripts** — `scripts/purge-explore.mjs`, `scripts/backup-redis.mjs`
 
 ---
 
@@ -131,25 +133,80 @@
 
 | Commit | Description |
 |--------|-------------|
+| `f4cce21` | **feat:** Tier 3 — Redis backup script, sitemap enhancement (/sample), .gitignore backups |
+| `8163939` | **feat:** Tier 2 — blog-to-roadmap CTA bridge, explore page filter pills, sample report teaser below form |
+| `80a5794` | **fix:** Favicon — dark purple `#4f39c8` rounded square with white lowercase 's' + apple-touch-icon |
+| `fb0d229` | **feat:** Tier 1 — CTA copy upgrade ("Ready to prove it?"), social proof counter on hero, blog relative dates |
+| `c2c02b4` | **feat:** Input validation shield — profanity filter, keyboard smash detection, min/max length |
+| `6896921` | **docs:** Updated CORE_CONTEXT.md with full project inventory |
 | `f8728ec` | **fix:** Replace deprecated Unsplash Source with Pexels API for tweet images |
-| `cbfa795` | **feat:** Images on every tweet (bank + curiosity), punchier curiosity prompt (200-280 chars, mini-rant style), route renamed .ts→.tsx for JSX |
-| `6fc3d78` | **fix:** Absolute OG image URLs on /r/[slug]/share — social crawlers now resolve images |
-| `47f8afb` | **fix:** Email gate amnesia (localStorage flag `skillbridge_email_captured`) + PDF unicode corruption (strip emojis, replace → with ASCII) |
+| `cbfa795` | **feat:** Images on every tweet, punchier curiosity prompt, .ts→.tsx for JSX |
+| `6fc3d78` | **fix:** Absolute OG image URLs on /r/[slug]/share |
+| `47f8afb` | **fix:** Email gate amnesia + PDF unicode corruption |
 
 ### Key Technical Notes
 - **Tweet images:** Switched from `source.unsplash.com` (deprecated) to Pexels API. Bank tweets attach pillar-themed photos, curiosity tweets use inline `next/og` ImageResponse for stats images.
 - **OG sharing:** Share pages now have proper `openGraph.images` + `twitter.images` metadata with absolute URLs.
 - **PDF sanitization:** All PDF text stripped of emojis, unicode arrows replaced with ASCII. Phase accents use [F]/[E]/[A] markers.
 - **Email gate:** Users who enter email at Authority gate no longer see duplicate PDF email modal (shared localStorage flag).
+- **Input validation (`lib/validate-input.ts`):** Zero-dependency profanity filter + keyboard smash detection + length/charset validation. Wired into `/api/generate` (before Anthropic call) and `/api/roadmap/save` (before Redis write). Purge script at `scripts/purge-explore.mjs`.
+- **Favicon:** `app/icon.tsx` (32×32) + `app/apple-icon.tsx` (180×180). Dark purple `#4f39c8`, white lowercase 's', rounded corners. Auto-discovered by Next.js App Router.
+- **Social proof:** `/api/stats` reads `roadmaps:count` from Redis, displayed on hero: "Join X+ professionals..."
+- **Blog dates:** Static posts staggered (Mar 10, 14, 18). `formatBlogDate()` in `lib/blog.ts` shows relative timestamps.
+- **Blog CTA:** Full-width purple gradient section at bottom of every post: "Stop guessing your next career move."
+- **Explore filters:** Client component `app/explore/explore-grid.tsx` with keyword-based category matching. 7 categories: Engineering, Data & AI, Design, Product, DevOps & Cloud, Leadership, Marketing.
+- **Sample Report teaser:** Visible below the Generate form on homepage: "Want to see the $9 evaluation first? View Sample Report →"
+
+---
+
+## Rate Limiting
+
+All public API routes are rate-limited via `lib/rate-limit.ts` (Redis-backed sliding window):
+
+| Route | Limit | Window | Prefix |
+|-------|-------|--------|--------|
+| `/api/generate` | 3 | 24 hours | `generate` |
+| `/api/score` | 20 | 1 hour | `score` |
+| `/api/checkout` | 10 | 1 hour | `checkout` |
+| `/api/leads` | 10 | 1 hour | `leads` |
+| `/api/evaluate` | 5 | 1 hour | `evaluate` |
+| `/api/send-report` | 5 | 1 hour | `send-report` |
+
+Owner IPs can be whitelisted via `RATE_LIMIT_WHITELIST` env var (comma-separated, applies to `/api/generate` only).
+
+---
+
+## Redis Backup
+
+**Script:** `scripts/backup-redis.mjs`
+
+**Usage:**
+```bash
+# Full backup to backups/redis-YYYY-MM-DD.json
+node scripts/backup-redis.mjs
+
+# Scan + count only (no file written)
+node scripts/backup-redis.mjs --dry-run
+
+# Custom output path
+node scripts/backup-redis.mjs --out backups/custom.json
+
+# Restore from backup
+node scripts/backup-redis.mjs --restore backups/redis-2026-03-22.json
+```
+
+**What it backs up:** All Redis keys with type-aware serialization (string, list, set, sorted set, hash). Preserves TTLs. The `backups/` directory is gitignored.
+
+**Recommendation:** Run weekly or before any destructive operation. First backup taken 2026-03-22 (56 keys, 0.09 MB).
 
 ---
 
 ## Last 3 Commits
 
 ```
-f8728ec fix: replace deprecated Unsplash Source with Pexels API for tweet images
-cbfa795 feat: upgrade X tweets — images on every post + meatier curiosity tweets
-6fc3d78 fix: add absolute OG image URLs to share page metadata
+f4cce21 feat: Tier 3 — Redis backup script, sitemap enhancement, .gitignore backups
+8163939 feat: Tier 2 — blog CTA bridge, explore filters, sample report teaser
+80a5794 fix: favicon — dark purple rounded square with lowercase 's' + apple-touch-icon
 ```
 
 ---
