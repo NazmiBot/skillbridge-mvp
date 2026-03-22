@@ -1,4 +1,19 @@
+"use client";
+
+import { useState, useEffect } from "react";
+
 export default function HeroSection() {
+  const [count, setCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch("/api/stats")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.blueprints > 0) setCount(d.blueprints);
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <section className="pb-8 pt-14 text-center sm:pb-12 sm:pt-28">
       <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/5 px-4 py-1.5 text-sm text-blue-400">
@@ -17,6 +32,16 @@ export default function HeroSection() {
         personalized 3-phase roadmap — from foundation skills to industry
         authority — with specific resources, milestones, and timelines.
       </p>
+
+      {count !== null && count > 0 && (
+        <p className="mt-6 text-sm text-zinc-500">
+          Join{" "}
+          <span className="font-semibold text-zinc-300">
+            {count.toLocaleString()}+
+          </span>{" "}
+          professionals navigating their next career move
+        </p>
+      )}
     </section>
   );
 }

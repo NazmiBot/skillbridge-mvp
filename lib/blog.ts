@@ -18,7 +18,7 @@ export const BLOG_POSTS: BlogPost[] = [
     title: "How to Become a Staff Engineer: A Realistic Roadmap for 2026",
     description:
       "The jump from Senior to Staff Engineer is the hardest promotion in tech. Here's what actually matters — from engineers who've made the leap.",
-    publishedAt: "2026-03-19",
+    publishedAt: "2026-03-18",
     author: "SkillBridge",
     readingTime: "8 min read",
     tags: ["staff engineer", "career growth", "engineering leadership"],
@@ -107,7 +107,7 @@ export const BLOG_POSTS: BlogPost[] = [
     title: "How to Build a Career Roadmap as a Software Engineer",
     description:
       "Most engineers don't have a career plan. Here's a framework for building one that actually works — whether you're junior or senior.",
-    publishedAt: "2026-03-19",
+    publishedAt: "2026-03-14",
     author: "SkillBridge",
     readingTime: "6 min read",
     tags: ["career roadmap", "software engineer", "career planning"],
@@ -176,7 +176,7 @@ export const BLOG_POSTS: BlogPost[] = [
     title: "Skill Gap Analysis: The First Step in Any Career Change",
     description:
       "Before you start learning, figure out what's actually missing. A proper skill gap analysis saves months of wasted effort.",
-    publishedAt: "2026-03-19",
+    publishedAt: "2026-03-10",
     author: "SkillBridge",
     readingTime: "7 min read",
     tags: ["skill gap", "career change", "career transition"],
@@ -283,6 +283,26 @@ export const BLOG_POSTS: BlogPost[] = [
 ];
 
 import { getRedis } from "./redis";
+
+/** Format a date as relative time ("2 days ago", "last week") or absolute if > 30 days */
+export function formatBlogDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  if (diffDays < 14) return "Last week";
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
 
 /** Get a post by slug — checks static bank first, then Redis */
 export function getPostStatic(slug: string): BlogPost | undefined {

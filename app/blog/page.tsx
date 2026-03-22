@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAllPosts } from "@/lib/blog";
+import { getAllPosts, formatBlogDate } from "@/lib/blog";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import type { Metadata } from "next";
@@ -48,11 +48,7 @@ export default async function BlogIndex() {
             >
               <div className="mb-3 flex items-center gap-3 text-xs text-zinc-500">
                 <time dateTime={post.publishedAt}>
-                  {new Date(post.publishedAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                  {formatBlogDate(post.publishedAt)}
                 </time>
                 <span>•</span>
                 <span>{post.readingTime}</span>

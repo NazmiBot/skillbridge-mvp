@@ -145,17 +145,18 @@ export default function RoadmapResults({
           <div className="pointer-events-none absolute -top-24 left-1/2 h-48 w-96 -translate-x-1/2 rounded-full bg-emerald-500/10 blur-3xl" />
 
           <div className="relative">
-            <div className="mb-4 text-5xl">🎙️</div>
+            <div className="mb-4 text-5xl">🎯</div>
             <h3 className="mb-2 text-2xl font-bold text-white sm:text-3xl">
-              Ready to Ace the Interview?
+              Ready to prove it?
             </h3>
-            <p className="mx-auto mb-3 max-w-lg text-base text-zinc-300">
-              Get a personalized mock interview with questions tailored to{" "}
-              <span className="font-medium text-white">your exact roadmap</span>.
-              Practice before the real thing.
+            <p className="mx-auto mb-3 max-w-xl text-base text-zinc-300">
+              Take a hyper-realistic mock interview tailored to{" "}
+              <span className="font-semibold text-white">this exact roadmap</span>.
+              Get a brutally honest STAR-method evaluation and a custom readiness
+              score — the kind of feedback a hiring manager thinks but never says.
             </p>
             <p className="mx-auto mb-8 max-w-md text-sm text-zinc-500">
-              AI-generated questions • Timed practice • Coaching tips included
+              Personalized questions • STAR evaluation • Readiness score • PDF report
             </p>
 
             <button
@@ -169,12 +170,18 @@ export default function RoadmapResults({
                   Redirecting to checkout...
                 </>
               ) : (
-                "Unlock Mock Interview — $9"
+                "Get Your Evaluation — $9"
               )}
             </button>
             <p className="mt-4 text-xs text-zinc-600">
               One-time payment • Instant access • Powered by Stripe
             </p>
+            <a
+              href="/sample"
+              className="mt-3 inline-block text-sm text-zinc-500 transition hover:text-zinc-300"
+            >
+              See a sample report →
+            </a>
             {checkoutError && (
               <p className="mt-3 text-sm text-red-400">{checkoutError}</p>
             )}
