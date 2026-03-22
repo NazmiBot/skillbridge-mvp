@@ -8,6 +8,7 @@ import {
 import { getAnthropic } from "@/lib/anthropic";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { getClientIp } from "@/lib/ip";
+import { validateJobTitle } from "@/lib/validate-input";
 
 const RATE_LIMIT = 3;
 const RATE_WINDOW = 60 * 60 * 24;
@@ -76,11 +77,17 @@ export async function POST(request: NextRequest) {
 
     const body: RoadmapRequest = await request.json();
 
-    if (!body.targetRole?.trim()) {
-      return NextResponse.json(
-        { error: "Please provide your target role." },
-        { status: 400 }
-      );
+    // 🛡️ Validate inputs before burning Anthropic tokens
+    const targetCheck = validateJobTitle(body.targetRole, "Target role");
+    if (!targetCheck.valid) {
+      return NextResponse.json({ error: targetCheck.error }, { status: 400 });
+    }
+
+    if (body.currentRole?.trim()) {
+      const currentCheck = validateJobTitle(body.currentRole, "Current role");
+      if (!currentCheck.valid) {
+        return NextResponse.json({ error: currentCheck.error }, { status: 400 });
+      }
     }
 
     const roadmap = await generateRoadmap(body);

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getRedis } from "@/lib/redis";
 import { createHash } from "crypto";
 import type { SavedRoadmap } from "@/lib/types";
+import { validateJobTitle } from "@/lib/validate-input";
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,6 +14,18 @@ export async function POST(request: NextRequest) {
         { error: "Missing roadmap data" },
         { status: 400 }
       );
+    }
+
+    // 🛡️ Block garbage from being saved to /explore
+    const targetCheck = validateJobTitle(input.targetRole, "Target role");
+    if (!targetCheck.valid) {
+      return NextResponse.json({ error: targetCheck.error }, { status: 400 });
+    }
+    if (input.currentRole?.trim()) {
+      const currentCheck = validateJobTitle(input.currentRole, "Current role");
+      if (!currentCheck.valid) {
+        return NextResponse.json({ error: currentCheck.error }, { status: 400 });
+      }
     }
 
     // Generate a short slug from the input payload
