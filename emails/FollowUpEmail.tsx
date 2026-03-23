@@ -27,11 +27,21 @@ export default function FollowUpEmail({
 }: FollowUpEmailProps) {
   return (
     <Html>
-      <Head />
+      <Head>
+        <meta name="color-scheme" content="dark" />
+        <meta name="supported-color-schemes" content="dark" />
+        <style>{`
+          :root { color-scheme: dark; }
+          @media (prefers-color-scheme: dark) {
+            .email-body, .email-body * { color-scheme: dark !important; }
+          }
+          u + .email-body .tip-card { background-color: #18181b !important; }
+        `}</style>
+      </Head>
       <Preview>
         The #1 thing {targetRole} interviewers look for (that most candidates miss)
       </Preview>
-      <Body style={main}>
+      <Body style={main} className="email-body">
         <Container style={container}>
           {/* Header */}
           <Section style={header}>
@@ -161,6 +171,8 @@ const tipCard = {
   border: "1px solid #854d0e",
   padding: "24px",
   marginBottom: "24px",
+  // Prevent email client dark mode from inverting this card
+  color: "#fef3c7",
 };
 
 const tipLabel = {
