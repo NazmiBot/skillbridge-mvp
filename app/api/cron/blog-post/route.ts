@@ -145,23 +145,39 @@ Output ONLY the JSON. No explanation, no markdown fences.`,
 
     const today = new Date().toISOString().slice(0, 10);
 
-    // Build Unsplash image URLs from queries
-    const heroQuery = encodeURIComponent(post.heroImageQuery || topic.angle);
-    const heroImage = `https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=500&fit=crop&q=80`;
-    // Use Unsplash source for dynamic images based on query
-    const heroUrl = `https://source.unsplash.com/1200x500/?${heroQuery}`;
+    // Curated Unsplash photo pool (source.unsplash.com is deprecated/dead)
+    const HERO_IMAGES = [
+      "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&h=500&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=1200&h=500&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&h=500&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=1200&h=500&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1200&h=500&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&h=500&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1200&h=500&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&h=500&fit=crop&q=80",
+    ];
+    const SECTION_IMAGES = [
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=400&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&h=400&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&h=400&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=400&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=400&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&h=400&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=800&h=400&fit=crop&q=80",
+    ];
 
-    // Replace section image placeholders with Unsplash URLs
+    // Pick random images from pool (avoid repeats within a post)
+    const pickRandom = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
+    const heroUrl = pickRandom(HERO_IMAGES);
+    const sectionImg1 = pickRandom(SECTION_IMAGES);
+    let sectionImg2 = pickRandom(SECTION_IMAGES);
+    if (sectionImg2 === sectionImg1) sectionImg2 = SECTION_IMAGES[(SECTION_IMAGES.indexOf(sectionImg1) + 1) % SECTION_IMAGES.length];
+
+    // Replace section image placeholders with real Unsplash URLs
     let content = post.content;
-    const sectionQueries: string[] = post.sectionImageQueries || [topic.angle, "technology"];
-    content = content.replace(
-      /SECTION_IMAGE_1/g,
-      `https://source.unsplash.com/800x400/?${encodeURIComponent(sectionQueries[0] || topic.angle)}`
-    );
-    content = content.replace(
-      /SECTION_IMAGE_2/g,
-      `https://source.unsplash.com/800x400/?${encodeURIComponent(sectionQueries[1] || "career")}`
-    );
+    content = content.replace(/SECTION_IMAGE_1/g, sectionImg1);
+    content = content.replace(/SECTION_IMAGE_2/g, sectionImg2);
 
     const blogPost = {
       slug,
