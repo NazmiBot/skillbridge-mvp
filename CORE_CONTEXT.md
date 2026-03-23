@@ -1,6 +1,6 @@
 # CORE_CONTEXT.md — SkillBridge Long-Term Memory
 
-> Last updated: 2026-03-22
+> Last updated: 2026-03-23
 > Maintainer: Nazmi (Lead Architect)
 
 ---
@@ -108,7 +108,7 @@
    - salary negotiation, remote work, portfolio building, burnout recovery
 3. Calls Claude Sonnet 4 with HTML-only formatting instructions (no markdown)
 4. Claude returns JSON: `{ title, description, tags, readingTime, heroImageQuery, sectionImageQueries, content }`
-5. Generates slug from title, replaces `SECTION_IMAGE_1/2` placeholders with Unsplash URLs
+5. Generates slug from title, replaces `SECTION_IMAGE_1/2` placeholders with URLs from a curated Unsplash photo pool (8 hero + 8 section images)
 6. Saves post to `blog:post:{slug}`, adds to `blog:posts` sorted set index
 7. Marks the topic angle as used; pool resets when all 8 are exhausted
 8. Supports `?preview=true` for dry runs
@@ -133,12 +133,13 @@
 
 | Commit | Description |
 |--------|-------------|
+| `8aa1bde` | **fix:** Dark mode meta tags on all 5 email templates — iOS Mail was inverting card backgrounds |
+| `ea17662` | **fix:** Replace dead `source.unsplash.com` with curated image pool for blog cron |
 | `f4cce21` | **feat:** Tier 3 — Redis backup script, sitemap enhancement (/sample), .gitignore backups |
 | `8163939` | **feat:** Tier 2 — blog-to-roadmap CTA bridge, explore page filter pills, sample report teaser below form |
 | `80a5794` | **fix:** Favicon — dark purple `#4f39c8` rounded square with white lowercase 's' + apple-touch-icon |
 | `fb0d229` | **feat:** Tier 1 — CTA copy upgrade ("Ready to prove it?"), social proof counter on hero, blog relative dates |
 | `c2c02b4` | **feat:** Input validation shield — profanity filter, keyboard smash detection, min/max length |
-| `6896921` | **docs:** Updated CORE_CONTEXT.md with full project inventory |
 | `f8728ec` | **fix:** Replace deprecated Unsplash Source with Pexels API for tweet images |
 | `cbfa795` | **feat:** Images on every tweet, punchier curiosity prompt, .ts→.tsx for JSX |
 | `6fc3d78` | **fix:** Absolute OG image URLs on /r/[slug]/share |
@@ -146,6 +147,8 @@
 
 ### Key Technical Notes
 - **Tweet images:** Switched from `source.unsplash.com` (deprecated) to Pexels API. Bank tweets attach pillar-themed photos, curiosity tweets use inline `next/og` ImageResponse for stats images.
+- **Blog images:** `source.unsplash.com` is dead (503). Blog cron now uses a curated pool of 8 hero + 8 section `images.unsplash.com/photo-*` URLs. Existing broken posts in Redis were patched manually.
+- **Email dark mode:** All 5 email templates (`emails/*.tsx`) include `color-scheme: dark` meta tags + CSS to prevent iOS Mail / mobile clients from inverting dark-themed cards to white.
 - **OG sharing:** Share pages now have proper `openGraph.images` + `twitter.images` metadata with absolute URLs.
 - **PDF sanitization:** All PDF text stripped of emojis, unicode arrows replaced with ASCII. Phase accents use [F]/[E]/[A] markers.
 - **Email gate:** Users who enter email at Authority gate no longer see duplicate PDF email modal (shared localStorage flag).
@@ -204,9 +207,9 @@ node scripts/backup-redis.mjs --restore backups/redis-2026-03-22.json
 ## Last 3 Commits
 
 ```
+8aa1bde fix: add dark mode meta tags to all email templates
+ea17662 fix: replace dead source.unsplash.com with curated image pool
 f4cce21 feat: Tier 3 — Redis backup script, sitemap enhancement, .gitignore backups
-8163939 feat: Tier 2 — blog CTA bridge, explore filters, sample report teaser
-80a5794 fix: favicon — dark purple rounded square with lowercase 's' + apple-touch-icon
 ```
 
 ---
