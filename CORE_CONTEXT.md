@@ -1,7 +1,21 @@
 # CORE_CONTEXT.md — SkillBridge Long-Term Memory
 
-> Last updated: 2026-03-23
+> Last updated: 2026-03-24
 > Maintainer: Nazmi (Lead Architect)
+
+---
+
+## Product Positioning
+
+**Target audience:** Career changers — people transitioning between fields (teacher→HR, retail→sales, designer→marketing, barista→customer success). NOT primarily developers.
+
+**Value prop:** "Your next career move, mapped out." — Personalized 3-phase career roadmaps for people who feel lost and need a clear path.
+
+**Revenue:** $9 mock interview evaluation.
+
+**Phase names:** Learn the Basics → Build Real Experience → Become the Expert
+
+**Voice:** 8th-grade reading level, zero jargon, warm and practical. Transferable skills are a core theme.
 
 ---
 
@@ -21,7 +35,7 @@
 | Hosting | Vercel (Hobby plan) | — |
 | Domain | tryskillbridge.com | Not yet wired to Vercel |
 
-### Shared Singletons & Modules (`lib/` — 15 files)
+### Shared Singletons & Modules (`lib/` — 16 files)
 - `anthropic.ts` — Anthropic client
 - `redis.ts` — ioredis client
 - `stripe.ts` — Stripe client
@@ -30,13 +44,26 @@
 - `ip.ts` — `getClientIp()` for rate limiting
 - `rate-limit.ts` — Redis-backed sliding window rate limiter
 - `twitter.ts` — Twitter API v2 client
-- `career-data.ts` — 15 role profiles with fuzzy matching
-- `x-content.ts` — 52-tweet bank + target accounts + topics
+- `career-data.ts` — **25 role profiles** with fuzzy matching (15 tech + 10 non-tech)
+- `x-content.ts` — 52-tweet bank + target accounts + topics (career changer voice)
 - `analytics.ts` — event tracking (roadmap saves, email unlocks, blog views)
 - `blog.ts` — blog post helpers
 - `phase-config.ts` — roadmap phase configuration
 - `progress.ts` — progress tracking logic
 - `types.ts` — shared TypeScript types
+- `validate-input.ts` — profanity filter, keyboard smash detection, input validation
+
+---
+
+## Career Profiles (25 total)
+
+### Tech (15 — original)
+senior-frontend-engineer, staff-engineer, engineering-manager, data-scientist, product-manager, devops-engineer, ux-designer, backend-engineer, fullstack-engineer, cybersecurity-engineer, ai-ml-engineer, cto, data-engineer, mobile-engineer, digital-marketer
+
+### Non-Tech (10 — added Sprint 1, 2026-03-24)
+hr-specialist, sales-representative, project-manager-general, marketing-coordinator, customer-success-manager, operations-manager, financial-analyst, ux-writer, recruiter, event-planner
+
+**Categories:** engineering, design, data, product, management, devops, security, marketing, ai, hr, sales, operations, finance, creative
 
 ---
 
@@ -97,74 +124,137 @@
 
 ---
 
+## Sample Roadmaps (seeded 2026-03-24)
+
+4 non-tech sample roadmaps in Redis and on `/explore`:
+- `teacher-to-hr-specialist` — Teacher → HR Specialist
+- `retail-manager-to-b2b-sales` — Retail Manager → B2B Sales Rep
+- `graphic-designer-to-marketing` — Graphic Designer → Marketing Coordinator
+- `barista-to-customer-success` — Barista → Customer Success Manager
+
+---
+
 ## SEO Blog Engine
 
 **Cron:** `/api/cron/blog-post` — runs weekly Monday @ 09:00 UTC
 
+**Topic Pool (updated 2026-03-24 — career changer focus):**
+1. Career change guide (step-by-step transitions)
+2. Transferable skills (undervalued everyday skills)
+3. Interview confidence (career changer interview prep)
+4. "Is it too late" (age and career change data)
+5. First 90 days (starting in a new field)
+6. Career change anxiety (emotional side, imposter syndrome)
+7. Salary in new career (financial reality, negotiation)
+8. Skills roadmap (building a learning plan)
+
 **Flow:**
 1. Loads `blog:used_topics` from Redis to avoid repeating angles
-2. Picks a random unused topic from the 8-topic pool:
-   - career transition, interview prep, skill development, engineering leadership
-   - salary negotiation, remote work, portfolio building, burnout recovery
-3. Calls Claude Sonnet 4 with HTML-only formatting instructions (no markdown)
+2. Picks a random unused topic from the 8-topic pool
+3. Calls Claude Sonnet 4 with HTML-only formatting, warm/practical voice for career changers
 4. Claude returns JSON: `{ title, description, tags, readingTime, heroImageQuery, sectionImageQueries, content }`
-5. Generates slug from title, replaces `SECTION_IMAGE_1/2` placeholders with URLs from a curated Unsplash photo pool (8 hero + 8 section images)
+5. Generates slug from title, replaces `SECTION_IMAGE_1/2` placeholders with URLs from a curated Unsplash photo pool
 6. Saves post to `blog:post:{slug}`, adds to `blog:posts` sorted set index
 7. Marks the topic angle as used; pool resets when all 8 are exhausted
-8. Supports `?preview=true` for dry runs
 
 **Rendering:** `/blog` reads from `blog:posts` sorted set → dynamic SSR. `/blog/[slug]` loads from `blog:post:{slug}`. Three static seed articles exist from initial build.
 
 ---
 
-## Project Scale
+## X (Twitter) Automation
 
-- **22 API routes** across checkout, cron, evaluation, generation, interviews, leads, progress, roadmaps, webhooks, and X automation
-- **13 components** — CareerForm, CareerPaths, Footer, Header, HeroSection, HowItWorks, LoadingSkeleton, PhaseCard, ProgressTracker, RoadmapResults, ScoreChecker, Spinner, DownloadPDF
-- **16 lib modules** — shared singletons, career data, analytics, blog, progress, types, validate-input
-- **12 pages** — home, blog (index + [slug]), explore, privacy, terms, sample, score/[id], roadmap/[slug] (view, interview, results, share)
-- **23 API routes** (added /api/stats)
-- **5 email templates** via React Email
-- **2 utility scripts** — `scripts/purge-explore.mjs`, `scripts/backup-redis.mjs`
+**Tweet Bank:** 52 tweets targeting career changers (updated 2026-03-24)
+- 40% wisdom — transferable skills, career mindset, "you're not starting from zero"
+- 30% insight — job market reality for career changers, hiring patterns
+- 20% tips — practical career change tactics, interview prep, skill mapping
+- 10% engagement — polls, questions, "what career change are you considering?"
+
+**Target Accounts:** simonsinek, AdamMGrant, JamesClear, SahilBloom, RamseyShow, levelsio, ShelcyJoseph, IAmMarkManson, austinkleon, MelRobbins
+
+**Relevant Topics:** 26 career-change-focused keywords (career change, career pivot, transferable skills, starting over, etc.)
 
 ---
 
-## Recent Changes (since 2026-03-20)
+## Email Templates (5)
 
-| Commit | Description |
-|--------|-------------|
-| `8aa1bde` | **fix:** Dark mode meta tags on all 5 email templates — iOS Mail was inverting card backgrounds |
-| `ea17662` | **fix:** Replace dead `source.unsplash.com` with curated image pool for blog cron |
-| `f4cce21` | **feat:** Tier 3 — Redis backup script, sitemap enhancement (/sample), .gitignore backups |
-| `8163939` | **feat:** Tier 2 — blog-to-roadmap CTA bridge, explore page filter pills, sample report teaser below form |
-| `80a5794` | **fix:** Favicon — dark purple `#4f39c8` rounded square with white lowercase 's' + apple-touch-icon |
-| `fb0d229` | **feat:** Tier 1 — CTA copy upgrade ("Ready to prove it?"), social proof counter on hero, blog relative dates |
-| `c2c02b4` | **feat:** Input validation shield — profanity filter, keyboard smash detection, min/max length |
-| `f8728ec` | **fix:** Replace deprecated Unsplash Source with Pexels API for tweet images |
-| `cbfa795` | **feat:** Images on every tweet, punchier curiosity prompt, .ts→.tsx for JSX |
-| `6fc3d78` | **fix:** Absolute OG image URLs on /r/[slug]/share |
-| `47f8afb` | **fix:** Email gate amnesia + PDF unicode corruption |
+All emails use "Career roadmaps for real people." tagline. Default examples: Teacher → HR Specialist.
+
+| Template | Trigger | Purpose |
+|----------|---------|---------|
+| `BlueprintEmail` | Email gate unlock | Sends full roadmap with 3 phases |
+| `FollowUpEmail` | Day 2 cron (24-48h) | Insider tip + mock interview CTA |
+| `CaseStudyEmail` | Day 5 cron (96-144h) | Career change success story + CTA |
+| `NudgeEmail` | Weekly Monday cron | Progress nudge with completion % |
+| `ReportEmail` | Post-evaluation | Score, strengths, weaknesses summary |
+
+---
+
+## Project Scale
+
+- **23 API routes** across checkout, cron, evaluation, generation, interviews, leads, progress, roadmaps, stats, webhooks, and X automation
+- **13 components** — CareerForm, CareerPaths, Footer, Header, HeroSection, HowItWorks, LoadingSkeleton, PhaseCard, ProgressTracker, RoadmapResults, ScoreChecker, Spinner, DownloadPDF
+- **16 lib modules** — shared singletons, career data (25 profiles), analytics, blog, progress, types, validate-input
+- **12 pages** — home, blog (index + [slug]), explore, privacy, terms, sample, score/[id], roadmap/[slug] (view, interview, results, share)
+- **5 email templates** via React Email
+- **3 utility scripts** — `scripts/purge-explore.mjs`, `scripts/backup-redis.mjs`, `scripts/seed-samples.mjs`
+- **9 explore categories** — Business & Sales, Human Resources, Marketing & Creative, Operations, Finance, Tech, Leadership, Healthcare, Education
+
+---
+
+## AI Prompts Summary
+
+### Roadmap Generation (`/api/generate`)
+- 8th-grade reading level, plain language
+- Explicitly identifies transferable skills from current role
+- Phase names: "Learn the Basics", "Build Real Experience", "Become the Expert"
+- Resources: accessible (free YouTube, affordable courses, practical projects)
+- R-or-Fail STAR rubric on evaluation
+
+### Interview Questions (`/api/interview/[slug]`)
+- "Friendly but thorough career coach" persona
+- Plain conversational language, avoids jargon
+- STAR explained as storytelling: "What was happening? What did you need to do? What did you do? What was the result?"
+
+### Evaluation (`/api/evaluate`)
+- "Hiring Manager from Hell" persona (still tough, but career-changer-aware)
+- Recognizes transferable skills and potential, not just domain expertise
+- Suggests accessible learning resources (YouTube, free courses)
+- R-or-Fail rule: no measurable Result = capped at 40/100
+
+### Blog Generation (`/api/cron/blog-post`)
+- Warm, practical, jargon-free voice
+- Written for someone Googling "how to change careers" at midnight
+- HTML-only formatting, 1200-1800 words
+
+---
+
+## Recent Changes
+
+| Commit | Date | Description |
+|--------|------|-------------|
+| `428ea6c` | 2026-03-24 | **feat:** Sprint 2 — 52 new career-changer tweets, new blog topics, all 5 email templates updated |
+| `304f503` | 2026-03-24 | **feat:** Sprint 1 — 10 non-tech career profiles, landing page rewrite, Claude prompt overhaul, sample roadmaps |
+| `8aa1bde` | 2026-03-23 | **fix:** Dark mode meta tags on all 5 email templates |
+| `ea17662` | 2026-03-23 | **fix:** Replace dead `source.unsplash.com` with curated image pool for blog cron |
+| `f4cce21` | 2026-03-22 | **feat:** Tier 3 — Redis backup script, sitemap enhancement, .gitignore backups |
+| `8163939` | 2026-03-22 | **feat:** Tier 2 — blog-to-roadmap CTA bridge, explore page filter pills, sample report teaser |
+| `80a5794` | 2026-03-22 | **fix:** Favicon — dark purple `#4f39c8` rounded square with white lowercase 's' |
+| `fb0d229` | 2026-03-21 | **feat:** Tier 1 — CTA copy upgrade, social proof counter, blog relative dates |
 
 ### Key Technical Notes
-- **Tweet images:** Switched from `source.unsplash.com` (deprecated) to Pexels API. Bank tweets attach pillar-themed photos, curiosity tweets use inline `next/og` ImageResponse for stats images.
-- **Blog images:** `source.unsplash.com` is dead (503). Blog cron now uses a curated pool of 8 hero + 8 section `images.unsplash.com/photo-*` URLs. Existing broken posts in Redis were patched manually.
-- **Email dark mode:** All 5 email templates (`emails/*.tsx`) include `color-scheme: dark` meta tags + CSS to prevent iOS Mail / mobile clients from inverting dark-themed cards to white.
-- **OG sharing:** Share pages now have proper `openGraph.images` + `twitter.images` metadata with absolute URLs.
-- **PDF sanitization:** All PDF text stripped of emojis, unicode arrows replaced with ASCII. Phase accents use [F]/[E]/[A] markers.
-- **Email gate:** Users who enter email at Authority gate no longer see duplicate PDF email modal (shared localStorage flag).
-- **Input validation (`lib/validate-input.ts`):** Zero-dependency profanity filter + keyboard smash detection + length/charset validation. Wired into `/api/generate` (before Anthropic call) and `/api/roadmap/save` (before Redis write). Purge script at `scripts/purge-explore.mjs`.
-- **Favicon:** `app/icon.tsx` (32×32) + `app/apple-icon.tsx` (180×180). Dark purple `#4f39c8`, white lowercase 's', rounded corners. Auto-discovered by Next.js App Router.
-- **Social proof:** `/api/stats` reads `roadmaps:count` from Redis, displayed on hero: "Join X+ professionals..."
-- **Blog dates:** Static posts staggered (Mar 10, 14, 18). `formatBlogDate()` in `lib/blog.ts` shows relative timestamps.
-- **Blog CTA:** Full-width purple gradient section at bottom of every post: "Stop guessing your next career move."
-- **Explore filters:** Client component `app/explore/explore-grid.tsx` with keyword-based category matching. 7 categories: Engineering, Data & AI, Design, Product, DevOps & Cloud, Leadership, Marketing.
-- **Sample Report teaser:** Visible below the Generate form on homepage: "Want to see the $9 evaluation first? View Sample Report →"
+- **Repositioning (2026-03-24):** Full pivot from developer-focused to career-changer audience. Landing page, AI prompts, tweet bank, blog topics, email templates all rewritten. Tech careers still fully supported — this is an additive change.
+- **Tweet images:** Pexels API for bank tweets, `next/og` ImageResponse for curiosity tweets.
+- **Blog images:** Curated pool of `images.unsplash.com/photo-*` URLs (source.unsplash.com is dead).
+- **Email dark mode:** All 5 templates include `color-scheme: dark` meta tags.
+- **OG sharing:** Share pages have proper `openGraph.images` + `twitter.images` metadata.
+- **PDF sanitization:** Emojis stripped, unicode arrows → ASCII, phase accents use markers.
+- **Input validation:** Zero-dependency profanity filter + keyboard smash detection.
+- **Favicon:** `app/icon.tsx` (32×32) + `app/apple-icon.tsx` (180×180). Dark purple `#4f39c8`.
+- **Social proof:** `/api/stats` → hero counter "Join X+ career changers building their next chapter"
 
 ---
 
 ## Rate Limiting
-
-All public API routes are rate-limited via `lib/rate-limit.ts` (Redis-backed sliding window):
 
 | Route | Limit | Window | Prefix |
 |-------|-------|--------|--------|
@@ -175,42 +265,27 @@ All public API routes are rate-limited via `lib/rate-limit.ts` (Redis-backed sli
 | `/api/evaluate` | 5 | 1 hour | `evaluate` |
 | `/api/send-report` | 5 | 1 hour | `send-report` |
 
-Owner IPs can be whitelisted via `RATE_LIMIT_WHITELIST` env var (comma-separated, applies to `/api/generate` only).
+Owner IPs whitelisted via `RATE_LIMIT_WHITELIST` env var.
 
 ---
 
 ## Redis Backup
 
 **Script:** `scripts/backup-redis.mjs`
-
-**Usage:**
 ```bash
-# Full backup to backups/redis-YYYY-MM-DD.json
-node scripts/backup-redis.mjs
-
-# Scan + count only (no file written)
-node scripts/backup-redis.mjs --dry-run
-
-# Custom output path
-node scripts/backup-redis.mjs --out backups/custom.json
-
-# Restore from backup
+node scripts/backup-redis.mjs              # Full backup
+node scripts/backup-redis.mjs --dry-run    # Scan + count only
 node scripts/backup-redis.mjs --restore backups/redis-2026-03-22.json
 ```
 
-**What it backs up:** All Redis keys with type-aware serialization (string, list, set, sorted set, hash). Preserves TTLs. The `backups/` directory is gitignored.
-
-**Recommendation:** Run weekly or before any destructive operation. First backup taken 2026-03-22 (56 keys, 0.09 MB).
-
 ---
 
-## Last 3 Commits
-
-```
-8aa1bde fix: add dark mode meta tags to all email templates
-ea17662 fix: replace dead source.unsplash.com with curated image pool
-f4cce21 feat: Tier 3 — Redis backup script, sitemap enhancement, .gitignore backups
-```
+## Env Keys (Vercel)
+- ANTHROPIC_API_KEY, STRIPE_SECRET_KEY, STRIPE_PUBLISHABLE_KEY, STRIPE_WEBHOOK_SECRET
+- TWITTER_API_KEY, TWITTER_API_SECRET, TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_SECRET, TWITTER_BEARER_TOKEN
+- CRON_SECRET, RESEND_API_KEY, REDIS_URL
+- RATE_LIMIT_WHITELIST
+- Always run `vercel env pull .env.local` to sync locally
 
 ---
 
@@ -218,10 +293,10 @@ f4cce21 feat: Tier 3 — Redis backup script, sitemap enhancement, .gitignore ba
 
 | Time (UTC) | Route | Frequency | Purpose |
 |------------|-------|-----------|---------|
-| 09:00 Mon | `/api/cron/blog-post` | Weekly | Generate SEO article |
+| 09:00 Mon | `/api/cron/blog-post` | Weekly | Generate SEO article (career changer topics) |
 | 10:00 Mon | `/api/progress/nudge` | Weekly | Progress nudge emails to subscribers |
-| 11:30 M-F | `/api/x/engage` | Weekdays | X engagement (reply to targets) |
-| 14:00 daily | `/api/x/tweet` | Daily | Post from tweet bank |
+| 11:30 M-F | `/api/x/engage` | Weekdays | X engagement (reply to career change accounts) |
+| 14:00 daily | `/api/x/tweet` | Daily | Post from career-changer tweet bank |
 | 14:00 daily | `/api/cron/follow-up` | Daily | Day 2 + Day 5 email sequences |
 | 16:00 M-F | `/api/x/engage` | Weekdays | X engagement round 2 |
 | 19:30 MWF | `/api/x/engage` | 3x/week | X engagement round 3 |
