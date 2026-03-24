@@ -14,49 +14,49 @@ interface RoadmapSummary {
 
 const CATEGORIES: { label: string; icon: string; keywords: string[] }[] = [
   {
-    label: "Engineering",
-    icon: "🛠",
-    keywords: [
-      "engineer", "developer", "frontend", "backend", "fullstack",
-      "full-stack", "full stack", "software", "web dev", "sre",
-      "staff", "principal", "architect",
-    ],
+    label: "Business & Sales",
+    icon: "💼",
+    keywords: ["sales", "account", "business development", "bdr", "sdr", "customer success", "b2b"],
   },
   {
-    label: "Data & AI",
-    icon: "📊",
-    keywords: [
-      "data", "ai", "ml", "machine learning", "analytics", "scientist",
-      "deep learning", "nlp", "llm",
-    ],
+    label: "Human Resources",
+    icon: "👥",
+    keywords: ["hr", "human resources", "recruiter", "talent", "people operations", "staffing"],
   },
   {
-    label: "Design",
-    icon: "🎨",
-    keywords: ["design", "ux", "ui", "product design", "graphic"],
+    label: "Marketing & Creative",
+    icon: "📈",
+    keywords: ["marketing", "content", "brand", "social media", "copywriter", "ux writer", "communications", "creative"],
   },
   {
-    label: "Product",
-    icon: "📋",
-    keywords: ["product manager", "product owner", "pm", "product lead"],
+    label: "Operations",
+    icon: "⚙️",
+    keywords: ["operations", "project manager", "coordinator", "logistics", "event", "office manager"],
   },
   {
-    label: "DevOps & Cloud",
-    icon: "☁️",
-    keywords: ["devops", "cloud", "infrastructure", "platform", "sre", "kubernetes", "aws", "azure"],
+    label: "Finance",
+    icon: "💰",
+    keywords: ["finance", "financial", "accountant", "bookkeeper", "analyst", "controller", "fp&a"],
+  },
+  {
+    label: "Tech",
+    icon: "💻",
+    keywords: ["engineer", "developer", "frontend", "backend", "fullstack", "software", "devops", "data scientist", "ml", "ai", "sre"],
   },
   {
     label: "Leadership",
     icon: "👔",
-    keywords: [
-      "manager", "director", "vp", "cto", "cio", "lead", "head of",
-      "chief", "executive", "management",
-    ],
+    keywords: ["manager", "director", "vp", "cto", "head of", "chief", "executive"],
   },
   {
-    label: "Marketing",
-    icon: "📈",
-    keywords: ["marketing", "growth", "seo", "content", "brand"],
+    label: "Healthcare",
+    icon: "🏥",
+    keywords: ["healthcare", "nurse", "medical", "health", "therapy", "clinical"],
+  },
+  {
+    label: "Education",
+    icon: "🎓",
+    keywords: ["teacher", "instructor", "education", "training", "tutor", "professor"],
   },
 ];
 

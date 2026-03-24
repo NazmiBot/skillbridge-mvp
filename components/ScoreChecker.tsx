@@ -69,14 +69,14 @@ export default function ScoreChecker() {
               type="text"
               value={targetRole}
               onChange={(e) => setTargetRole(e.target.value)}
-              placeholder="Target role (e.g. Staff Engineer)"
+              placeholder="Target role (e.g. HR Specialist, Sales Rep)"
               className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white placeholder-zinc-600 outline-none focus:border-blue-500/50"
             />
             <input
               type="text"
               value={skills}
               onChange={(e) => setSkills(e.target.value)}
-              placeholder="Your skills (comma-separated)"
+              placeholder="Your skills (e.g. Communication, Excel, Teamwork)"
               className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white placeholder-zinc-600 outline-none focus:border-blue-500/50"
             />
             <input

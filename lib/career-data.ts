@@ -3,7 +3,7 @@
 
 export interface CareerProfile {
   aliases: string[]; // fuzzy match targets
-  category: "engineering" | "design" | "data" | "product" | "management" | "devops" | "security" | "marketing" | "ai";
+  category: "engineering" | "design" | "data" | "product" | "management" | "devops" | "security" | "marketing" | "ai" | "hr" | "sales" | "operations" | "finance" | "healthcare" | "education" | "creative";
   foundation: {
     skills: string[];
     resources: { name: string; type: "course" | "book" | "practice" | "community" }[];
@@ -674,6 +674,435 @@ export const CAREER_PROFILES: Record<string, CareerProfile> = {
       senior: { durationMult: 0.7, extraFoundationSkills: [] },
     },
   },
+  "hr-specialist": {
+    aliases: ["hr", "human resources", "hr manager", "hr coordinator", "people operations", "talent acquisition", "recruiter", "hr business partner"],
+    category: "hr",
+    foundation: {
+      skills: ["Employment law basics (hiring, firing, discrimination rules)", "HR software systems (BambooHR, Workday, or similar)", "New employee onboarding and orientation", "Workplace conflict resolution", "Benefits and compensation administration"],
+      resources: [
+        { name: "SHRM Essentials of HR Management", type: "course" },
+        { name: "The HR Answer Book by Shawn Smith & Rebecca Mazin", type: "book" },
+        { name: "BambooHR Academy (free online training)", type: "course" },
+        { name: "SHRM Connect community", type: "community" },
+      ],
+      milestone: "Run a complete new-hire onboarding process from offer letter to first-week check-in",
+      baseDurationMonths: 3,
+    },
+    execution: {
+      skills: ["Talent management and succession planning", "Performance review design and facilitation", "Employee engagement surveys and action plans", "HR policy writing and handbook creation", "Diversity, equity, and inclusion programs"],
+      resources: [
+        { name: "Design and run a quarterly performance review cycle", type: "practice" },
+        { name: "Who by Geoff Smart & Randy Street", type: "book" },
+        { name: "LinkedIn Learning — HR Foundations", type: "course" },
+        { name: "HR Open Source community", type: "community" },
+      ],
+      milestone: "Build an employee handbook and run performance reviews for a team of 20+ people",
+      baseDurationMonths: 5,
+    },
+    authority: {
+      skills: ["Organization development and company culture strategy", "HR analytics and workforce planning", "Executive coaching and leadership development", "Change management during company growth", "Employer branding and talent attraction"],
+      resources: [
+        { name: "SHRM-CP or SHRM-SCP certification prep", type: "course" },
+        { name: "Work Rules! by Laszlo Bock", type: "book" },
+        { name: "Present at a local HR meetup or SHRM chapter event", type: "community" },
+        { name: "Build an employer brand strategy document", type: "practice" },
+      ],
+      milestone: "People leaders across the company come to you for advice on team-building, hiring, and culture",
+      baseDurationMonths: 4,
+    },
+    seniorityModifiers: {
+      junior: { durationMult: 1.5, extraFoundationSkills: ["Professional communication and email writing", "Basic spreadsheet skills (Excel or Google Sheets)", "Understanding workplace confidentiality"] },
+      mid: { durationMult: 1.0, extraFoundationSkills: ["Advanced interviewing techniques"] },
+      senior: { durationMult: 0.7, extraFoundationSkills: [] },
+    },
+  },
+
+  "sales-representative": {
+    aliases: ["sales rep", "b2b sales", "account executive", "business development", "bdr", "sdr", "sales manager", "inside sales"],
+    category: "sales",
+    foundation: {
+      skills: ["Prospecting and finding potential customers", "CRM tools (Salesforce or HubSpot basics)", "Discovery calls — asking the right questions", "Handling objections and concerns", "Writing effective outreach emails and messages"],
+      resources: [
+        { name: "HubSpot Academy — Inbound Sales (free certification)", type: "course" },
+        { name: "SPIN Selling by Neil Rackham", type: "book" },
+        { name: "Practice 20+ cold calls with a friend or mentor", type: "practice" },
+        { name: "Sales Hacker community", type: "community" },
+      ],
+      milestone: "Book 10 discovery calls with real prospects using your own outreach",
+      baseDurationMonths: 3,
+    },
+    execution: {
+      skills: ["Pipeline management and sales forecasting", "Negotiation and closing techniques", "Account management and growing existing clients", "Sales presentations and demos", "Using data to track and improve your performance"],
+      resources: [
+        { name: "Close a deal from first contact to signed contract", type: "practice" },
+        { name: "The Challenger Sale by Dixon & Adamson", type: "book" },
+        { name: "Salesforce Trailhead (free learning paths)", type: "course" },
+        { name: "Build a personal pipeline tracker in a spreadsheet", type: "practice" },
+      ],
+      milestone: "Consistently hit or exceed your monthly sales quota for 3 months in a row",
+      baseDurationMonths: 5,
+    },
+    authority: {
+      skills: ["Sales team leadership and coaching", "Territory planning and strategy", "Key account and enterprise sales", "Cross-team collaboration with marketing and product", "Building a repeatable sales process"],
+      resources: [
+        { name: "Predictable Revenue by Aaron Ross", type: "book" },
+        { name: "Mentor a junior sales rep through their first quarter", type: "community" },
+        { name: "Create a sales playbook for your team", type: "practice" },
+        { name: "Revenue Collective / Pavilion community", type: "community" },
+      ],
+      milestone: "Your sales process is so reliable that new reps can follow it and succeed within their first month",
+      baseDurationMonths: 4,
+    },
+    seniorityModifiers: {
+      junior: { durationMult: 1.5, extraFoundationSkills: ["Active listening and empathy in conversations", "Time management and daily planning", "Basic business writing"] },
+      mid: { durationMult: 1.0, extraFoundationSkills: [] },
+      senior: { durationMult: 0.7, extraFoundationSkills: [] },
+    },
+  },
+
+  "project-manager-general": {
+    aliases: ["project manager", "program manager", "project coordinator", "pmo", "project management"],
+    category: "operations",
+    foundation: {
+      skills: ["Project planning basics (scope, timeline, budget)", "Stakeholder communication and status updates", "Risk identification and mitigation planning", "Project management tools (Asana, Monday.com, or Trello)", "Meeting facilitation and agenda setting"],
+      resources: [
+        { name: "Google Project Management Certificate (Coursera)", type: "course" },
+        { name: "The Fast Forward MBA in Project Management by Eric Verzuh", type: "book" },
+        { name: "Plan and execute a real project from start to finish", type: "practice" },
+        { name: "ProjectManagement.com community forums", type: "community" },
+      ],
+      milestone: "Successfully deliver a cross-team project on time and within budget",
+      baseDurationMonths: 3,
+    },
+    execution: {
+      skills: ["Budget tracking and financial reporting for projects", "Gantt charts and critical path analysis", "Change management when project scope shifts", "Vendor management and contract basics", "Quality assurance and project documentation"],
+      resources: [
+        { name: "Manage a project with a $50K+ budget", type: "practice" },
+        { name: "PMP exam prep course (PMI or Udemy)", type: "course" },
+        { name: "Making Things Happen by Scott Berkun", type: "book" },
+        { name: "Create a risk register and lessons-learned document", type: "practice" },
+      ],
+      milestone: "Manage 3+ concurrent projects while keeping all stakeholders informed and satisfied",
+      baseDurationMonths: 5,
+    },
+    authority: {
+      skills: ["Program management across multiple workstreams", "Executive reporting and steering committee presentations", "Building and mentoring a project management team", "Process improvement and PMO setup", "Strategic planning and resource allocation"],
+      resources: [
+        { name: "PMP certification", type: "course" },
+        { name: "Present project results to senior leadership", type: "practice" },
+        { name: "PMI chapter events and networking", type: "community" },
+        { name: "The Lean Startup by Eric Ries", type: "book" },
+      ],
+      milestone: "You run the project management practice — leadership trusts you to deliver their most important initiatives",
+      baseDurationMonths: 4,
+    },
+    seniorityModifiers: {
+      junior: { durationMult: 1.5, extraFoundationSkills: ["Spreadsheet skills for tracking and reporting", "Professional email and written communication", "Basic budgeting concepts"] },
+      mid: { durationMult: 1.0, extraFoundationSkills: [] },
+      senior: { durationMult: 0.7, extraFoundationSkills: [] },
+    },
+  },
+
+  "marketing-coordinator": {
+    aliases: ["marketing coordinator", "marketing assistant", "brand manager", "social media manager", "content creator", "communications specialist"],
+    category: "marketing",
+    foundation: {
+      skills: ["Social media strategy and content planning", "Basic graphic design (Canva, Adobe Express)", "Email marketing campaigns (Mailchimp or similar)", "Content calendar creation and management", "Copywriting for different platforms and audiences"],
+      resources: [
+        { name: "HubSpot Content Marketing Certification (free)", type: "course" },
+        { name: "Everybody Writes by Ann Handley", type: "book" },
+        { name: "Create and manage social media for a real brand for 30 days", type: "practice" },
+        { name: "Marketing Brew newsletter and community", type: "community" },
+      ],
+      milestone: "Plan and launch a 30-day content campaign across 2+ social media platforms",
+      baseDurationMonths: 3,
+    },
+    execution: {
+      skills: ["Campaign performance tracking and analytics", "Brand voice and style guide development", "Event marketing and promotional planning", "Influencer outreach and partnership coordination", "Marketing budget management"],
+      resources: [
+        { name: "Run an email marketing campaign with A/B testing", type: "practice" },
+        { name: "Google Analytics certification (free)", type: "course" },
+        { name: "Building a StoryBrand by Donald Miller", type: "book" },
+        { name: "Create a brand style guide from scratch", type: "practice" },
+      ],
+      milestone: "Run a marketing campaign that measurably increases engagement or leads by 20%+",
+      baseDurationMonths: 5,
+    },
+    authority: {
+      skills: ["Marketing strategy and annual planning", "Team leadership and creative direction", "Cross-department collaboration (sales, product, leadership)", "Marketing technology stack management", "Public relations and media outreach"],
+      resources: [
+        { name: "Develop a quarterly marketing strategy presentation", type: "practice" },
+        { name: "This Is Marketing by Seth Godin", type: "book" },
+        { name: "Mentor a junior marketer or intern", type: "community" },
+        { name: "American Marketing Association events", type: "community" },
+      ],
+      milestone: "You own the marketing strategy — campaigns you design consistently drive business results",
+      baseDurationMonths: 4,
+    },
+    seniorityModifiers: {
+      junior: { durationMult: 1.5, extraFoundationSkills: ["Strong writing and proofreading skills", "Basic photo and video editing", "Understanding social media algorithms"] },
+      mid: { durationMult: 1.0, extraFoundationSkills: [] },
+      senior: { durationMult: 0.7, extraFoundationSkills: [] },
+    },
+  },
+
+  "customer-success-manager": {
+    aliases: ["customer success", "csm", "account manager", "client relations", "customer experience", "client success"],
+    category: "sales",
+    foundation: {
+      skills: ["Customer onboarding and training", "CRM tools for tracking customer health (Gainsight, HubSpot)", "Measuring customer satisfaction (NPS, CSAT surveys)", "Proactive check-ins and relationship building", "Identifying at-risk accounts and preventing cancellations"],
+      resources: [
+        { name: "Gainsight Pulse community and resources", type: "community" },
+        { name: "Customer Success by Nick Mehta, Dan Steinman & Lincoln Murphy", type: "book" },
+        { name: "SuccessHACKER free courses", type: "course" },
+        { name: "Onboard 5+ customers and document the process", type: "practice" },
+      ],
+      milestone: "Successfully onboard 10 customers with a 90%+ satisfaction score",
+      baseDurationMonths: 3,
+    },
+    execution: {
+      skills: ["Quarterly business reviews (QBRs) with clients", "Upselling and expansion revenue strategies", "Customer health scoring and early warning systems", "Cross-team collaboration with product and support", "Building customer advocacy and referral programs"],
+      resources: [
+        { name: "Run quarterly business reviews for your top 10 accounts", type: "practice" },
+        { name: "The Effortless Experience by Dixon, Toman & DeLisi", type: "book" },
+        { name: "Build a customer health dashboard in a spreadsheet", type: "practice" },
+        { name: "Customer Success Network on LinkedIn", type: "community" },
+      ],
+      milestone: "Maintain a 95%+ customer retention rate while growing account revenue by 15%",
+      baseDurationMonths: 5,
+    },
+    authority: {
+      skills: ["Customer success strategy and team building", "Voice of the customer programs", "Executive relationship management", "Customer lifecycle optimization", "Churn analysis and prevention at scale"],
+      resources: [
+        { name: "Build a customer success playbook for your team", type: "practice" },
+        { name: "Speak at a customer success meetup or webinar", type: "community" },
+        { name: "The Customer Success Professional's Handbook by Vaidyanathan & Rabago", type: "book" },
+        { name: "Mentor junior CSMs on difficult account situations", type: "community" },
+      ],
+      milestone: "You define how the company keeps customers happy — retention and expansion are strong because of your systems",
+      baseDurationMonths: 4,
+    },
+    seniorityModifiers: {
+      junior: { durationMult: 1.5, extraFoundationSkills: ["Active listening and empathy", "Written communication for professional emails", "Basic data analysis in spreadsheets"] },
+      mid: { durationMult: 1.0, extraFoundationSkills: [] },
+      senior: { durationMult: 0.7, extraFoundationSkills: [] },
+    },
+  },
+
+  "operations-manager": {
+    aliases: ["operations manager", "ops manager", "business operations", "office manager", "operations coordinator"],
+    category: "operations",
+    foundation: {
+      skills: ["Process mapping and documentation", "Vendor management and negotiations", "Budget tracking and expense management", "Key performance indicator (KPI) dashboards", "Team coordination and scheduling"],
+      resources: [
+        { name: "Google Project Management Certificate (Coursera)", type: "course" },
+        { name: "The Goal by Eliyahu Goldratt", type: "book" },
+        { name: "Map out and improve one business process end-to-end", type: "practice" },
+        { name: "Operations Management subreddit and communities", type: "community" },
+      ],
+      milestone: "Document and improve a key business process, reducing time or cost by 15%+",
+      baseDurationMonths: 3,
+    },
+    execution: {
+      skills: ["Supply chain and logistics coordination", "Lean and Six Sigma basics for process improvement", "Cross-department project management", "Compliance and workplace safety standards", "Inventory management and resource allocation"],
+      resources: [
+        { name: "Lean Six Sigma Yellow Belt certification", type: "course" },
+        { name: "Manage operations for a team of 10+ people", type: "practice" },
+        { name: "Operations Management by Heizer, Render & Munson", type: "book" },
+        { name: "Build a KPI dashboard for your department", type: "practice" },
+      ],
+      milestone: "Run daily operations for a department while hitting all KPI targets for a full quarter",
+      baseDurationMonths: 5,
+    },
+    authority: {
+      skills: ["Strategic operations planning and scaling", "Business continuity and disaster recovery planning", "Technology selection for operational efficiency", "Building and leading an operations team", "Executive reporting on operational health"],
+      resources: [
+        { name: "Develop an annual operations plan with budget projections", type: "practice" },
+        { name: "Good to Great by Jim Collins", type: "book" },
+        { name: "APICS or similar operations certification", type: "course" },
+        { name: "Mentor junior operations staff", type: "community" },
+      ],
+      milestone: "The business runs smoothly because of the systems you built — leadership relies on your operational expertise",
+      baseDurationMonths: 4,
+    },
+    seniorityModifiers: {
+      junior: { durationMult: 1.5, extraFoundationSkills: ["Spreadsheet skills (Excel formulas, pivot tables)", "Professional communication across teams", "Time management and prioritization"] },
+      mid: { durationMult: 1.0, extraFoundationSkills: [] },
+      senior: { durationMult: 0.7, extraFoundationSkills: [] },
+    },
+  },
+
+  "financial-analyst": {
+    aliases: ["financial analyst", "finance manager", "accountant", "bookkeeper", "financial planner", "fp&a", "controller"],
+    category: "finance",
+    foundation: {
+      skills: ["Financial statements reading (income statement, balance sheet, cash flow)", "Excel and Google Sheets mastery (VLOOKUP, pivot tables, charts)", "Budgeting and forecasting basics", "Accounting fundamentals (debits, credits, journal entries)", "Financial reporting and presentation skills"],
+      resources: [
+        { name: "Coursera — Financial Accounting Fundamentals", type: "course" },
+        { name: "Financial Intelligence by Karen Berman & Joe Knight", type: "book" },
+        { name: "Build a personal or small business budget from scratch", type: "practice" },
+        { name: "Wall Street Oasis or r/FinancialCareers community", type: "community" },
+      ],
+      milestone: "Create a complete monthly financial report with variance analysis for a real or practice business",
+      baseDurationMonths: 3,
+    },
+    execution: {
+      skills: ["Financial modeling and scenario analysis", "Profit & loss (P&L) deep-dive analysis", "QuickBooks or similar accounting software", "Cash flow forecasting and management", "Cost analysis and finding savings opportunities"],
+      resources: [
+        { name: "Build a 3-statement financial model in Excel", type: "practice" },
+        { name: "QuickBooks certification (Intuit free training)", type: "course" },
+        { name: "The Interpretation of Financial Statements by Benjamin Graham", type: "book" },
+        { name: "Prepare a budget vs. actual report for a real department", type: "practice" },
+      ],
+      milestone: "Identify $10K+ in cost savings or revenue opportunities through financial analysis",
+      baseDurationMonths: 5,
+    },
+    authority: {
+      skills: ["Strategic financial planning and business advisory", "Board and executive financial presentations", "Audit preparation and compliance", "Team leadership and process automation", "Investment analysis and capital allocation"],
+      resources: [
+        { name: "CPA or CFA Level 1 exam preparation", type: "course" },
+        { name: "Present financial results to senior leadership", type: "practice" },
+        { name: "CFO.University community and resources", type: "community" },
+        { name: "The Intelligent Investor by Benjamin Graham", type: "book" },
+      ],
+      milestone: "Leadership trusts your financial analysis to make major business decisions — you're the go-to numbers person",
+      baseDurationMonths: 4,
+    },
+    seniorityModifiers: {
+      junior: { durationMult: 1.5, extraFoundationSkills: ["Basic math and percentages confidence", "Attention to detail and data accuracy", "Professional writing for reports"] },
+      mid: { durationMult: 1.0, extraFoundationSkills: [] },
+      senior: { durationMult: 0.7, extraFoundationSkills: [] },
+    },
+  },
+
+  "ux-writer": {
+    aliases: ["ux writer", "content designer", "copywriter", "technical writer", "content strategist"],
+    category: "creative",
+    foundation: {
+      skills: ["Microcopy and interface writing (buttons, error messages, tooltips)", "User research basics — understanding who you're writing for", "Style guide creation and maintenance", "Writing for accessibility (plain language, screen readers)", "Content auditing — reviewing what already exists"],
+      resources: [
+        { name: "Google UX Writing course (Coursera)", type: "course" },
+        { name: "Strategic Writing for UX by Torrey Podmajersky", type: "book" },
+        { name: "Rewrite the microcopy for 3 existing apps and document why", type: "practice" },
+        { name: "UX Writing Hub community", type: "community" },
+      ],
+      milestone: "Rewrite all the interface text for one product feature and test it with 5 real users",
+      baseDurationMonths: 3,
+    },
+    execution: {
+      skills: ["A/B testing copy to see what performs better", "Content design systems and component libraries", "Collaboration with designers and developers", "Writing for different platforms (web, mobile, email)", "Localization and translation-ready writing"],
+      resources: [
+        { name: "Run an A/B test on button copy and measure click-through rates", type: "practice" },
+        { name: "Letting Go of the Words by Janice Redish", type: "book" },
+        { name: "Build a content style guide for a product or team", type: "practice" },
+        { name: "Content Design London courses", type: "course" },
+      ],
+      milestone: "Your copy changes measurably improve a key metric (sign-ups, task completion, or error reduction)",
+      baseDurationMonths: 5,
+    },
+    authority: {
+      skills: ["Content strategy across an entire product", "Voice and tone guidelines for a brand", "Leading content design within a team", "Mentoring writers and providing feedback", "Presenting content decisions to stakeholders"],
+      resources: [
+        { name: "Develop a voice and tone guide for a company", type: "practice" },
+        { name: "Content Design by Sarah Richards", type: "book" },
+        { name: "Speak at a UX or content design meetup", type: "community" },
+        { name: "Mentor a junior writer through their first project", type: "community" },
+      ],
+      milestone: "You set the words strategy — every screen, email, and notification is better because of your influence",
+      baseDurationMonths: 4,
+    },
+    seniorityModifiers: {
+      junior: { durationMult: 1.5, extraFoundationSkills: ["Strong grammar and proofreading skills", "Empathy and curiosity about users", "Basic understanding of how websites and apps work"] },
+      mid: { durationMult: 1.0, extraFoundationSkills: [] },
+      senior: { durationMult: 0.7, extraFoundationSkills: [] },
+    },
+  },
+
+  "recruiter": {
+    aliases: ["recruiter", "talent acquisition specialist", "headhunter", "sourcer", "recruitment consultant", "staffing coordinator"],
+    category: "hr",
+    foundation: {
+      skills: ["Sourcing techniques (LinkedIn Recruiter, Boolean search)", "Candidate screening and phone interviews", "Applicant tracking systems (Greenhouse, Lever, Workday)", "Job description writing that attracts diverse candidates", "Interview coordination and scheduling"],
+      resources: [
+        { name: "LinkedIn Recruiter certification (free)", type: "course" },
+        { name: "Who by Geoff Smart & Randy Street", type: "book" },
+        { name: "Source and screen 20 candidates for a practice role", type: "practice" },
+        { name: "SourceCon community for recruiters", type: "community" },
+      ],
+      milestone: "Fill a real or practice job opening from sourcing through offer acceptance",
+      baseDurationMonths: 3,
+    },
+    execution: {
+      skills: ["Building talent pipelines for hard-to-fill roles", "Employer branding and candidate experience", "Offer negotiation and closing candidates", "Diversity hiring strategies and inclusive practices", "Recruitment metrics (time-to-fill, quality-of-hire, source effectiveness)"],
+      resources: [
+        { name: "Build a talent pipeline for 3 different role types", type: "practice" },
+        { name: "Talent Acquisition Excellence by Kevin Wheeler", type: "book" },
+        { name: "AIRS certification or equivalent", type: "course" },
+        { name: "Track and improve your time-to-fill and acceptance rate", type: "practice" },
+      ],
+      milestone: "Maintain a 90%+ offer acceptance rate while filling roles 20% faster than average",
+      baseDurationMonths: 5,
+    },
+    authority: {
+      skills: ["Recruitment strategy and workforce planning", "Building and leading a recruiting team", "Executive search and C-suite recruitment", "Recruitment technology evaluation and implementation", "Campus recruiting and early career programs"],
+      resources: [
+        { name: "Design a company-wide hiring strategy document", type: "practice" },
+        { name: "Speak at an HR or recruiting conference", type: "community" },
+        { name: "Work by Laszlo Bock (chapters on hiring)", type: "book" },
+        { name: "Mentor junior recruiters on sourcing and closing", type: "community" },
+      ],
+      milestone: "You built the hiring machine — great people join the company because of the recruiting process you created",
+      baseDurationMonths: 4,
+    },
+    seniorityModifiers: {
+      junior: { durationMult: 1.5, extraFoundationSkills: ["Professional communication and relationship building", "Organizational skills and attention to detail", "Understanding different job roles and industries"] },
+      mid: { durationMult: 1.0, extraFoundationSkills: [] },
+      senior: { durationMult: 0.7, extraFoundationSkills: [] },
+    },
+  },
+
+  "event-planner": {
+    aliases: ["event planner", "event coordinator", "event manager", "conference organizer", "wedding planner", "meeting planner"],
+    category: "operations",
+    foundation: {
+      skills: ["Event budgeting and cost tracking", "Venue research and site selection", "Vendor sourcing and contract negotiation", "Event timeline and logistics planning", "Guest list management and invitations"],
+      resources: [
+        { name: "Coursera — Event Management and Planning", type: "course" },
+        { name: "The Art of the Event by James Monroe", type: "book" },
+        { name: "Plan and execute a small event (50+ attendees) from start to finish", type: "practice" },
+        { name: "Meeting Professionals International (MPI) community", type: "community" },
+      ],
+      milestone: "Successfully plan and run a real event for 50+ people on time and within budget",
+      baseDurationMonths: 3,
+    },
+    execution: {
+      skills: ["Marketing events and driving attendance", "Sponsorship acquisition and partnership management", "On-site event management and troubleshooting", "Attendee experience design and feedback collection", "Event technology (registration platforms, virtual event tools)"],
+      resources: [
+        { name: "Manage an event with a $10K+ budget and sponsors", type: "practice" },
+        { name: "Event Planning by Judy Allen", type: "book" },
+        { name: "CMP (Certified Meeting Professional) prep course", type: "course" },
+        { name: "Create post-event reports with ROI analysis", type: "practice" },
+      ],
+      milestone: "Plan and deliver a 200+ person event with sponsors, hitting attendance and satisfaction targets",
+      baseDurationMonths: 5,
+    },
+    authority: {
+      skills: ["Event strategy and annual program planning", "Team leadership and volunteer management", "Crisis management and contingency planning", "Multi-event portfolio management", "Industry networking and thought leadership"],
+      resources: [
+        { name: "CMP certification", type: "course" },
+        { name: "Build an annual events calendar with ROI projections", type: "practice" },
+        { name: "Speak at an events industry conference", type: "community" },
+        { name: "Mentor aspiring event planners", type: "community" },
+      ],
+      milestone: "You're the events authority — organizations trust you to deliver memorable, impactful experiences every time",
+      baseDurationMonths: 4,
+    },
+    seniorityModifiers: {
+      junior: { durationMult: 1.5, extraFoundationSkills: ["Multitasking and staying calm under pressure", "Basic design skills for event materials (Canva)", "Strong interpersonal and networking skills"] },
+      mid: { durationMult: 1.0, extraFoundationSkills: [] },
+      senior: { durationMult: 0.7, extraFoundationSkills: [] },
+    },
+  },
 };
 
 /**
@@ -744,14 +1173,29 @@ export function matchCareerProfile(targetRole: string): string | null {
     ios: "mobile-engineer",
     android: "mobile-engineer",
     flutter: "mobile-engineer",
-    manager: "engineering-manager",
-    lead: "engineering-manager",
     cto: "cto",
     "vp eng": "cto",
-    director: "cto",
-    marketing: "digital-marketer",
+    hr: "hr-specialist",
+    "human resources": "hr-specialist",
+    "people operations": "hr-specialist",
+    sales: "sales-representative",
+    "business development": "sales-representative",
+    "project manager": "project-manager-general",
+    "customer success": "customer-success-manager",
+    operations: "operations-manager",
+    finance: "financial-analyst",
+    accounting: "financial-analyst",
+    writer: "ux-writer",
+    copywriter: "ux-writer",
+    recruiter: "recruiter",
+    "talent acquisition": "recruiter",
+    event: "event-planner",
+    marketing: "marketing-coordinator",
     growth: "digital-marketer",
     seo: "digital-marketer",
+    manager: "project-manager-general",
+    lead: "engineering-manager",
+    director: "cto",
   };
 
   for (const [keyword, profileKey] of Object.entries(keywordMap)) {
@@ -775,7 +1219,12 @@ export function inferSeniority(
     roleLower.includes("senior") ||
     roleLower.includes("lead") ||
     roleLower.includes("principal") ||
-    roleLower.includes("staff")
+    roleLower.includes("staff") ||
+    roleLower.includes("director") ||
+    roleLower.includes("vp") ||
+    roleLower.includes("vice president") ||
+    roleLower.includes("head of") ||
+    roleLower.includes("chief")
   ) {
     return "senior";
   }
@@ -784,7 +1233,10 @@ export function inferSeniority(
     roleLower.includes("intern") ||
     roleLower.includes("entry") ||
     roleLower.includes("associate") ||
-    roleLower.includes("starter")
+    roleLower.includes("starter") ||
+    roleLower.includes("coordinator") ||
+    roleLower.includes("assistant") ||
+    roleLower.includes("trainee")
   ) {
     return "junior";
   }

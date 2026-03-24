@@ -136,34 +136,36 @@ Reference career profile (use as a starting point, personalize based on the user
   const pace = input.preferences?.pace ?? "balanced";
   const focus = input.preferences?.focus ?? "hybrid";
 
-  const systemPrompt = `You are SkillBridge, an expert career architect. You generate hyper-personalized 3-phase career roadmaps.
+  const systemPrompt = `You are SkillBridge, a friendly career coach who helps people change careers. You create personalized 3-phase career roadmaps that anyone can follow — even if they've never worked in the target field before.
+
+Write everything at an 8th-grade reading level. Use plain, simple language. No jargon or buzzwords unless the job absolutely requires knowing them.
 
 Your output must be a valid JSON object matching this exact schema:
 {
   "roadmap": [
     {
       "phase": 1,
-      "title": "Foundation",
+      "title": "Learn the Basics",
       "duration": "X months",
       "skills": ["skill1", "skill2", "skill3", "skill4", "skill5"],
       "resources": ["emoji resourceName", "emoji resourceName", "emoji resourceName", "emoji resourceName"],
-      "milestone": "A specific, measurable milestone"
+      "milestone": "A specific, achievable milestone"
     },
     {
       "phase": 2,
-      "title": "Execution",
+      "title": "Build Real Experience",
       "duration": "X months",
       "skills": ["skill1", "skill2", "skill3", "skill4", "skill5"],
       "resources": ["emoji resourceName", "emoji resourceName", "emoji resourceName", "emoji resourceName"],
-      "milestone": "A specific, measurable milestone"
+      "milestone": "A specific, achievable milestone"
     },
     {
       "phase": 3,
-      "title": "Authority",
+      "title": "Become the Expert",
       "duration": "X months",
       "skills": ["skill1", "skill2", "skill3", "skill4", "skill5"],
       "resources": ["emoji resourceName", "emoji resourceName", "emoji resourceName", "emoji resourceName"],
-      "milestone": "A specific, measurable milestone"
+      "milestone": "A specific, achievable milestone"
     }
   ],
   "estimatedTimeline": "X months"
@@ -173,11 +175,13 @@ Rules:
 - Each phase MUST have exactly 5 skills and exactly 4 resources
 - Resources must start with an emoji: 🎓 for courses, 📚 for books, 🔨 for hands-on practice, 👥 for communities/mentorship
 - Skills the user already has should NOT appear — identify genuine gaps
+- IMPORTANT: Identify transferable skills from the user's current role ("${input.currentRole}") and acknowledge them. A teacher has communication skills. A barista has customer service skills. Build on what they already know.
 - Duration must account for seniority (${seniority}) and pace preference (${pace})
-- Milestones must be specific and measurable — not vague ("Ship X" not "Learn X")
-- Resources must be REAL (actual course names, actual book titles, actual communities)
+- Milestones must be specific and feel achievable — not intimidating. Use "Complete X" or "Get your first Y" instead of demanding language.
+- Resources must be REAL and accessible: free YouTube channels, affordable online courses, books available at any library, practical projects anyone can do at home
 - Tailor everything to the specific transition from "${input.currentRole}" to "${input.targetRole}"
 - Focus preference: ${focus}
+- Describe every skill in plain language a non-expert would understand
 - Output ONLY the JSON object, no markdown, no explanation. Do not wrap the JSON in markdown code fences.`;
 
   const userPrompt = `Generate a career roadmap for this person:
@@ -318,7 +322,7 @@ function fallbackGenerate(
       roadmap: [
         {
           phase: 1,
-          title: "Foundation",
+          title: "Learn the Basics",
           duration: `${fDur} month${fDur !== 1 ? "s" : ""}`,
           skills:
             foundationSkills.length > 0
@@ -332,7 +336,7 @@ function fallbackGenerate(
         },
         {
           phase: 2,
-          title: "Execution",
+          title: "Build Real Experience",
           duration: `${eDur} months`,
           skills:
             executionSkills.length > 0
@@ -343,7 +347,7 @@ function fallbackGenerate(
         },
         {
           phase: 3,
-          title: "Authority",
+          title: "Become the Expert",
           duration: `${aDur} months`,
           skills:
             authoritySkills.length > 0
@@ -372,60 +376,60 @@ function fallbackGenerate(
     roadmap: [
       {
         phase: 1,
-        title: "Foundation",
+        title: "Learn the Basics",
         duration: `${fDur} month${fDur !== 1 ? "s" : ""}`,
         skills: [
-          `Core ${target} competencies`,
-          "Industry best practices",
-          `Gap analysis: current → ${target}`,
-          "Foundational tools & frameworks",
-          `${focus === "leadership" ? "Communication skills" : "Technical fundamentals"}`,
+          `Core ${target} knowledge and vocabulary`,
+          "Industry best practices and standards",
+          `Understanding the gap between your current role and ${target}`,
+          "Essential tools used in the field",
+          `${focus === "leadership" ? "Communication and people skills" : "Key technical skills for the role"}`,
         ],
         resources: [
-          `🎓 Top-rated courses for ${target}`,
-          `📚 2-3 foundational books in the field`,
-          `🔨 Build a portfolio project`,
-          `👥 Join ${target} communities`,
+          `🎓 Top-rated beginner courses for ${target}`,
+          `📚 2-3 beginner-friendly books in the field`,
+          `🔨 Build a starter project or portfolio piece`,
+          `👥 Join ${target} communities and forums`,
         ],
-        milestone: `Demonstrate foundational ${target} knowledge through a portfolio piece`,
+        milestone: `Show you understand the basics of ${target} through a portfolio piece or project`,
       },
       {
         phase: 2,
-        title: "Execution",
+        title: "Build Real Experience",
         duration: `${eDur} months`,
         skills: [
-          `Advanced ${target} skills`,
-          "Real-world project delivery",
-          "Cross-functional collaboration",
-          "Metrics-driven decisions",
-          "Problem-solving at scale",
+          `Intermediate ${target} skills`,
+          "Hands-on project delivery",
+          "Working with other teams and departments",
+          "Tracking your results with numbers",
+          "Solving real problems in the field",
         ],
         resources: [
-          `🔨 Take on ${target}-level responsibilities`,
-          "🔨 Contribute to open-source projects",
-          "📚 Study industry case studies",
-          "👥 Find a mentor in the role",
+          `🔨 Take on real ${target} responsibilities (volunteer, freelance, or at work)`,
+          "🔨 Work on a real project with measurable results",
+          "📚 Study real-world examples and case studies",
+          "👥 Find a mentor who works in the role",
         ],
-        milestone: `Your output is at ${target} level with concrete results`,
+        milestone: `You're doing ${target}-level work with real results to show for it`,
       },
       {
         phase: 3,
-        title: "Authority",
+        title: "Become the Expert",
         duration: `${aDur} months`,
         skills: [
-          "Thought leadership",
-          "Strategic thinking",
-          "Mentoring others",
-          "Industry networking",
-          "Executive communication",
+          "Sharing your knowledge with others",
+          "Strategic thinking and planning",
+          "Teaching and mentoring newcomers",
+          "Building your professional network",
+          "Communicating with leadership",
         ],
         resources: [
-          "🔨 Write about your expertise publicly",
-          "👥 Speak at meetups or events",
-          "👥 Mentor 2+ people",
-          "🔨 Lead a significant initiative",
+          "🔨 Write about what you've learned (blog, LinkedIn, etc.)",
+          "👥 Speak at a meetup or event",
+          "👥 Mentor 2+ people who are earlier in their journey",
+          "🔨 Lead an important project or initiative",
         ],
-        milestone: `Recognized as a ${target} by peers and industry`,
+        milestone: `People recognize you as a skilled ${target} — peers and leaders trust your expertise`,
       },
     ],
     estimatedTimeline: `${fDur + eDur + aDur} months`,

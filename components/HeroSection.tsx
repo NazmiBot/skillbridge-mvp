@@ -24,13 +24,13 @@ export default function HeroSection() {
         Your next career move,
         <br />
         <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-          engineered.
+          mapped out.
         </span>
       </h2>
       <p className="mx-auto max-w-2xl text-base leading-relaxed text-zinc-400 sm:text-xl">
-        Tell us where you are and where you want to be. SkillBridge generates a
-        personalized 3-phase roadmap — from foundation skills to industry
-        authority — with specific resources, milestones, and timelines.
+        Changing careers? Not sure what to learn first? Tell us where you are
+        and where you want to go — we&apos;ll build you a personalized step-by-step
+        roadmap with the exact skills, resources, and milestones you need.
       </p>
 
       {count !== null && count > 0 && (
@@ -39,7 +39,7 @@ export default function HeroSection() {
           <span className="font-semibold text-zinc-300">
             {count.toLocaleString()}+
           </span>{" "}
-          professionals navigating their next career move
+          career changers building their next chapter
         </p>
       )}
     </section>

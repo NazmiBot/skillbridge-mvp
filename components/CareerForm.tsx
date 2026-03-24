@@ -1,14 +1,14 @@
 import Spinner from "./Spinner";
 
 const POPULAR_CAREERS = [
-  "Senior Frontend Engineer",
-  "Staff Engineer",
-  "Engineering Manager",
-  "Data Scientist",
-  "Product Manager",
-  "DevOps Engineer",
-  "AI/ML Engineer",
-  "CTO",
+  "HR Specialist",
+  "Sales Representative",
+  "Project Manager",
+  "Marketing Coordinator",
+  "Financial Analyst",
+  "Operations Manager",
+  "UX Designer",
+  "Data Analyst",
 ];
 
 interface CareerFormProps {
@@ -48,18 +48,18 @@ export default function CareerForm({
       >
       <div className="mb-5">
         <label className="mb-1.5 block text-sm font-medium text-zinc-400">
-          Dream Career <span className="text-blue-400">*</span>
+          What job do you want? <span className="text-blue-400">*</span>
         </label>
         <input
           type="text"
           value={dreamCareer}
           onChange={(e) => onDreamCareerChange(e.target.value)}
-          placeholder="e.g. Staff Engineer, Product Manager, CTO..."
+          placeholder="e.g. HR Manager, Sales Rep, Marketing Coordinator..."
           required
           className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-lg text-white placeholder-zinc-600 outline-none transition focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25"
         />
         <div className="mt-2.5">
-          <p className="mb-1.5 text-xs text-zinc-600">Quick suggestions</p>
+          <p className="mb-1.5 text-xs text-zinc-600">Popular career changes</p>
           <div className="flex flex-wrap gap-1.5">
             {POPULAR_CAREERS.map((career) => (
               <button
@@ -88,7 +88,7 @@ export default function CareerForm({
             type="text"
             value={currentRole}
             onChange={(e) => onCurrentRoleChange(e.target.value)}
-            placeholder="e.g. Junior Developer"
+            placeholder="e.g. Teacher, Retail Manager, Barista..."
             className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white placeholder-zinc-600 outline-none transition focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25"
           />
         </div>
@@ -119,7 +119,7 @@ export default function CareerForm({
           type="text"
           value={skills}
           onChange={(e) => onSkillsChange(e.target.value)}
-          placeholder="e.g. React, TypeScript, CSS, Node.js"
+          placeholder="e.g. Communication, Excel, Customer Service, Team Management"
           className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white placeholder-zinc-600 outline-none transition focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25"
         />
       </div>
@@ -132,14 +132,14 @@ export default function CareerForm({
         {loading ? (
           <span className="flex items-center justify-center gap-2">
             <Spinner />
-            Architecting Blueprint...
+            Building your roadmap...
           </span>
         ) : (
-          "Generate My Career Blueprint →"
+          "Build My Career Roadmap →"
         )}
       </button>
       <p className="mt-3 text-center text-xs text-zinc-600">
-        3 free blueprints per day — no account needed
+        3 free roadmaps per day — no account needed
       </p>
 
       {/* Sample Report teaser */}
