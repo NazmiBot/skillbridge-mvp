@@ -24,8 +24,8 @@ interface ReportEmailProps {
 }
 
 export default function ReportEmail({
-  targetRole = "Staff Engineer",
-  currentRole = "Developer",
+  targetRole = "HR Specialist",
+  currentRole = "Teacher",
   score = 65,
   summary = "",
   strengths = [],
@@ -123,7 +123,7 @@ export default function ReportEmail({
 
           {/* Footer */}
           <Section style={footer}>
-            <Text style={footerText}>SkillBridge — Career blueprints, engineered.</Text>
+            <Text style={footerText}>SkillBridge — Career roadmaps for real people.</Text>
             <Text style={footerMuted}>
               You received this because you completed a mock interview on{" "}
               <Link href="https://tryskillbridge.com" style={footerLink}>tryskillbridge.com</Link>.

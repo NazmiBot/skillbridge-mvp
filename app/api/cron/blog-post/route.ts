@@ -5,44 +5,44 @@ import { verifyCron } from "@/lib/cron";
 
 const TOPIC_POOL = [
   {
-    angle: "career transition",
-    keywords: ["career change", "switching roles", "career pivot"],
-    prompt: "Write about how to successfully transition between tech roles. Focus on a specific transition (e.g., backend to DevOps, IC to manager, frontend to full-stack). Pick one and go deep.",
+    angle: "career change guide",
+    keywords: ["career change", "switching careers", "career transition guide"],
+    prompt: "Write about the step-by-step process of changing careers. Focus on a specific non-tech transition (e.g., teacher to HR, retail to sales). Include timelines, what to expect, and common mistakes.",
   },
   {
-    angle: "interview prep",
-    keywords: ["interview tips", "tech interview", "mock interview"],
-    prompt: "Write about a specific interview preparation strategy that most candidates overlook. Be contrarian — challenge common interview advice that doesn't actually work.",
+    angle: "transferable skills",
+    keywords: ["transferable skills", "skills that transfer", "career skills"],
+    prompt: "Write about transferable skills that most career changers undervalue. Show how everyday job skills (managing customers, organizing schedules, training coworkers) translate to new careers.",
   },
   {
-    angle: "skill development",
-    keywords: ["learning skills", "upskilling", "skill gap"],
-    prompt: "Write about an underrated skill that accelerates career growth in tech. Not an obvious one like 'learn to code' — something most engineers neglect.",
+    angle: "interview confidence",
+    keywords: ["interview tips", "career change interview", "mock interview"],
+    prompt: "Write about how to ace interviews when you're switching careers. Focus on how to talk about your past experience in a way that's relevant to the new role. Include specific example answers.",
   },
   {
-    angle: "engineering leadership",
-    keywords: ["tech lead", "engineering manager", "leadership"],
-    prompt: "Write about a specific challenge in engineering leadership. Could be: first-time tech lead mistakes, managing up, running effective 1:1s, or building team culture.",
+    angle: "is it too late",
+    keywords: ["career change at 30", "career change at 40", "too late to switch careers"],
+    prompt: "Write about why it's never too late to change careers. Include real data on career changers at different ages and practical advice for people who feel stuck because of their age.",
   },
   {
-    angle: "salary negotiation",
-    keywords: ["salary negotiation", "compensation", "job offer"],
-    prompt: "Write about salary negotiation tactics for engineers. Include specific scripts or frameworks. Be practical, not theoretical.",
+    angle: "first 90 days",
+    keywords: ["new career first 90 days", "starting a new career", "career change plan"],
+    prompt: "Write about what the first 90 days in a new career look like. Cover what to learn, who to connect with, and how to build credibility fast when you're the 'new person' in a field.",
   },
   {
-    angle: "remote work",
-    keywords: ["remote work", "distributed teams", "async work"],
-    prompt: "Write about thriving in remote engineering roles. Focus on visibility, career growth, or communication — not productivity hacks.",
+    angle: "career change anxiety",
+    keywords: ["career change fear", "afraid to switch careers", "career change anxiety"],
+    prompt: "Write about the emotional side of career changes — fear, imposter syndrome, financial anxiety. Be real and practical, not just 'believe in yourself.' Include coping strategies that actually work.",
   },
   {
-    angle: "portfolio building",
-    keywords: ["portfolio", "side projects", "github profile"],
-    prompt: "Write about building a compelling engineering portfolio or personal brand. What actually makes hiring managers notice you?",
+    angle: "salary in new career",
+    keywords: ["career change salary", "salary negotiation new career", "pay cut career change"],
+    prompt: "Write about the financial reality of career changes. When should you expect a pay cut? How do you negotiate when you're 'starting over'? Include specific strategies for maintaining your earning power.",
   },
   {
-    angle: "burnout recovery",
-    keywords: ["burnout", "work-life balance", "career break"],
-    prompt: "Write about recognizing and recovering from engineering burnout. Be honest and specific — not generic wellness advice.",
+    angle: "skills roadmap",
+    keywords: ["career roadmap", "learning plan career change", "skill gap career change"],
+    prompt: "Write about how to build a learning roadmap for a career change. Cover how to identify which skills matter most, free and affordable resources, and how to prove your skills without formal credentials.",
   },
 ];
 
@@ -85,7 +85,7 @@ async function handler(req: NextRequest) {
     const anthropic = getAnthropic();
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
-      system: `You are a career advice writer for SkillBridge, a career roadmap tool for software engineers. Write long-form blog posts that are genuinely helpful, SEO-optimized, and engaging.
+      system: `You are a career advice writer for SkillBridge, a career roadmap tool for people changing careers. Write long-form blog posts that are genuinely helpful, SEO-optimized, and engaging. Write in a warm, practical, jargon-free voice — as if you're talking to someone Googling "how to change careers" at midnight.
 
 RULES:
 - Write in a direct, opinionated voice. Not corporate. Not generic.
@@ -94,7 +94,7 @@ RULES:
 - Total length: 1200-1800 words
 - Open with a hook — a bold claim, surprising stat, or contrarian take
 - Include specific, actionable advice — not vague platitudes
-- End with a natural segue to "mapping your career gaps" (don't hard-sell, just plant the seed)
+- End with a natural segue to "building your career roadmap" (don't hard-sell, just plant the seed)
 - NO markdown. HTML only.
 - NO links. NO images. Just formatted text.
 

@@ -21,9 +21,9 @@ interface CaseStudyEmailProps {
 }
 
 export default function CaseStudyEmail({
-  targetRole = "Staff Engineer",
-  currentRole = "Developer",
-  caseStudy = "One engineer went from Mid-level to Staff in 11 months by focusing on exactly three skills: system design documentation, cross-team influence, and technical mentorship.",
+  targetRole = "HR Specialist",
+  currentRole = "Teacher",
+  caseStudy = "One career changer went from teaching to HR in 8 months by focusing on three things: understanding employment law basics, getting comfortable with HR software, and practicing interview skills weekly.",
   interviewUrl = "https://tryskillbridge.com",
   blueprintUrl = "https://tryskillbridge.com",
 }: CaseStudyEmailProps) {
@@ -58,7 +58,7 @@ export default function CaseStudyEmail({
               <span style={{ color: "#60a5fa" }}>{targetRole}</span>
             </Heading>
             <Text style={subtitle}>
-              A real pattern we&apos;ve seen from career roadmap data.
+              A real pattern we&apos;ve seen from career change roadmaps.
             </Text>
           </Section>
 
@@ -81,7 +81,7 @@ export default function CaseStudyEmail({
             </Text>
             <Text style={bodyText}>
               People who close 3 targeted skill gaps grow faster than people who
-              try to learn everything. Your blueprint already identified the gaps
+              try to learn everything. Your roadmap already identified the gaps
               — the question is whether you&apos;re ready to prove you&apos;ve closed them.
             </Text>
             <Text style={bodyText}>
@@ -112,10 +112,10 @@ export default function CaseStudyEmail({
           {/* Footer */}
           <Section style={footer}>
             <Text style={footerText}>
-              SkillBridge — Career blueprints, engineered.
+              SkillBridge — Career roadmaps for real people.
             </Text>
             <Text style={footerMuted}>
-              You received this because you created a career blueprint on{" "}
+              You received this because you created a career roadmap on{" "}
               <Link href="https://tryskillbridge.com" style={footerLink}>
                 tryskillbridge.com
               </Link>

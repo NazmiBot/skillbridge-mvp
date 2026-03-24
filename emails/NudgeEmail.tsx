@@ -22,14 +22,14 @@ interface NudgeEmailProps {
 }
 
 export default function NudgeEmail({
-  targetRole = "Staff Engineer",
+  targetRole = "HR Specialist",
   overallPercent = 35,
   currentPhase = 2,
-  nextSkill = "System Design",
+  nextSkill = "Employment Law Basics",
   roadmapUrl = "https://tryskillbridge.com/r/abc123",
   unsubscribeUrl = "https://tryskillbridge.com/r/abc123?unsubscribe=true",
 }: NudgeEmailProps) {
-  const phaseNames: Record<number, string> = { 1: "Foundation", 2: "Execution", 3: "Authority" };
+  const phaseNames: Record<number, string> = { 1: "Learn the Basics", 2: "Build Real Experience", 3: "Become the Expert" };
   const phaseName = phaseNames[currentPhase] || `Phase ${currentPhase}`;
 
   return (
@@ -116,7 +116,7 @@ export default function NudgeEmail({
           {/* Footer */}
           <Section style={footer}>
             <Text style={footerText}>
-              SkillBridge — Career blueprints, engineered.
+              SkillBridge — Career roadmaps for real people.
             </Text>
             <Text style={footerMuted}>
               You&apos;re receiving this because you subscribed to progress nudges.{" "}

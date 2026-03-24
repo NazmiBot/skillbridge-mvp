@@ -21,13 +21,16 @@ interface BlueprintEmailProps {
 }
 
 export default function BlueprintEmail({
-  targetRole = "Staff Engineer",
-  currentRole = "Developer",
+  targetRole = "HR Specialist",
+  currentRole = "Teacher",
   phases = [],
   estimatedTimeline = "12–18 months",
   shareUrl,
 }: BlueprintEmailProps) {
   const phaseEmoji: Record<string, string> = {
+    "Learn the Basics": "📖",
+    "Build Real Experience": "⚡",
+    "Become the Expert": "👑",
     Foundation: "🧱",
     Execution: "⚡",
     Authority: "👑",
@@ -57,7 +60,7 @@ export default function BlueprintEmail({
 
           {/* Hero */}
           <Section style={heroSection}>
-            <Heading style={h1}>Your Career Blueprint</Heading>
+            <Heading style={h1}>Your Career Roadmap</Heading>
             <Text style={subtitle}>
               {currentRole} → <strong style={{ color: "#60a5fa" }}>{targetRole}</strong>
             </Text>
@@ -95,12 +98,12 @@ export default function BlueprintEmail({
               <>
                 <Text style={ctaText}>View your full interactive blueprint:</Text>
                 <Link href={shareUrl} style={button}>
-                  Open Blueprint →
+                  Open My Roadmap →
                 </Link>
               </>
             ) : (
               <>
-                <Text style={ctaText}>Generate more career blueprints:</Text>
+                <Text style={ctaText}>Build more career roadmaps:</Text>
                 <Link href="https://tryskillbridge.com" style={button}>
                   Visit SkillBridge →
                 </Link>
@@ -113,10 +116,10 @@ export default function BlueprintEmail({
           {/* Footer */}
           <Section style={footer}>
             <Text style={footerText}>
-              SkillBridge — Career blueprints, engineered.
+              SkillBridge — Career roadmaps for real people.
             </Text>
             <Text style={footerMuted}>
-              You received this because you unlocked a blueprint on{" "}
+              You received this because you created a roadmap on{" "}
               <Link href="https://tryskillbridge.com" style={footerLink}>
                 tryskillbridge.com
               </Link>

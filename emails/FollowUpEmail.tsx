@@ -20,9 +20,9 @@ interface FollowUpEmailProps {
 }
 
 export default function FollowUpEmail({
-  targetRole = "Staff Engineer",
-  currentRole = "Developer",
-  insiderTip = "Most candidates undersell their system design experience. Interviewers want to hear about trade-offs, not solutions.",
+  targetRole = "HR Specialist",
+  currentRole = "Teacher",
+  insiderTip = "Most career changers undersell their people skills. Interviewers want to hear how you handled real situations — not just that you're a 'people person.'",
   interviewUrl = "https://tryskillbridge.com",
 }: FollowUpEmailProps) {
   return (
@@ -75,13 +75,13 @@ export default function FollowUpEmail({
           {/* The pitch */}
           <Section style={bodySection}>
             <Text style={bodyText}>
-              Your blueprint covers <em>what</em> to learn. But interviews test
+              Your roadmap covers <em>what</em> to learn. But interviews test
               <em> how you think</em> — and that&apos;s a different skill entirely.
             </Text>
             <Text style={bodyText}>
-              Our AI mock interview simulates the real thing: role-specific
-              questions, STAR framework evaluation, and a personalized report
-              showing exactly where you&apos;d trip up.
+              Our mock interview simulates the real thing: questions tailored
+              to your target role, a structured evaluation of your answers, and
+              a personalized report showing exactly where you&apos;d trip up.
             </Text>
           </Section>
 
@@ -100,10 +100,10 @@ export default function FollowUpEmail({
           {/* Footer */}
           <Section style={footer}>
             <Text style={footerText}>
-              SkillBridge — Career blueprints, engineered.
+              SkillBridge — Career roadmaps for real people.
             </Text>
             <Text style={footerMuted}>
-              You received this because you created a career blueprint on{" "}
+              You received this because you created a career roadmap on{" "}
               <Link href="https://tryskillbridge.com" style={footerLink}>
                 tryskillbridge.com
               </Link>

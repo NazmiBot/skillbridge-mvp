@@ -4,272 +4,263 @@
  */
 
 export const TWEET_BANK: { pillar: string; text: string }[] = [
-  // ── Career Wisdom (40%) ──────────────────────────────────
+  // ── Career Wisdom (40% — 21 tweets) ──────────────────────
   {
     pillar: "wisdom",
-    text: "The biggest skill gap isn't technical — it's knowing what to learn next.",
+    text: "Your skills don't disappear when you change careers. A teacher who managed 30 kids is a project manager who doesn't know it yet.",
   },
   {
     pillar: "wisdom",
-    text: "Nobody got promoted by learning everything. They got promoted by learning the right things at the right time.",
+    text: "The scariest part of a career change isn't starting over. It's realizing you already waited too long to start.",
   },
   {
     pillar: "wisdom",
-    text: "Your career isn't a ladder. It's a map. And most people are walking without one.",
+    text: "Nobody's career is a straight line. The people who look like they have it figured out? They pivoted at least twice.",
   },
   {
     pillar: "wisdom",
-    text: "The difference between a junior and a senior isn't years — it's knowing which problems matter.",
+    text: "You're not 'starting from zero' when you change careers. You're starting from experience. There's a massive difference.",
   },
   {
     pillar: "wisdom",
-    text: "Stop collecting certificates. Start collecting solved problems.",
+    text: "The biggest lie about career changes: you need to go back to school. Most of the time, you need a plan — not a degree.",
   },
   {
     pillar: "wisdom",
-    text: "The fastest way to get stuck in your career: optimize for your current role instead of your next one.",
+    text: "Feeling stuck in your career isn't a sign of failure. It's a sign you've outgrown where you are. That's growth trying to happen.",
   },
   {
     pillar: "wisdom",
-    text: "Career advice nobody gives you: the skills that got you here won't get you there. Every level requires a different toolkit.",
+    text: "A barista who handles 200 customers a day under pressure has more customer success skills than most people with the job title.",
   },
   {
     pillar: "wisdom",
-    text: "Most people spend more time planning a vacation than planning their career. Then wonder why they feel lost.",
+    text: "Career changers have a superpower: fresh perspective. Every industry is drowning in groupthink. You're the outside voice they need.",
   },
   {
     pillar: "wisdom",
-    text: "A 10-year career plan is useless. A 6-month skill plan is priceless.",
+    text: "The worst career advice: 'just be grateful you have a job.' Gratitude is great. Settling is not. You can appreciate where you are and still want more.",
   },
   {
     pillar: "wisdom",
-    text: "The best engineers I know aren't the smartest. They're the ones who figured out what to learn and what to skip.",
+    text: "Most people don't hate their jobs. They hate that their jobs don't use the best parts of who they are. That's a career fit problem, not a work ethic problem.",
   },
   {
     pillar: "wisdom",
-    text: "Unpopular opinion: career growth isn't about working harder. It's about closing the right skill gaps at the right time.",
+    text: "Your first career chose you. Your next one should be something you choose. That's not selfish — that's growth.",
   },
   {
     pillar: "wisdom",
-    text: "You don't need 10 years of experience. You need 1 year of intentional growth, repeated.",
+    text: "A designer who switches to marketing isn't starting over. They're bringing visual storytelling skills that most marketers would kill for.",
+  },
+  {
+    pillar: "wisdom",
+    text: "The people who successfully change careers aren't braver than you. They just got tired of wondering 'what if' and made a plan.",
+  },
+  {
+    pillar: "wisdom",
+    text: "You don't need permission to change careers. Not from your parents, not from your partner, not from LinkedIn. You need a roadmap.",
+  },
+  {
+    pillar: "wisdom",
+    text: "Every expert was once a beginner. Every hiring manager was once the nervous new person. Imposter syndrome lies to you.",
+  },
+  {
+    pillar: "wisdom",
+    text: "The cost of changing careers is 6-12 months of discomfort. The cost of not changing? Decades of wondering.",
+  },
+  {
+    pillar: "wisdom",
+    text: "Stop waiting until you're 'ready' to change careers. Ready is a feeling. Prepared is a plan. Focus on prepared.",
+  },
+  {
+    pillar: "wisdom",
+    text: "A retail manager who handled scheduling, inventory, conflict resolution, and training is qualified for way more jobs than they think.",
+  },
+  {
+    pillar: "wisdom",
+    text: "The myth of the 'perfect career' keeps people stuck. There's no perfect — there's just better. And better is always worth pursuing.",
+  },
+  {
+    pillar: "wisdom",
+    text: "Career changes aren't just for your 20s. Some of the best pivots happen at 35, 42, 50. Experience isn't a liability — it's leverage.",
+  },
+  {
+    pillar: "wisdom",
+    text: "The hardest part of a career change isn't learning new skills. It's unlearning the identity tied to your old job. You are not your job title.",
   },
 
-  // ── Industry Insights (30%) ──────────────────────────────
+  // ── Industry Insights (30% — 16 tweets) ──────────────────
   {
     pillar: "insight",
-    text: "Companies say they want 'Senior Engineers' but the job description is 3 different roles.\n\nHere's how to decode it: look at the team size. Under 5? They want a generalist. Over 20? They want depth. Between? They don't know yet.",
+    text: "Companies don't hire credentials. They hire people who can solve problems. Your 5 years in retail taught you more about people than most MBA programs.",
   },
   {
     pillar: "insight",
-    text: "The tech job market didn't get harder. It got more specific.\n\nGeneralists are competing with specialists. The fix isn't more skills — it's a clearer direction.",
+    text: "The fastest-growing career fields right now — HR, customer success, sales ops — are filled with career changers. You're not behind. You're the new normal.",
   },
   {
     pillar: "insight",
-    text: "AI won't replace developers. But developers who understand AI will replace those who don't.\n\nThe gap isn't coding ability. It's adaptability.",
+    text: "Hiring managers spend 7 seconds on your resume. They're not counting your years in one field. They're looking for proof you can do THIS job.",
   },
   {
     pillar: "insight",
-    text: "Hot take: most 'career advice' on Twitter is survivorship bias disguised as strategy.\n\nWhat actually works? Mapping your specific gaps and closing them systematically.",
+    text: "Here's what most career changers get wrong: they apologize for their background instead of translating it.\n\n'I was just a teacher' → 'I trained and evaluated 150+ people per year.'\n\nSame experience. Completely different impact.",
   },
   {
     pillar: "insight",
-    text: "The most in-demand skill for 2026 isn't a programming language.\n\nIt's the ability to learn one quickly, apply it, and move on.",
+    text: "The 'skills gap' is mostly a confidence gap. When we map career changers' existing skills against job requirements, they're usually 60-70% there already.",
   },
   {
     pillar: "insight",
-    text: "Every senior engineer I've talked to says the same thing: 'I wish someone had told me what to focus on earlier.'\n\nThe information exists. The roadmap doesn't. That's the real problem.",
+    text: "Companies are getting smarter about hiring. Many now prefer career changers because they bring cross-industry thinking that lifers can't.\n\nYour 'non-traditional background' is becoming your edge.",
   },
   {
     pillar: "insight",
-    text: "Hiring managers don't reject you for lacking skills.\n\nThey reject you for not showing a plan to acquire them. Growth trajectory > current ability.",
+    text: "The #1 reason career changers don't get callbacks? Their resume still reads like their old career.\n\nYou need to translate, not just list. Show the new employer how your old skills solve THEIR problems.",
   },
   {
     pillar: "insight",
-    text: "The 'learn to code' era is over.\n\nThe 'learn the right code at the right time for the right role' era just started.",
+    text: "Most people think they need 100% of the qualifications to apply. Research shows people who match 60% get hired all the time.\n\nYou're probably more qualified than you think.",
+  },
+  {
+    pillar: "insight",
+    text: "The job market doesn't care about your career narrative being 'clean.' It cares about what you can do right now.\n\nStop trying to explain your path. Start showing your value.",
+  },
+  {
+    pillar: "insight",
+    text: "Transferable skills are the most undervalued currency in the job market.\n\nCommunication. Problem-solving. Managing people. Training others. Leading under pressure.\n\nThese aren't soft skills. They're the skills that actually run companies.",
+  },
+  {
+    pillar: "insight",
+    text: "The biggest misconception about career changes: that you'll take a massive pay cut forever.\n\nReality: most career changers recover to their previous salary within 18-24 months. Some exceed it.",
+  },
+  {
+    pillar: "insight",
+    text: "Every job posting is a wishlist, not a checklist. 'Required: 5 years experience' often means 'we'd love someone who knows what they're doing.'\n\nYour 5 years in a different field? That counts more than you think.",
+  },
+  {
+    pillar: "insight",
+    text: "The interview question career changers fear most: 'Why are you leaving your field?'\n\nThe winning answer isn't about running FROM something. It's about running TOWARD something. Frame it as growth, not escape.",
+  },
+  {
+    pillar: "insight",
+    text: "Networking isn't schmoozing. For career changers, it's the #1 way in.\n\nOne coffee chat with someone in your target field is worth 50 cold applications. People hire people they've talked to.",
+  },
+  {
+    pillar: "insight",
+    text: "The rise of remote work has been a gift for career changers. Suddenly you're not competing with just your local job market — and companies aren't limited to local talent pools.",
+  },
+  {
+    pillar: "insight",
+    text: "Here's a pattern we see constantly: people spend months 'researching' career changes but never actually talk to someone in the field.\n\nOne informational interview will teach you more than 100 articles.",
   },
 
-  // ── Practical Tips (20%) ──────────────────────────────────
+  // ── Practical Tips (20% — 10 tweets) ─────────────────────
   {
     pillar: "tip",
-    text: "Before your next interview, do this:\n\n1. Find 3 recent blog posts from the company's engineering team\n2. Reference them in your answers\n3. Watch the interviewer light up\n\nIt works because almost nobody does it.",
+    text: "Before applying to a new field, do this:\n\nFind 5 job postings for your dream role. Write down every skill mentioned more than twice. That's your study plan.\n\nThe market is literally telling you what it wants.",
   },
   {
     pillar: "tip",
-    text: "Simple framework for career planning:\n\n1. Pick your target role\n2. List every skill it requires\n3. Cross off what you already have\n4. Rank the gaps by impact\n5. Close the top 3\n\nThat's it. No 47-step process needed.",
+    text: "The STAR method for career changer interviews:\n\n• Situation — set the scene from your current/past job\n• Task — what was YOUR responsibility\n• Action — what you specifically did\n• Result — use numbers whenever possible\n\nThis works for ANY background. Practice 5 stories.",
   },
   {
     pillar: "tip",
-    text: "How to answer 'Where do you see yourself in 5 years?' without sounding generic:\n\nDon't name a title. Name a skill set.\n\n'I want to be someone who can architect systems end-to-end and mentor the next generation of engineers.'",
+    text: "How to rewrite your resume for a career change in 30 minutes:\n\n1. Read the job posting out loud\n2. Circle every skill they mention\n3. For each one, write a bullet from YOUR experience that proves it\n4. Lead with those bullets\n\nStop sending your old resume to new careers.",
   },
   {
     pillar: "tip",
-    text: "The STAR method for interviews, simplified:\n\n• Situation — set the scene (2 sentences max)\n• Task — what was your specific job\n• Action — what YOU did (not the team)\n• Result — numbers. always numbers.\n\n70% of your answer should be Action + Result.",
+    text: "Free career change hack:\n\nFind 3 people on LinkedIn with the job title you want. Look at their career history. At least one of them changed careers too.\n\nStudy their path. Then reach out and ask how they did it.",
   },
   {
     pillar: "tip",
-    text: "Want to stand out in interviews?\n\nStop saying 'we' for everything.\n\nInterviewers want to know what YOU did. Use 'I led', 'I decided', 'I identified the issue.'\n\nBeing humble is good. Being invisible is not.",
+    text: "Starting a career change? Do these 3 things this week:\n\n1. Write down the top 10 skills from your current job\n2. Match them to skills needed in your target role\n3. Identify the 3 gaps you need to fill\n\nYou just built your roadmap.",
   },
   {
     pillar: "tip",
-    text: "Free career hack: read the last 10 job postings for your dream role.\n\nWrite down every skill mentioned more than 3 times.\n\nThat's your learning roadmap. The market is literally telling you what it wants.",
+    text: "How to answer 'tell me about yourself' when you're changing careers:\n\nDon't recite your old job history. Instead:\n\n'I spent X years doing [old role], where I developed [transferable skill]. Now I'm bringing that to [new field] because [genuine reason].'\n\n30 seconds. Done.",
+  },
+  {
+    pillar: "tip",
+    text: "The fastest way to prove you belong in a new field: do the work before you get the job.\n\n• Volunteer for a project\n• Take a freelance gig\n• Build something on your own\n\nOne real example beats ten 'I'm a fast learner' claims.",
+  },
+  {
+    pillar: "tip",
+    text: "Career change interview prep nobody talks about:\n\nGoogle '[your target role] day in the life.' Read 5 articles. Now you can speak their language in interviews.\n\nMost career changers skip this and it shows.",
+  },
+  {
+    pillar: "tip",
+    text: "If you're worried about a career change pay cut, try this:\n\n1. Calculate your REAL hourly rate (salary ÷ actual hours worked)\n2. Factor in commute, stress, Sunday dread\n3. Compare honestly\n\nSometimes a 'pay cut' is actually a raise in life quality.",
+  },
+  {
+    pillar: "tip",
+    text: "Next time you finish a project at work, write 3 sentences:\n\n1. What problem did you solve?\n2. What did YOU specifically do?\n3. What was the result (with numbers)?\n\nDo this for 3 months. You'll have a career-change-ready resume without even trying.",
   },
 
-  // ── Engagement / Community (10%) ──────────────────────────
+  // ── Engagement / Community (10% — 5 tweets) ──────────────
   {
     pillar: "engagement",
-    text: "What's the one skill you wish you'd learned 2 years earlier? 👇",
-  },
-  {
-    pillar: "engagement",
-    text: "Hot debate: Is it better to go deep in one technology or stay broad across many?\n\nDrop your take 👇",
+    text: "What's the career change you've been thinking about but haven't started? Drop it below 👇",
   },
   {
     pillar: "engagement",
-    text: "If you could restart your tech career knowing what you know now, what would you do differently?",
+    text: "Career changers — what was the moment you knew it was time to leave your old field?\n\nI'll go first: when Sunday nights started feeling like Monday mornings.",
   },
   {
     pillar: "engagement",
-    text: "The most underrated skill in tech is ______.\n\nFill in the blank 👇",
+    text: "Be honest: what's the #1 thing holding you back from changing careers?\n\n💰 = Money fears\n🎓 = Feel unqualified\n👨‍👩‍👧 = Family pressure\n😰 = Just scared\n\nNo judgment. Let's talk about it.",
   },
   {
     pillar: "engagement",
-    text: "Be honest: do you have a career plan, or are you just winging it?\n\n🗺️ = I have a plan\n🎲 = Making it up as I go",
-  },
-
-  // ── New Batch (March 2026) ────────────────────────────────
-
-  // Career Wisdom
-  {
-    pillar: "wisdom",
-    text: "The engineers who grow fastest aren't the ones who work the most hours. They're the ones who figured out which skills compound.",
-  },
-  {
-    pillar: "wisdom",
-    text: "Your manager won't build your career roadmap for you. That's not their job. It's yours.",
-  },
-  {
-    pillar: "wisdom",
-    text: "The gap between Senior and Staff isn't technical depth. It's the ability to make an entire team more effective — not just yourself.",
-  },
-  {
-    pillar: "wisdom",
-    text: "Every career plateau has the same root cause: you're still solving last year's problems with last year's skills.",
-  },
-  {
-    pillar: "wisdom",
-    text: "The most dangerous career move: staying comfortable. Growth happens at the edge of what you know.",
-  },
-  {
-    pillar: "wisdom",
-    text: "Two engineers start the same job. One asks 'what should I learn?' The other asks 'what should I learn FIRST?' The second one gets promoted.",
-  },
-  {
-    pillar: "wisdom",
-    text: "Seniority isn't about knowing all the answers. It's about knowing which questions to ask — and who to ask them to.",
-  },
-  {
-    pillar: "wisdom",
-    text: "The best career investment isn't a course or a cert. It's a 30-minute conversation with someone who's already where you want to be.",
-  },
-
-  // Industry Insights
-  {
-    pillar: "insight",
-    text: "Notice how the best job postings don't list 15 required technologies?\n\nThey list 3-4 core skills and say 'willingness to learn.'\n\nThat tells you what actually matters.",
-  },
-  {
-    pillar: "insight",
-    text: "The return on learning a new framework: diminishing.\n\nThe return on learning to communicate technical tradeoffs clearly: compounding forever.",
-  },
-  {
-    pillar: "insight",
-    text: "Every time the market shifts, the same pattern repeats:\n\nSpecialists panic. Generalists scramble. Intentional learners adapt.\n\nBe the third one.",
-  },
-  {
-    pillar: "insight",
-    text: "The hiring market doesn't reward the most skilled. It rewards the most legible.\n\nIf a hiring manager can't understand your impact in 30 seconds, your skills don't matter.",
-  },
-
-  // Practical Tips
-  {
-    pillar: "tip",
-    text: "Career hack that nobody talks about:\n\nRead your target company's engineering blog before applying. Reference specific posts in your cover letter.\n\nYou'll already be in the top 5% of applicants.",
-  },
-  {
-    pillar: "tip",
-    text: "How to figure out if you're ready for your next role:\n\n1. List 10 problems that role solves daily\n2. Count how many you could handle today\n3. If it's 6+, you're closer than you think\n4. The remaining 4 are your study plan",
-  },
-  {
-    pillar: "tip",
-    text: "The fastest way to learn system design:\n\nDon't read about it. Pick a real product you use daily and draw how you think it works. Then find out how it actually works.\n\nThe gap is your curriculum.",
-  },
-  {
-    pillar: "tip",
-    text: "Next time you finish a project, write a 3-sentence summary:\n\n1. What problem did it solve?\n2. What decision did you make that mattered?\n3. What was the measurable result?\n\nDo this for 6 months. You'll never struggle with resume bullets again.",
-  },
-
-  // Engagement
-  {
-    pillar: "engagement",
-    text: "What's one piece of career advice you received that turned out to be completely wrong? 👇",
+    text: "Unpopular opinion: you don't need to be 'passionate' about your career. You need to be engaged, challenged, and fairly paid.\n\nAgree or disagree? 👇",
   },
   {
     pillar: "engagement",
-    text: "You can only pick two:\n\n🏠 Remote work\n💰 Top-tier salary\n🚀 Rapid career growth\n\nWhich two? 👇",
-  },
-  {
-    pillar: "engagement",
-    text: "Biggest green flag in a job interview:\n\nWhen the interviewer talks more about the team's problems than the company's perks.\n\nAgree or disagree?",
-  },
-  {
-    pillar: "engagement",
-    text: "Rank these career skills by importance:\n\n1. Deep technical expertise\n2. Communication\n3. Knowing what to learn next\n4. Building relationships\n\nMost people get the order wrong.",
+    text: "If you successfully changed careers, drop your before → after below.\n\nTeacher → ?\nRetail → ?\nFood service → ?\n\nLet's show people what's possible 🔥",
   },
 ];
 
 /** Target accounts for engagement (reply strategy) */
 export const TARGET_ACCOUNTS = [
-  // Tech Career / Leadership
-  "levelsio",
-  "swyx",
-  "GergelyOrosz",
-  "RandallKanna",
-  "DThompsonDev",
-  // Tech / Engineering
-  "ThePrimeagen",
-  "firaborgnern",
-  "t3dotgg",
-  // Motivation / Frameworks
-  "SahilBloom",
+  "simonsinek",
+  "AdamMGrant",
   "JamesClear",
+  "SahilBloom",
+  "RamseyShow",
+  "levelsio",
+  "ShelcyJoseph",
+  "IAmMarkManson",
+  "austinkleon",
+  "MelRobbins",
 ];
 
 /** Topics we care about — used to filter tweets worth replying to */
 export const RELEVANT_TOPICS = [
   "career",
-  "skill",
-  "interview",
-  "developer",
-  "engineer",
-  "learning",
-  "roadmap",
-  "growth",
-  "mentor",
-  "senior",
-  "junior",
-  "promotion",
-  "resume",
-  "hire",
-  "hiring",
-  "job",
-  "tech career",
   "career change",
   "career transition",
+  "career pivot",
+  "new job",
+  "job change",
+  "switching careers",
   "career advice",
+  "interview",
+  "resume",
+  "skill",
+  "learning",
+  "growth",
+  "transferable skills",
   "career path",
+  "job search",
+  "starting over",
+  "career break",
+  "new career",
+  "hiring",
+  "job market",
   "upskill",
-  "coding",
-  "programming",
-  "startup",
-  "building",
+  "professional development",
+  "career coach",
+  "career goals",
+  "career plan",
 ];
