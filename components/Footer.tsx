@@ -9,7 +9,7 @@ export default function Footer() {
           <span className="text-blue-400">Bridge</span>
         </Link>
         <p className="text-sm text-zinc-500">
-          Career blueprints, engineered.
+          Career roadmaps for real people.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-zinc-600">
           <Link href="/sample" className="transition hover:text-zinc-400">

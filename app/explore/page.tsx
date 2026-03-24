@@ -4,9 +4,9 @@ import Footer from "@/components/Footer";
 import ExploreGrid from "./explore-grid";
 
 export const metadata: Metadata = {
-  title: "Explore Career Blueprints | SkillBridge",
+  title: "Explore Career Roadmaps | SkillBridge",
   description:
-    "Browse real career roadmaps created by SkillBridge users. See how others are planning their transition from junior to senior, engineer to manager, and more.",
+    "Browse real career roadmaps created by SkillBridge users. See how others are navigating career changes — teachers to HR, marketers to UX, and more.",
 };
 
 interface RoadmapSummary {
@@ -40,7 +40,7 @@ export default async function ExplorePage() {
       <main className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
         <div className="mb-12 text-center">
           <h1 className="mb-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
-            Explore Career Blueprints
+            Explore Career Roadmaps
           </h1>
           <p className="mx-auto max-w-lg text-base text-zinc-400">
             Real roadmaps from real career transitions. Get inspired, then{" "}

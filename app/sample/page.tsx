@@ -15,71 +15,71 @@ export const metadata: Metadata = {
 const SAMPLE_ROADMAP = {
   slug: "sample",
   input: {
-    currentRole: "Junior Frontend Developer",
-    targetRole: "Senior Full-Stack Engineer",
-    skills: ["HTML", "CSS", "JavaScript", "React", "Git"],
-    experience: 2,
+    currentRole: "High School Teacher",
+    targetRole: "HR Specialist",
+    skills: ["Communication", "Conflict Resolution", "Scheduling", "Microsoft Office", "Training"],
+    experience: 5,
   },
   result: {
-    estimatedTimeline: "18–24 months",
+    estimatedTimeline: "8–12 months",
     generatedAt: new Date().toISOString(),
     roadmap: [
       {
         phase: 1,
-        title: "Foundation",
-        duration: "Months 1–6",
+        title: "Learn the Basics",
+        duration: "Months 1–3",
         skills: [
-          "TypeScript",
-          "Node.js",
-          "SQL & PostgreSQL",
-          "REST API Design",
-          "Testing (Jest / Vitest)",
+          "Employment Law Fundamentals",
+          "HR Information Systems (HRIS)",
+          "Recruiting & Onboarding Processes",
+          "Compensation & Benefits Basics",
+          "Workplace Compliance (OSHA, EEOC)",
         ],
         resources: [
-          "TypeScript Handbook — typescriptlang.org",
-          "Node.js Official Docs — nodejs.org",
-          "SQLBolt Interactive — sqlbolt.com",
+          "SHRM Essentials of HR Management — shrm.org",
+          "The HR Answer Book by Shawn Smith",
+          "BambooHR Academy — free online courses",
         ],
         milestone:
-          "Build and deploy a full REST API with auth, tests, and a PostgreSQL database.",
+          "Pass the SHRM-CP practice exam with 70%+ and complete a mock employee onboarding workflow.",
       },
       {
         phase: 2,
-        title: "Execution",
-        duration: "Months 7–14",
+        title: "Build Real Experience",
+        duration: "Months 4–8",
         skills: [
-          "System Design Basics",
-          "CI / CD Pipelines",
-          "Docker & Containers",
-          "Caching (Redis)",
-          "Monitoring & Observability",
+          "Employee Relations & Conflict Mediation",
+          "Performance Review Processes",
+          "HR Analytics & Reporting",
+          "Interview Coordination & Screening",
+          "Policy Writing & Documentation",
         ],
         resources: [
-          "Designing Data-Intensive Applications — Martin Kleppmann",
-          "GitHub Actions Docs — docs.github.com",
-          "Docker Getting Started — docker.com",
+          "Volunteer HR support for a local nonprofit",
+          "LinkedIn Learning — HR Foundations Certificate",
+          "HR Open Source community — hropensource.org",
         ],
         milestone:
-          "Ship a production feature end-to-end: frontend, backend, CI pipeline, and monitoring.",
+          "Complete a 3-month HR volunteer or internship role and build a portfolio of HR documents you've created.",
       },
       {
         phase: 3,
-        title: "Authority",
-        duration: "Months 15–24",
+        title: "Become the Expert",
+        duration: "Months 9–12",
         skills: [
-          "Architecture Decision Records",
-          "Mentoring & Code Reviews",
-          "Performance Optimization",
-          "Cloud Infrastructure (AWS / GCP)",
-          "Technical Writing",
+          "Talent Development & Succession Planning",
+          "HR Strategy & Organizational Design",
+          "Diversity, Equity & Inclusion Programs",
+          "Change Management",
+          "HR Budget Management",
         ],
         resources: [
-          "Staff Engineer — Will Larson",
-          "AWS Well-Architected Framework",
-          "Write useful code reviews — Google Eng. Practices",
+          "SHRM-CP Certification prep course",
+          "HR Bartender blog — hrbartender.com",
+          "Join your local SHRM chapter for networking",
         ],
         milestone:
-          "Lead a cross-team initiative, mentor a junior, and present an architectural RFC.",
+          "Land your first HR role and earn SHRM-CP certification within your first year.",
       },
     ],
   },
@@ -88,42 +88,42 @@ const SAMPLE_ROADMAP = {
 const SAMPLE_EVALUATION = {
   score: 62,
   summary:
-    "You demonstrate solid foundational frontend skills and communicate with enthusiasm, but your answers lack concrete metrics and structured storytelling. Backend knowledge gaps are apparent, particularly around database design and API architecture. With focused practice on the STAR method and backend fundamentals, you can close these gaps within 3–4 months.",
+    "You bring strong people skills from your teaching background and communicate with warmth and clarity. However, your answers lack specific HR terminology and measurable outcomes. You need to translate your classroom management experience into HR language — your skills transfer more than you realize, but you need to frame them differently.",
   strengths: [
-    "Strong grasp of React component architecture and state management patterns — you articulated the trade-offs between local state and context clearly.",
-    "Genuine enthusiasm and curiosity about learning new technologies; your answer about picking up TypeScript on the job showed real initiative.",
-    "Good instinct for user experience — your explanation of how you optimized a checkout flow demonstrated product-minded thinking.",
-    "Clear communication style with minimal filler; you structured most answers logically even when the content could be deeper.",
+    "Excellent communication skills — you explained complex situations clearly and concisely, a critical skill for HR professionals.",
+    "Strong conflict resolution instincts from managing a classroom of 30+ students — you naturally de-escalate tensions.",
+    "Genuine empathy and active listening — your answer about helping a struggling student showed the people-first mindset HR teams need.",
+    "Organized and process-oriented — your description of managing lesson plans and parent meetings translates directly to HR workflows.",
   ],
   weaknesses: [
-    "Answers lacked quantifiable results — statements like 'it was much faster' need concrete numbers (e.g., '40% reduction in load time').",
-    "Limited understanding of backend concepts; when asked about database indexing and query optimization, the response was surface-level.",
-    "No mention of testing strategies — a senior role requires demonstrating commitment to code quality through unit, integration, and E2E testing.",
-    "Struggled to articulate past conflict resolution — the question about disagreeing with a tech lead received a vague, non-specific answer.",
+    "Answers lacked measurable results — 'it went well' needs to become 'reduced parent complaints by 40% over one semester.'",
+    "Limited knowledge of HR-specific processes — when asked about onboarding, the response was too general. Study real onboarding checklists.",
+    "No mention of employment law or compliance — even basic awareness of EEOC guidelines and at-will employment would strengthen your answers.",
+    "The question about handling a workplace policy violation received a classroom-based answer — practice reframing your teaching experience in corporate terms.",
   ],
   starRewrites: [
-    "QUESTION: \"Tell me about a time you improved application performance.\"\n\nORIGINAL (weak): \"I made the page load faster by optimizing some components and it was much better after.\"\n\nSTAR REWRITE:\n• Situation: Our e-commerce checkout page had a 4.2s load time, causing a 23% cart abandonment rate.\n• Task: I was assigned to reduce load time to under 2s before the holiday traffic spike.\n• Action: I profiled the bundle with Webpack Bundle Analyzer, code-split three heavy dependencies (Moment.js → date-fns, lodash → cherry-picked imports), added React.lazy for below-the-fold components, and implemented image lazy loading.\n• Result: Load time dropped to 1.6s (62% improvement), cart abandonment fell to 14%, and the changes contributed to a $180K revenue increase during Q4.",
-    "QUESTION: \"Describe a disagreement with a colleague on a technical decision.\"\n\nORIGINAL (weak): \"I disagreed with my tech lead once about something but we worked it out.\"\n\nSTAR REWRITE:\n• Situation: During a sprint planning, my tech lead proposed using GraphQL for a simple internal dashboard that had 3 endpoints.\n• Task: I needed to present my case for REST without undermining the lead's authority or creating team friction.\n• Action: I prepared a one-page comparison (development time, team familiarity, maintenance overhead) and requested a 15-min slot to present it. I acknowledged GraphQL's strengths for complex data-fetching while showing REST would save ~2 weeks of development for this specific use case.\n• Result: The lead appreciated the structured approach, we went with REST, delivered 10 days early, and the lead later cited my approach as a model for healthy technical disagreements in the team retro.",
+    "QUESTION: \"Tell me about a time you resolved a conflict between two people.\"\n\nORIGINAL (weak): \"I had two students who didn't get along and I talked to them and they worked it out.\"\n\nSTAR REWRITE:\n• Situation: Two students in my 10th-grade class had an ongoing conflict that was disrupting the learning environment and affecting 28 other students.\n• Task: I needed to resolve the conflict while maintaining a safe classroom and following school mediation policies.\n• Action: I scheduled individual meetings with each student to hear their perspective, then facilitated a joint mediation session using active listening techniques. I documented the agreements they made and scheduled two follow-up check-ins over the next month.\n• Result: The conflict was fully resolved within two weeks. Classroom disruptions dropped by 60%, and both students' grades improved by one letter grade that quarter. The principal later asked me to train other teachers on my mediation approach.",
+    "QUESTION: \"How would you handle an employee who's consistently underperforming?\"\n\nORIGINAL (weak): \"I would talk to them and try to help them improve.\"\n\nSTAR REWRITE:\n• Situation: In my teaching role, I had a teaching assistant who was consistently missing deadlines for grading assignments, which affected 120 students across 4 classes.\n• Task: I needed to address the performance issue while maintaining a positive working relationship and following school HR procedures.\n• Action: I scheduled a private one-on-one meeting, documented specific instances with dates, and asked open-ended questions to understand root causes. Together we created a 30-day improvement plan with clear weekly milestones and check-ins every Friday.\n• Result: The TA met all milestones within 3 weeks, grading turnaround time improved from 2 weeks to 3 days, and they were later promoted to lead TA the following semester.",
   ],
   learningRoadmap: {
     topicsToStudy: [
-      "Database indexing strategies — understand B-tree vs. hash indexes, composite indexes, and when to use EXPLAIN ANALYZE to profile slow queries.",
-      "RESTful API design patterns — study resource naming conventions, proper HTTP status codes, pagination strategies, and API versioning approaches.",
-      "Testing pyramid fundamentals — learn the balance between unit tests (70%), integration tests (20%), and E2E tests (10%), using Jest and Playwright.",
+      "Employment law basics — understand at-will employment, FMLA, ADA accommodations, and anti-discrimination laws (Title VII).",
+      "HRIS systems — get comfortable with BambooHR or Workday through free trials and demo environments.",
+      "HR metrics and analytics — learn to track turnover rate, time-to-hire, employee satisfaction scores, and cost-per-hire.",
     ],
     resourcesToWatch: [
-      "\"System Design Interview\" by Gaurav Sen — YouTube playlist covering database scaling, caching, and load balancing.",
-      "\"Node.js API Masterclass\" by Traversy Media — hands-on REST API build with Express, PostgreSQL, and JWT auth.",
-      "\"Testing JavaScript\" by Kent C. Dodds — comprehensive guide to testing React and Node applications effectively.",
+      "\"HR Basics\" by GreggU on YouTube — clear, beginner-friendly explanations of core HR concepts.",
+      "\"Josh Bersin Academy\" — industry-leading HR learning platform with career changer tracks.",
+      "\"The HR Bartender\" blog and podcast — practical, real-world HR advice for people entering the field.",
     ],
     milestones: [
-      "Week 1–2: Complete SQLBolt exercises and build a PostgreSQL-backed REST API with proper indexing; write a blog post explaining your indexing decisions.",
-      "Week 3–4: Add a full test suite (unit + integration) to your API project; aim for 80%+ coverage and practice TDD on at least 3 endpoints.",
-      "Week 5–6: Build a small full-stack app (React + Node + PostgreSQL) with CI/CD via GitHub Actions; deploy to a cloud provider and document the architecture.",
+      "Week 1–2: Complete the SHRM Essentials online course and create a glossary of 50 HR terms you need to know.",
+      "Week 3–4: Set up a BambooHR free trial, create a mock company with 20 employees, and practice running reports.",
+      "Week 5–6: Rewrite 5 of your teaching accomplishments using HR language and measurable outcomes. Use these as your interview answer bank.",
     ],
   },
   aiGenerated: true,
-  evaluatedAt: "2025-03-15T10:30:00Z",
+  evaluatedAt: "2026-03-15T10:30:00Z",
 };
 
 /* ------------------------------------------------------------------ */
@@ -162,7 +162,7 @@ export default function SamplePage() {
         <div className="mb-12">
           <div className="mb-8 text-center">
             <p className="mb-2 font-mono text-sm text-zinc-500">
-              Career Blueprint
+              Career Roadmap
             </p>
             <h1 className="mb-3 text-3xl font-bold tracking-tight sm:text-4xl">
               <span className="text-zinc-400">
@@ -204,13 +204,31 @@ export default function SamplePage() {
                   border: "border-amber-500/20",
                   badge: "bg-amber-500/15 text-amber-400",
                 },
+                "Learn the Basics": {
+                  icon: "📖",
+                  gradient: "from-amber-500/10 to-orange-500/5",
+                  border: "border-amber-500/20",
+                  badge: "bg-amber-500/15 text-amber-400",
+                },
                 Execution: {
                   icon: "⚡",
                   gradient: "from-blue-500/10 to-cyan-500/5",
                   border: "border-blue-500/20",
                   badge: "bg-blue-500/15 text-blue-400",
                 },
+                "Build Real Experience": {
+                  icon: "⚡",
+                  gradient: "from-blue-500/10 to-cyan-500/5",
+                  border: "border-blue-500/20",
+                  badge: "bg-blue-500/15 text-blue-400",
+                },
                 Authority: {
+                  icon: "👑",
+                  gradient: "from-purple-500/10 to-pink-500/5",
+                  border: "border-purple-500/20",
+                  badge: "bg-purple-500/15 text-purple-400",
+                },
+                "Become the Expert": {
                   icon: "👑",
                   gradient: "from-purple-500/10 to-pink-500/5",
                   border: "border-purple-500/20",
@@ -308,14 +326,14 @@ export default function SamplePage() {
             Ready for your personalized report?
           </h2>
           <p className="mb-6 text-zinc-400">
-            Generate your free career blueprint, take the mock interview, and
+            Build your free career roadmap, take the mock interview, and
             unlock your own deep-dive feedback for just $9.
           </p>
           <Link
             href="/"
             className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-purple-500/20 transition hover:from-purple-500 hover:to-blue-500 hover:shadow-purple-500/30"
           >
-            Get Your Blueprint →
+            Build Your Roadmap →
           </Link>
         </div>
       </main>
@@ -327,7 +345,7 @@ export default function SamplePage() {
             <Link href="/" className="transition hover:text-zinc-400">
               SkillBridge
             </Link>{" "}
-            — Career blueprints, engineered.
+            — Career roadmaps for real people.
           </p>
         </div>
       </footer>

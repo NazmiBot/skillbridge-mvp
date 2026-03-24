@@ -10,11 +10,11 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Blog — SkillBridge | Career Roadmap Insights",
   description:
-    "Practical career advice for software engineers. Roadmaps, skill gap analysis, and strategies for leveling up.",
+    "Practical career advice for people changing careers. Roadmaps, transferable skills, and strategies for your next chapter.",
   openGraph: {
     title: "Blog — SkillBridge",
     description:
-      "Practical career advice for software engineers. Roadmaps, skill gap analysis, and strategies for leveling up.",
+      "Practical career advice for people changing careers. Roadmaps, transferable skills, and strategies for your next chapter.",
     type: "website",
     siteName: "SkillBridge",
   },
@@ -34,8 +34,7 @@ export default async function BlogIndex() {
             Career Insights
           </h1>
           <p className="text-lg text-zinc-400">
-            Practical advice for engineers who want to level up — no fluff, no
-            generic tips.
+            Practical advice for career changers — real strategies, no fluff.
           </p>
         </div>
 
