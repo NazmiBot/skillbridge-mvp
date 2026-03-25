@@ -208,7 +208,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
+    <div className="min-h-screen bg-[#0b0b10] text-white">
       <Header />
 
       <main className="mx-auto max-w-6xl px-4 sm:px-6">

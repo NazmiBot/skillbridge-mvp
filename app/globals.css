@@ -2,8 +2,8 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #0b0b10;
+  --foreground: #efefef;
 }
 
 @theme inline {
@@ -42,7 +42,7 @@ button, a, input, [role="button"] {
 
 /* Selection */
 ::selection {
-  background: rgba(96, 165, 250, 0.3);
+  background: rgba(139, 92, 246, 0.35);
   color: white;
 }
 

@@ -60,8 +60,8 @@ export default function ScoreChecker() {
   return (
     <section className="mx-auto mb-12 max-w-2xl sm:mb-14">
       <div className="rounded-2xl border border-white/[0.08] bg-[#0f0f14] p-6 text-center">
-        <h3 className="mb-1 text-lg font-bold text-white">⚡ Quick Career Gap Score</h3>
-        <p className="mb-5 text-sm text-zinc-500">Find out how ready you are — takes 10 seconds</p>
+        <h3 className="mb-1 text-lg font-bold text-white">🧭 How ready are you?</h3>
+        <p className="mb-5 text-sm text-zinc-500">Quick career gap check — takes 10 seconds, totally free</p>
 
         {!result ? (
           <div className="space-y-3">
@@ -69,21 +69,21 @@ export default function ScoreChecker() {
               type="text"
               value={targetRole}
               onChange={(e) => setTargetRole(e.target.value)}
-              placeholder="Target role (e.g. HR Specialist, Sales Rep)"
+              placeholder="What role are you aiming for?"
               className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white placeholder-zinc-600 outline-none focus:border-blue-500/50"
             />
             <input
               type="text"
               value={skills}
               onChange={(e) => setSkills(e.target.value)}
-              placeholder="Your skills (e.g. Communication, Excel, Teamwork)"
+              placeholder="Skills you have (e.g. Communication, Excel, Teamwork)"
               className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white placeholder-zinc-600 outline-none focus:border-blue-500/50"
             />
             <input
               type="number"
               value={experience}
               onChange={(e) => setExperience(e.target.value)}
-              placeholder="Years of experience"
+              placeholder="Years of experience (0 is fine!)"
               min="0"
               className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white placeholder-zinc-600 outline-none focus:border-blue-500/50"
             />
@@ -92,7 +92,7 @@ export default function ScoreChecker() {
               disabled={loading || !targetRole.trim()}
               className="w-full rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 transition hover:from-emerald-500 hover:to-teal-500 disabled:opacity-40"
             >
-              {loading ? <span className="flex items-center justify-center gap-2"><Spinner /> Calculating...</span> : "Check My Score →"}
+              {loading ? <span className="flex items-center justify-center gap-2"><Spinner /> Checking...</span> : "Check My Readiness →"}
             </button>
           </div>
         ) : (
@@ -102,7 +102,7 @@ export default function ScoreChecker() {
 
             {result.missingSkills.length > 0 && (
               <div className="mb-4 text-left">
-                <p className="mb-2 text-xs font-semibold uppercase text-amber-400/70">Top skills to build:</p>
+                <p className="mb-2 text-xs font-semibold uppercase text-amber-400/70">Skills to focus on next:</p>
                 <div className="flex flex-wrap gap-1.5">
                   {result.missingSkills.slice(0, 3).map((s, i) => (
                     <span key={i} className="rounded-full border border-amber-500/20 bg-amber-500/5 px-3 py-1 text-xs text-amber-300">

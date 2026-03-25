@@ -38,8 +38,8 @@ export default function CareerForm({
 }: CareerFormProps) {
   return (
     <div className="relative mx-auto mb-12 max-w-2xl sm:mb-14">
-      {/* Subtle glow behind the form */}
-      <div className="pointer-events-none absolute -inset-4 rounded-3xl bg-gradient-to-b from-blue-500/[0.04] via-purple-500/[0.02] to-transparent blur-2xl" />
+      {/* Warm glow behind the form */}
+      <div className="pointer-events-none absolute -inset-4 rounded-3xl bg-gradient-to-b from-blue-500/[0.03] via-violet-500/[0.03] to-amber-500/[0.02] blur-2xl" />
 
       <form
         id="career-form"
@@ -48,7 +48,7 @@ export default function CareerForm({
       >
       <div className="mb-5">
         <label className="mb-1.5 block text-sm font-medium text-zinc-400">
-          What job do you want? <span className="text-blue-400">*</span>
+          What&apos;s your dream job? <span className="text-amber-400">*</span>
         </label>
         <input
           type="text"
@@ -59,7 +59,7 @@ export default function CareerForm({
           className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-lg text-white placeholder-zinc-600 outline-none transition focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25"
         />
         <div className="mt-2.5">
-          <p className="mb-1.5 text-xs text-zinc-600">Popular career changes</p>
+          <p className="mb-1.5 text-xs text-zinc-600">Popular picks 👇</p>
           <div className="flex flex-wrap gap-1.5">
             {POPULAR_CAREERS.map((career) => (
               <button
@@ -82,25 +82,25 @@ export default function CareerForm({
       <div className="mb-6 grid gap-4 sm:grid-cols-2">
         <div>
           <label className="mb-1.5 block text-sm font-medium text-zinc-400">
-            Current Role
+            Where are you now?
           </label>
           <input
             type="text"
             value={currentRole}
             onChange={(e) => onCurrentRoleChange(e.target.value)}
-            placeholder="e.g. Teacher, Retail Manager, Barista..."
+            placeholder="e.g. Teacher, Retail Manager, Student..."
             className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white placeholder-zinc-600 outline-none transition focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25"
           />
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-medium text-zinc-400">
-            Years of Experience
+            Years of experience
           </label>
           <input
             type="number"
             value={experience}
             onChange={(e) => onExperienceChange(e.target.value)}
-            placeholder="e.g. 2"
+            placeholder="e.g. 2 (0 is totally fine!)"
             min="0"
             className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white placeholder-zinc-600 outline-none transition focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/25"
           />
@@ -109,10 +109,10 @@ export default function CareerForm({
 
       <div className="mb-6">
         <label className="mb-1.5 block text-sm font-medium text-zinc-400">
-          Your Skills
+          Skills you already have
           <span className="text-zinc-600">
             {" "}
-            (comma-separated, helps personalize your roadmap)
+            (comma-separated — helps us personalize your plan)
           </span>
         </label>
         <input
@@ -127,7 +127,7 @@ export default function CareerForm({
       <button
         type="submit"
         disabled={loading || !dreamCareer.trim()}
-        className="w-full rounded-xl bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 px-6 py-4 text-base font-bold text-white shadow-xl shadow-blue-500/25 transition active:scale-[0.97] hover:from-blue-500 hover:via-blue-400 hover:to-purple-500 hover:shadow-blue-500/40 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+        className="w-full rounded-xl bg-gradient-to-r from-blue-600 via-violet-500 to-amber-500 px-6 py-4 text-base font-bold text-white shadow-xl shadow-blue-500/20 transition active:scale-[0.97] hover:shadow-blue-500/35 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
       >
         {loading ? (
           <span className="flex items-center justify-center gap-2">
@@ -135,21 +135,21 @@ export default function CareerForm({
             Building your roadmap...
           </span>
         ) : (
-          "Build My Career Roadmap →"
+          "Build My Free Roadmap 🚀"
         )}
       </button>
       <p className="mt-3 text-center text-xs text-zinc-600">
-        3 free roadmaps per day — no account needed
+        Completely free — 3 roadmaps per day, no account needed
       </p>
 
       {/* Sample Report teaser */}
       <div className="mt-5 flex items-center justify-center gap-2 text-sm">
-        <span className="text-zinc-600">Want to see the $9 evaluation first?</span>
+        <span className="text-zinc-600">Curious about the $9 evaluation?</span>
         <a
           href="/sample"
-          className="font-medium text-purple-400 transition hover:text-purple-300"
+          className="font-medium text-violet-400 transition hover:text-violet-300"
         >
-          View Sample Report →
+          See a sample →
         </a>
       </div>
     </form>
